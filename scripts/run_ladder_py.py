@@ -36,8 +36,12 @@ def main() -> int:
 
     results = []
     t_all = time.time()
-    for rung in args.rungs:
-        for seed in args.seeds:
+    # SEED-MAJOR, deliberately: finish the whole ladder at seed 0 before
+    # starting seed 1. If this is interrupted -- and it runs for days -- what
+    # survives is a COMPLETE ladder at fewer seeds, which is analysable, rather
+    # than three seeds of the first few rungs, which is not.
+    for seed in args.seeds:
+        for rung in args.rungs:
             cmd = [sys.executable, "-u", "-m", "src.train",
                    "--config", rung, "--seed", str(seed)]
             if args.epochs is not None:
