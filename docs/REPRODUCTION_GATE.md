@@ -183,3 +183,40 @@ checkpoint, and the batch-size dependency is characterised and pinned.
 
 The full twelve-cell reproduction (4 sensor configurations x 3 architectures,
 all at batch_size 32) is in `results/gate/` with one JSON per run.
+
+---
+
+## 6. Plot-level evaluation of all twelve cells
+
+`scripts/plot_level_eval.py` → `results/plot_level/*.json`. Same checkpoints,
+same `batch_size = 32`, both metric families computed in one pass.
+
+| run | pixel | plot | 95% CI (plots) | gap |
+|---|---:|---:|---:|---:|
+| [S2]_unet3d | 0.7059 | 0.6265 | [0.514, 0.739] | +0.0794 |
+| [S1]_unet3d | 0.7888 | 0.6761 | [0.568, 0.773] | +0.1128 |
+| [L8]_unet3d | 0.7071 | 0.4023 | [0.313, 0.498] | +0.3047 |
+| **[S2,L8,S1]_unet3d** | **0.8217** | 0.5208 | [0.422, 0.620] | +0.3009 |
+| [S2]_utae | 0.3812 | 0.2000 | [0.083, 0.339] | +0.1812 |
+| [S1]_utae | 0.5983 | 0.3709 | [0.309, 0.444] | +0.2274 |
+| [L8]_utae | 0.3812 | 0.2000 | [0.083, 0.339] | +0.1812 |
+| [S2,L8,S1]_utae | 0.5140 | 0.4112 | [0.344, 0.492] | +0.1028 |
+| [S2]_convlstm | 0.4190 | 0.6152 | [0.482, 0.744] | **−0.1962** |
+| [S1]_convlstm | 0.4129 | 0.1985 | [0.154, 0.245] | +0.2144 |
+| **[L8]_convlstm** | 0.7661 | **0.7557** | [0.629, 0.876] | +0.0104 |
+| [S2,L8,S1]_convlstm | 0.6794 | 0.4029 | [0.311, 0.502] | +0.2765 |
+
+    gap (pixel - plot): median +0.1812   min -0.1962   max +0.3047
+
+**The gap is large, not uniform, and changes sign.** Pixel-pooling flatters 11
+of 12 cells, by between 1 and 30 IoU points, and *under*states one.
+
+**It reorders the benchmark.** The winner by the published metric is
+`[S2,L8,S1]_unet3d` (0.8217). The winner by the plot-weighted metric is
+`[L8]_convlstm` (0.7557) — a **single** sensor — and the two cells' 95% CIs do
+not overlap ([0.422, 0.620] vs [0.629, 0.876]).
+
+Caveats, stated plainly: these are the released **seed-0** checkpoints, on 36
+validation plots, and the CIs are correspondingly wide. The claim is about what
+the metric choice does to this benchmark's ranking, not a general claim about
+these architectures.

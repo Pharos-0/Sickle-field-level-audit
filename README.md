@@ -141,12 +141,12 @@ See `docs/MODEL_DEFECTS.md`.
 
 ### 3. Pixel-pooled and plot-weighted IoU disagree, and reorder the benchmark
 
-Across **11 of 12** released cells (one still `NOT RUN`):
+Across **all 12** released cells:
 
 | | |
 |---|---|
-| median gap (pixel − plot) | **+0.18** |
-| range | +0.01 to +0.30, **negative in one cell** (−0.196) |
+| median gap (pixel − plot) | **+0.1812** |
+| range | +0.0104 to +0.3047, **negative in one cell** (−0.1962) |
 | best cell, pixel-pooled | `[S2,L8,S1]_unet3d` **0.8217** |
 | best cell, **plot-weighted** | `[L8]_convlstm` **0.7557** |
 
