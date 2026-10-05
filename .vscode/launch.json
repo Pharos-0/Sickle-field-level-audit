@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Smoke test (v1, 2 batches)",
+      "type": "debugpy", "request": "launch",
+      "module": "src.train", "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "args": ["--config", "v1", "--seed", "0", "--smoke", "--max-batches", "2"]
+    },
+    {
+      "name": "Train: pick a rung",
+      "type": "debugpy", "request": "launch",
+      "module": "src.train", "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "args": ["--config", "${input:rung}", "--seed", "${input:seed}"]
+    },
+    {
+      "name": "Evaluate: pick a rung",
+      "type": "debugpy", "request": "launch",
+      "module": "src.eval", "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "args": ["--config", "${input:rung}", "--seed", "${input:seed}"]
+    },
+    {
+      "name": "Reproduction gate (one released cell)",
+      "type": "debugpy", "request": "launch",
+      "program": "${workspaceFolder}/scripts/phase5_gate.py",
+      "console": "integratedTerminal", "cwd": "${workspaceFolder}",
+      "env": { "PYTHONIOENCODING": "utf-8" },
+      "args": ["--run", "[S2]_unet3d", "--batch-size", "32"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "rung", "type": "pickString", "description": "Ladder rung",
+      "options": ["v1","v2","v3","v4","v5","v6","v7","v8","v9","v10"],
+      "default": "v1"
+    },
+    {
+      "id": "seed", "type": "pickString", "description": "Seed",
+      "options": ["0","1","2"], "default": "0"
+    }
+  ]
+}

@@ -195,6 +195,23 @@ def build_dataset(cfg: dict, split: str, phase: str) -> tdata.Dataset:
     return ds, df
 
 
+class PadCollate:
+    """Picklable wrapper around the reference `pad_collate`.
+
+    A lambda cannot be pickled, and Windows DataLoader workers use `spawn`, so
+    a lambda collate silently forces `num_workers=0`. That matters a great deal
+    here: measured on this machine, ~204 s of a ~250 s epoch is data loading on
+    a single thread while 27 others idle. Making this a module-level callable
+    is what allows workers to be used at all.
+    """
+
+    def __init__(self, pad_value):
+        self.pad_value = pad_value
+
+    def __call__(self, batch):
+        return utae_utils.pad_collate(batch, pad_value=self.pad_value)
+
+
 def _plot_balanced_weights(df: pd.DataFrame) -> torch.Tensor:
     """One weight per SAMPLE, inversely proportional to its plot's frequency.
 
@@ -221,11 +238,15 @@ def build_loader(cfg: dict, split: str, phase: str, seed: int = 0):
             num_samples=len(df), replacement=True, generator=g)
         shuffle = False
 
+    nw = int(cfg["training"]["num_workers"])
     loader = tdata.DataLoader(
         ds, batch_size=bs, shuffle=shuffle, sampler=sampler,
-        num_workers=cfg["training"]["num_workers"],
-        collate_fn=lambda x: utae_utils.pad_collate(
-            x, pad_value=cfg["data"]["pad_value"]),
+        num_workers=nw,
+        collate_fn=PadCollate(cfg["data"]["pad_value"]),
+        # Workers are respawned every epoch by default, and spawn is expensive
+        # on Windows. Keeping them alive matters because loading dominates.
+        persistent_workers=bool(nw),
+        prefetch_factor=(4 if nw else None),
         drop_last=False,
     )
     return loader, df

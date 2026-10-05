@@ -163,6 +163,8 @@ def main() -> int:
                     help="tiny run to prove the pipeline moves; not a result")
     ap.add_argument("--max-batches", type=int, default=None)
     ap.add_argument("--lr", type=float, default=None, help="override")
+    ap.add_argument("--num-workers", type=int, default=None,
+                    help="override dataloader workers")
     args = ap.parse_args()
 
     cfg = utils.load_config(args.config)
@@ -170,6 +172,8 @@ def main() -> int:
         cfg["training"]["epochs"] = args.epochs
     if args.lr is not None:
         cfg["training"]["lr"] = args.lr
+    if args.num_workers is not None:
+        cfg["training"]["num_workers"] = args.num_workers
     if args.smoke:
         cfg["training"]["epochs"] = min(cfg["training"]["epochs"], 1)
 

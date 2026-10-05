@@ -1,0 +1,28 @@
+{
+  // The venv lives OUTSIDE this folder, so VS Code cannot auto-detect it.
+  "python.defaultInterpreterPath": "D:\Final Project M.Tech\.venv\Scripts\python.exe",
+  "python.terminal.activateEnvironment": true,
+
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+
+  // Training writes thousands of small files; keep the watcher and search out
+  // of the data and output trees or the window stalls.
+  "files.watcherExclude": {
+    "**/outputs/**": true,
+    "**/reference_impl/**": true,
+    "**/results/previews/**": true
+  },
+  "search.exclude": {
+    "**/outputs/**": true,
+    "**/reference_impl/**": true
+  },
+  "files.exclude": { "**/__pycache__": true, "**/*.pyc": true },
+
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.env.windows": { "PYTHONIOENCODING": "utf-8" },
+
+  "[python]": { "editor.rulers": [79], "editor.tabSize": 4 },
+  "[yaml]": { "editor.tabSize": 2 }
+}

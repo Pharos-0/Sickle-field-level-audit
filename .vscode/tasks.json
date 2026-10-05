@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "options": {
+    "cwd": "${workspaceFolder}",
+    "env": { "PYTHONIOENCODING": "utf-8" }
+  },
+  "presentation": { "panel": "dedicated", "clear": true },
+  "tasks": [
+    {
+      "label": "0. Check configs (fast, no data)",
+      "type": "shell", "group": "test",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/check_configs.py"
+    },
+    {
+      "label": "1. Run tests",
+      "type": "shell", "group": { "kind": "test", "isDefault": true },
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' -m pytest tests -q"
+    },
+    {
+      "label": "2. Smoke test (v1 + v2, 2 batches each)",
+      "type": "shell",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' -m src.train --config v1 --smoke --max-batches 2; & 'D:\Final Project M.Tech\.venv\Scripts\python.exe' -m src.train --config v2 --smoke --max-batches 2"
+    },
+    {
+      "label": "3. Benchmark all rungs (writes the timing table)",
+      "type": "shell",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/bench_rungs.py 8"
+    },
+    {
+      "label": "4. Train one rung",
+      "type": "shell", "group": { "kind": "build", "isDefault": true },
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' -m src.train --config ${input:rung} --seed ${input:seed}"
+    },
+    {
+      "label": "5. Run the whole ladder (sequential, long)",
+      "type": "shell",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/run_ladder_py.py --seeds ${input:seed}"
+    },
+    {
+      "label": "6. Aggregate results table",
+      "type": "shell",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/aggregate_ladder.py"
+    },
+    {
+      "label": "7. Watch a running rung",
+      "type": "shell",
+      "command": "& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/watch.py ${input:rung} ${input:seed}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "rung", "type": "pickString", "description": "Ladder rung",
+      "options": ["v1","v2","v3","v4","v5","v6","v7","v8","v9","v10"],
+      "default": "v1"
+    },
+    {
+      "id": "seed", "type": "pickString", "description": "Seed",
+      "options": ["0","1","2"], "default": "0"
+    }
+  ]
+}

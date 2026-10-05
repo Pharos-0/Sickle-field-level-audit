@@ -98,7 +98,14 @@ training:
   optimizer: adam
   scheduler: none
   warmup_epochs: 0
-  num_workers: 0         # Windows + the rasterio shim; raise only on Linux
+  # MEASURED, not guessed. Epoch time here is I/O bound, not compute bound:
+  # at 0 workers ~204 s of a ~250 s v1 epoch was ONE thread reading .npz while
+  # 27 threads idled. Loading cost per batch on this machine:
+  #     0 workers 3.41 s | 4 workers 0.82 s | 8 workers 0.52 s  (6.5x)
+  # This requires a picklable collate -- Windows workers use spawn, and the
+  # lambda this used to pass silently forced single-threaded loading. See
+  # src/dataset.py::PadCollate. Lower it to 0 if you hit worker crashes.
+  num_workers: 8
   amp: false
 
 augmentation:
