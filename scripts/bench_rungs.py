@@ -22,12 +22,12 @@ from src.loss import build_loss
 NB_TRAIN = 61
 ROWS = []
 
-def bench(rung: str, nw: int):
+def bench(rung: str, nw: int, device: str = "cpu"):
     cfg = utils.load_config(rung)
     cfg["training"]["num_workers"] = nw
     utils.set_seed(0)
     loader, df = build_loader(cfg, "train", "train", seed=0)
-    model, _ = build_model(cfg, "cpu"); model.train()
+    model, _ = build_model(cfg, device); model.train()
     crit = build_loss(cfg, None, "cpu")
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
 
@@ -43,15 +43,23 @@ def bench(rung: str, nw: int):
     io = (time.time() - t0) / max(k, 1)
 
     # compute only
-    y = mask[cfg["data"]["task"]].long()
+    def _to(x):
+        if torch.is_tensor(x): return x.to(device)
+        if isinstance(x, dict): return {k: _to(v) for k, v in x.items()}
+        if isinstance(x, (list, tuple)): return type(x)(_to(c) for c in x)
+        return x
+    inp = _to(inp)
+    y = mask[cfg["data"]["task"]].long().to(device)
     t0 = time.time()
     for _ in range(2):
         opt.zero_grad(set_to_none=True)
         loss = crit(model(inp), y); loss.backward(); opt.step()
+    if device == "cuda":
+        torch.cuda.synchronize()   # CUDA is async; timing without this lies
     comp = (time.time() - t0) / 2
 
     ep = NB_TRAIN * (io + comp)
-    ROWS.append(dict(rung=rung, sensors=",".join(sorted(cfg["satellites"])),
+    ROWS.append(dict(rung=rung, device=device, sensors=",".join(sorted(cfg["satellites"])),
                      model=cfg["model"]["name"], T=int(T),
                      params=count_params(model),
                      io_s=round(io, 2), compute_s=round(comp, 2),
@@ -63,17 +71,18 @@ def bench(rung: str, nw: int):
 
 if __name__ == "__main__":
     nw = int(sys.argv[1]) if len(sys.argv) > 1 else 8
+    device = sys.argv[2] if len(sys.argv) > 2 else "cpu"
     patches.install()
     print(f"num_workers={nw}  threads={torch.get_num_threads()}  "
           f"cuda={torch.cuda.is_available()}\n", flush=True)
     for r in [f"v{i}" for i in range(1, 11)]:
         try:
-            bench(r, nw)
+            bench(r, nw, device)
         except Exception as e:
             print(f"{r:5s} FAILED {type(e).__name__}: {e}", flush=True)
             ROWS.append(dict(rung=r, status=f"FAILED {type(e).__name__}"))
     (PROJ / "results").mkdir(exist_ok=True)
-    (PROJ / "results" / f"bench_rungs_nw{nw}.json").write_text(
+    (PROJ / "results" / f"bench_rungs_nw{nw}_{device}.json").write_text(
         json.dumps(ROWS, indent=2), encoding="utf8")
     tot = sum(r.get("hours_100ep", 0) for r in ROWS)
     print(f"\nTOTAL one seed, 100 epochs, all 10 rungs: {tot:.0f} h "
