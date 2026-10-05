@@ -116,8 +116,13 @@ def main() -> int:
             status = f"INCOMPLETE ({got}/{plan} epochs, seeds {sorted(partial)})"
         if dm is not None and dm < 1e-6:
             status = "DEGENERATE (predicts one class)"
-        eps = [r.get("best_epoch") for r in runs.values()]
-        if all(e == 1 for e in eps if e is not None):
+        # "best epoch 1" means a run never improved past its first epoch --
+        # how three of the four released UTAE baselines failed. It is only
+        # meaningful once the run has FINISHED: a run currently on epoch 1 of
+        # 100 trivially has its best at epoch 1 and is not degenerate.
+        finished = [r for r in runs.values() if r.get("complete")]
+        eps = [r.get("best_epoch") for r in finished]
+        if eps and all(e == 1 for e in eps if e is not None):
             status = ("DEGENERATE (best epoch 1)" if status == "ok"
                       else status + "; best epoch 1")
 
