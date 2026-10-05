@@ -1,0 +1,91 @@
+{
+  "resolution": "10m",
+  "n_samples_tested": 300,
+  "bands": 6,
+  "mask_index": "UNIQUE_ID",
+  "masks_without_tabular_row": 0,
+  "tabular_rows_without_mask": 206,
+  "confident_band_mapping": {
+    "2": {
+      "field": "SOWING_DAY",
+      "match_rate": 1.0
+    },
+    "4": {
+      "field": "HARVESTING_DAY",
+      "match_rate": 1.0
+    }
+  },
+  "band0_values_by_crop": {
+    "Coconut": [
+      1.0,
+      2.0,
+      6.0,
+      29.0,
+      31.0,
+      34.0,
+      36.0,
+      37.0,
+      38.0,
+      39.0,
+      103.0
+    ],
+    "Banana": [
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      6.0,
+      7.0,
+      13.0,
+      15.0,
+      28.0,
+      30.0,
+      32.0,
+      33.0
+    ],
+    "Paddy": [
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      23.0,
+      24.0,
+      37.0,
+      38.0,
+      105.0,
+      364.0
+    ],
+    "Tomato": [
+      25.0,
+      374.0
+    ],
+    "Brinjal": [
+      25.0,
+      26.0,
+      27.0,
+      374.0
+    ],
+    "Bhendi": [
+      25.0,
+      27.0,
+      374.0
+    ],
+    "Cotton": [
+      26.0
+    ],
+    "Tamarind tree": [
+      35.0
+    ]
+  },
+  "caveat": "A chip may contain neighbouring plots, so a band can hold several values. The test asks whether the sample's own value is CONTAINED in the band, not whether it is the only value. Band 0 appears to be a crop/class code and is resolved separately below."
+}

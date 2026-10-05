@@ -1,0 +1,32 @@
+# Core
+torch>=2.0
+numpy>=2.0
+pandas
+scipy
+matplotlib
+
+# Imagery
+tifffile          # REQUIRED: reads the 6-band float64 masks. PIL cannot
+                  # (compression) and OpenCV refuses >4 channels.
+imagecodecs       # Deflate support for tifffile
+opencv-python     # used by the reference dataloader for resizing
+albumentations    # used by the reference dataloader
+
+# Metrics / training
+torchmetrics
+torchnet
+tqdm
+
+# Reference implementation also imports these
+wandb
+
+# NOTE ON rasterio
+# ----------------
+# The reference implementation imports rasterio, but on this machine Windows
+# Smart App Control blocks its GDAL DLLs:
+#     ImportError: DLL load failed while importing _base:
+#     An Application Control policy has blocked this file.
+# `shims/rasterio.py` provides the single API the reference code uses
+# (rasterio.open(path).read()) backed by tifffile, so the reference code runs
+# unmodified. Install real rasterio only if your environment permits it.
+# rasterio>=1.3

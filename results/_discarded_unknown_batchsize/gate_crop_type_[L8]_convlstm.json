@@ -1,0 +1,25 @@
+{
+  "task": "crop_type",
+  "run": "[L8]_convlstm",
+  "device": "cpu",
+  "released_best_val_iou": 0.7662738561630249,
+  "released_best_epoch": 64,
+  "reproduced": 0.777384340763092,
+  "abs_delta": 0.011110484600067139,
+  "tolerance": 0.01,
+  "verdict": "FAIL",
+  "val_samples": 227,
+  "val_plots": 36,
+  "trainable_params": 1983042,
+  "all_metrics": {
+    "f1_macro": 0.8707941770553589,
+    "acc": 0.9053752422332764,
+    "iou": 0.777384340763092,
+    "paddy_f1": 0.8039504289627075,
+    "non_paddy_f1": 0.9376378655433655,
+    "paddy_acc": 0.8168232440948486,
+    "non_paddy_acc": 0.9329608678817749,
+    "paddy_iou": 0.6721714735031128,
+    "non_paddy_iou": 0.8825972080230713
+  }
+}

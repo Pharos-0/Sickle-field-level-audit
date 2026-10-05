@@ -1,0 +1,25 @@
+{
+  "task": "crop_type",
+  "run": "[S2]_utae",
+  "device": "cpu",
+  "released_best_val_iou": 0.38123732805252075,
+  "released_best_epoch": 1,
+  "reproduced": 0.38123732805252075,
+  "abs_delta": 0.0,
+  "tolerance": 0.01,
+  "verdict": "PASS",
+  "val_samples": 227,
+  "val_plots": 36,
+  "trainable_params": 1072258,
+  "all_metrics": {
+    "f1_macro": 0.4326159656047821,
+    "acc": 0.7624746561050415,
+    "iou": 0.38123732805252075,
+    "paddy_f1": 0.0,
+    "non_paddy_f1": 0.8652319312095642,
+    "paddy_acc": 0.0,
+    "non_paddy_acc": 1.0,
+    "paddy_iou": 0.0,
+    "non_paddy_iou": 0.7624746561050415
+  }
+}

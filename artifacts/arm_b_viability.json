@@ -1,0 +1,201 @@
+{
+  "criterion": {
+    "note": "Pre-specified feasibility criterion for this study; not a general statistical sufficiency claim. Fixed before the decision was computed and not lowered afterwards.",
+    "min_classes": 3,
+    "min_val_plots_per_class": 5
+  },
+  "per_class_plot_counts": [
+    {
+      "crop": "Paddy",
+      "plots_total": 262,
+      "plots_train": 233,
+      "plots_val": 29
+    },
+    {
+      "crop": "Banana",
+      "plots_total": 37,
+      "plots_train": 33,
+      "plots_val": 4
+    },
+    {
+      "crop": "Coconut",
+      "plots_total": 19,
+      "plots_train": 16,
+      "plots_val": 3
+    },
+    {
+      "crop": "Banyan",
+      "plots_total": 11,
+      "plots_train": 11,
+      "plots_val": 0
+    },
+    {
+      "crop": "Sugarcane",
+      "plots_total": 11,
+      "plots_train": 11,
+      "plots_val": 0
+    },
+    {
+      "crop": "Groundnut",
+      "plots_total": 10,
+      "plots_train": 10,
+      "plots_val": 0
+    },
+    {
+      "crop": "Cotton",
+      "plots_total": 5,
+      "plots_train": 5,
+      "plots_val": 0
+    },
+    {
+      "crop": "Brinjal",
+      "plots_total": 3,
+      "plots_train": 3,
+      "plots_val": 0
+    },
+    {
+      "crop": "Eucalyptus",
+      "plots_total": 3,
+      "plots_train": 3,
+      "plots_val": 0
+    },
+    {
+      "crop": "Bhendi",
+      "plots_total": 2,
+      "plots_train": 2,
+      "plots_val": 0
+    },
+    {
+      "crop": "Sesame",
+      "plots_total": 2,
+      "plots_train": 1,
+      "plots_val": 1
+    },
+    {
+      "crop": "Palm tree",
+      "plots_total": 2,
+      "plots_train": 2,
+      "plots_val": 0
+    },
+    {
+      "crop": "Green gram",
+      "plots_total": 2,
+      "plots_train": 1,
+      "plots_val": 1
+    },
+    {
+      "crop": "Tomato",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Tamarind tree",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Mixed plantation",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Black gram",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Betelwine",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Teak",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Blackgram",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    },
+    {
+      "crop": "Mixed",
+      "plots_total": 1,
+      "plots_train": 1,
+      "plots_val": 0
+    }
+  ],
+  "thresholds_evaluated": {
+    "3": {
+      "K": 9,
+      "classes": [
+        "Paddy",
+        "Banana",
+        "Coconut",
+        "Banyan",
+        "Sugarcane",
+        "Groundnut",
+        "Cotton",
+        "Brinjal",
+        "Eucalyptus"
+      ],
+      "min_val_plots_in_a_retained_class": 0,
+      "meets_criterion": false
+    },
+    "5": {
+      "K": 7,
+      "classes": [
+        "Paddy",
+        "Banana",
+        "Coconut",
+        "Banyan",
+        "Sugarcane",
+        "Groundnut",
+        "Cotton"
+      ],
+      "min_val_plots_in_a_retained_class": 0,
+      "meets_criterion": false
+    },
+    "10": {
+      "K": 6,
+      "classes": [
+        "Paddy",
+        "Banana",
+        "Coconut",
+        "Banyan",
+        "Sugarcane",
+        "Groundnut"
+      ],
+      "min_val_plots_in_a_retained_class": 0,
+      "meets_criterion": false
+    },
+    "15": {
+      "K": 3,
+      "classes": [
+        "Paddy",
+        "Banana",
+        "Coconut"
+      ],
+      "min_val_plots_in_a_retained_class": 3,
+      "meets_criterion": false
+    },
+    "20": {
+      "K": 2,
+      "classes": [
+        "Paddy",
+        "Banana"
+      ],
+      "min_val_plots_in_a_retained_class": 4,
+      "meets_criterion": false
+    }
+  },
+  "arm_b_status": "NOT_VIABLE",
+  "reason": "No threshold yields 3 classes with >=5 validation plots each. Beyond Paddy, only Banana and Coconut have any validation support (4 and 3 plots). Arm B is skipped; the difficulty axis must be replaced, not dropped."
+}

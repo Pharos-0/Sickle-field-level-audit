@@ -1,0 +1,61 @@
+check,claimed,actual,status
+exists: dataset zip,True,True,CONFIRMED
+exists: released runs,True,True,CONFIRMED
+exists: tabular csv,True,True,CONFIRMED
+exists: paper,True,True,CONFIRMED
+exists: toy dataset,True,True,CONFIRMED
+zip size (GB),-,6.34,RECORDED
+samples total,2370,2370,CONFIRMED
+column set,"['UNIQUE_ID', 'PLOT_ID', 'RIVER_PART', 'STANDARD_SEASON', 'YEAR', 'AREA', 'CROP', 'VARIETY', 'PADDY_BIN', 'SOWING_DATE', 'TRANSPLANTING_DATE', 'HARVESTING_DATE', 'SOWING_DAY', 'TRANSPLANTING_DAY', 'HARVESTING_DAY', 'YIELD', 'SPLIT']","['UNIQUE_ID', 'PLOT_ID', 'RIVER_PART', 'STANDARD_SEASON', 'YEAR', 'AREA', 'CROP', 'VARIETY', 'PADDY_BIN', 'SOWING_DATE', 'TRANSPLANTING_DATE', 'HARVESTING_DATE', 'SOWING_DAY', 'TRANSPLANTING_DAY', 'HARVESTING_DAY', 'YIELD', 'SPLIT']",CONFIRMED
+unique PLOT_ID,351,351,CONFIRMED
+train samples,1937,1937,CONFIRMED
+val samples,227,227,CONFIRMED
+test samples,206,206,CONFIRMED
+train plots,315,315,CONFIRMED
+val plots,36,36,CONFIRMED
+test plots,0,0,CONFIRMED
+test rows with blank PLOT_ID,206,206,CONFIRMED
+test rows with blank CROP,206,206,CONFIRMED
+test rows with blank PADDY_BIN,206,206,CONFIRMED
+plots straddling splits,0,0,CONFIRMED
+plots growing Paddy,262,262,CONFIRMED
+plots growing Banana,37,37,CONFIRMED
+plots growing Coconut,19,19,CONFIRMED
+val plots growing Paddy,29,29,CONFIRMED
+val plots growing Banana,4,4,CONFIRMED
+val plots growing Coconut,3,3,CONFIRMED
+plots with a paddy label,262,262,CONFIRMED
+plots with a non-paddy label,105,105,CONFIRMED
+plots with BOTH labels (rotation),16,16,CONFIRMED
+reconciliation 262+105 == 351+16,367,367,CONFIRMED
+plots growing >1 crop,24,24,CONFIRMED
+yield samples,319,319,CONFIRMED
+yield plots,131,131,CONFIRMED
+released run directories,78,78,CONFIRMED
+  runs in crop_type,13,13,CONFIRMED
+  runs in crop_yield,26,26,CONFIRMED
+  runs in harvesting_date,13,13,CONFIRMED
+  runs in sowing_date,13,13,CONFIRMED
+  runs in transplanting_date,13,13,CONFIRMED
+conf num_classes,2,2,CONFIRMED
+conf img_size,"[32, 32]","[32, 32]",CONFIRMED
+conf epochs,100,100,CONFIRMED
+conf batch_size,32,32,CONFIRMED
+conf lr,0.1,0.1,CONFIRMED
+conf seed,0,0,CONFIRMED
+conf ignore_index,-999,-999,CONFIRMED
+conf N_params,-,3107874,RECORDED
+trainlog epochs,100,100,CONFIRMED
+[S2]_unet3d best val_iou,-,0.7173,RECORDED
+[S2]_unet3d final val_iou,-,0.6601,RECORDED
+[S2]_unet3d final train_iou,-,0.8709,RECORDED
+[S2]_unet3d final gap,-,0.2108,RECORDED
+zip entries,3428250,3428250,CONFIRMED
+npz files,209039,209039,CONFIRMED
+tif files,2995937,2995937,CONFIRMED
+top-level entries,"['images', 'masks', 'sickle_dataset_tabular.csv']","['images', 'masks', 'sickle_dataset_tabular.csv']",CONFIRMED
+image modalities,"['L8', 'S1', 'S2']","['L8', 'S1', 'S2']",CONFIRMED
+mask resolutions,"['10m', '30m', '3m']","['10m', '30m', '3m']",CONFIRMED
+  npz under images/L8,-,44879,RECORDED
+  npz under images/S1,-,37657,RECORDED
+  npz under images/S2,-,126503,RECORDED

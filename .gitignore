@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------------------
+# Data — never commit. See README for how to obtain it.
+# ---------------------------------------------------------------------------
+/sickle_data/
+*.zip
+*.npz
+*.tif
+*.pth
+*.pth.tar
+
+# Reference implementation is cloned, not vendored (see README)
+/reference_impl/
+
+# Scratch
+/outputs/
+*.log
+
+# ---------------------------------------------------------------------------
+# Results ARE tracked, deliberately.
+#
+# Every headline claim in docs/ is backed by a file under results/ or
+# artifacts/. A run manifest that records a commit hash is worthless if the
+# evidence that hash is meant to pin is not in the tree. These are all small
+# (JSON/CSV/PNG, ~1.2 MB total), so they are committed rather than ignored:
+#
+#   results/gate/           12 cells x one JSON — the reproduction gate
+#   results/plot_level/     Plot-Macro IoU + bootstrap CI per cell
+#   results/previews/       human-viewable imagery
+#   artifacts/subsets/      the 30 nested plot manifests the sweep uses
+#   results/_discarded_unknown_batchsize/
+#                           the contaminated first sweep, kept so the process
+#                           failure in docs/REPRODUCTION_GATE.md 4a stays
+#                           auditable. Not used for anything.
+#
+# Large training outputs (checkpoints, 155-run logs) are excluded by the
+# *.pth.tar rule above and by /outputs/.
+# ---------------------------------------------------------------------------
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+desktop.ini
