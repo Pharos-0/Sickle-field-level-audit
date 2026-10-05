@@ -224,9 +224,68 @@ def _plot_balanced_weights(df: pd.DataFrame) -> torch.Tensor:
     return torch.as_tensor(w, dtype=torch.double)
 
 
+def effective_micro_batch(cfg: dict) -> tuple[int, int]:
+    """(micro_batch, accumulation_steps) for TRAINING.
+
+    `training.batch_size` is the EFFECTIVE batch and stays 32 everywhere --
+    evaluation on this benchmark is batch-size dependent and that value is
+    pinned (docs/REPRODUCTION_GATE.md section 2). `micro_batch_size` is only
+    how many samples cross the GPU at once; gradients are accumulated until
+    `batch_size` samples have contributed before the optimiser steps.
+
+    IT IS NOT EQUIVALENT TO A TRUE BATCH OF 32, AND MUST NOT BE DESCRIBED AS
+    SUCH. Two separate things matter and only one of them is fine:
+
+      * Normalisation: fine. The models use GROUP norm (`encoder_norm: group`),
+        which normalises within each sample, so no statistic crosses the batch.
+        With batch norm this whole scheme would be invalid.
+
+      * Padding: NOT fine. `utae_utils.pad_collate` pads the temporal axis to
+        the maximum sequence length WITHIN EACH BATCH. A micro-batch of 8
+        therefore pads to a different T than a batch of 32 would. Measured:
+
+            rung   T at batch 32   T at micro-batch 8
+            v2         72                61
+            v7         74                37
+            v8         74                60
+
+        This is the same per-batch padding behaviour that makes evaluation
+        batch-size dependent and moves IoU by up to 6.5 points on frozen
+        weights (docs/REPRODUCTION_GATE.md section 2).
+
+    So micro-batching IS a change to the training condition, not a free memory
+    optimisation. It is acceptable here only because:
+
+      1. it is held CONSTANT across every rung, so rung-to-rung deltas -- which
+         is what the study actually reports -- remain controlled; and
+      2. EVALUATION is unaffected: it always runs at the full pinned batch size
+         in fp32, so every reported metric is computed exactly as the
+         reproduction gate computed it.
+
+    It must be stated in the write-up as a training condition, and absolute
+    numbers from this ladder are not comparable to runs trained at a true
+    batch of 32.
+    """
+    bs = int(cfg["training"]["batch_size"])
+    mb = int(cfg["training"].get("micro_batch_size") or bs)
+    if mb > bs:
+        mb = bs
+    if bs % mb != 0:
+        raise ValueError(
+            f"training.batch_size ({bs}) must be divisible by "
+            f"micro_batch_size ({mb}), otherwise the effective batch is not {bs} "
+            f"and results stop being comparable across rungs.")
+    return mb, bs // mb
+
+
 def build_loader(cfg: dict, split: str, phase: str, seed: int = 0):
     ds, df = build_dataset(cfg, split, phase)
-    bs = cfg["training"]["batch_size"]
+    # Training streams micro-batches and accumulates; evaluation always uses
+    # the full pinned batch size, because that is what the metric depends on.
+    if phase == "train":
+        bs, _ = effective_micro_batch(cfg)
+    else:
+        bs = int(cfg["training"]["batch_size"])
 
     sampler = None
     shuffle = phase == "train"

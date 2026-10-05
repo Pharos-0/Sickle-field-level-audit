@@ -55,6 +55,10 @@ def main() -> int:
               f"{n}: batch_size is {c['training']['batch_size']}, must be 32 "
               f"(evaluation is batch-size dependent; see REPRODUCTION_GATE.md)")
         check(c["data"]["num_classes"] == 2, f"{n}: num_classes must be 2")
+        mb = c["training"].get("micro_batch_size") or c["training"]["batch_size"]
+        check(c["training"]["batch_size"] % mb == 0,
+              f"{n}: batch_size {c['training']['batch_size']} is not divisible "
+              f"by micro_batch_size {mb}; the effective batch would not be 32")
         check(c["data"]["eval_split"] == "val",
               f"{n}: eval_split must be val, the test split is unlabelled")
         check(c["project"]["version"] == n,

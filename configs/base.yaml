@@ -105,8 +105,36 @@ training:
   # This requires a picklable collate -- Windows workers use spawn, and the
   # lambda this used to pass silently forced single-threaded loading. See
   # src/dataset.py::PadCollate. Lower it to 0 if you hit worker crashes.
+  # How many samples actually cross the GPU at once. batch_size above stays the
+  # EFFECTIVE batch (and the evaluation batch); gradients accumulate until that
+  # many samples have contributed.
+  #
+  # THIS IS NOT EQUIVALENT TO A TRUE BATCH OF 32. Group norm makes the
+  # normalisation safe, but pad_collate pads the temporal axis to the maximum
+  # WITHIN EACH BATCH, so a micro-batch of 8 pads to a different T:
+  #     rung v2: T=72 at batch 32, T=61 at micro 8
+  #     rung v7: T=74 at batch 32, T=37 at micro 8
+  # That is the same per-batch padding that makes evaluation batch-size
+  # dependent (docs/REPRODUCTION_GATE.md section 2).
+  #
+  # It is acceptable only because it is held CONSTANT across every rung, so the
+  # rung-to-rung deltas the study reports stay controlled, and because
+  # EVALUATION always runs at the full pinned batch size in fp32. Absolute
+  # numbers from this ladder are NOT comparable to runs trained at a true
+  # batch of 32, and the write-up must say so.
+  #
+  # Measured on the RTX 5060 Laptop (8.5 GB), rung v8 (UTAE, 7.6M params):
+  #     fp32,      batch 32   20.65 GB  OVERFLOWS -> spills to RAM  55.53 s/batch
+  #     bf16 AMP,  batch 32   17.05 GB  OVERFLOWS                   31.78 s/batch
+  #     bf16 AMP,  micro 8     4.61 GB  FITS                         0.48 s/micro
+  # i.e. ~29x faster per effective batch. Raise to 32 on a larger card.
+  micro_batch_size: 8
+
+  # bf16 autocast for TRAINING only. Evaluation stays fp32 at the pinned batch
+  # size, so every reported metric is computed exactly as the gate computed it.
+  amp: true
+
   num_workers: 8
-  amp: false
 
 augmentation:
   enabled: false

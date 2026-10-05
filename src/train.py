@@ -36,7 +36,8 @@ PROJ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJ))
 
 from src import patches, utils                               # noqa: E402
-from src.dataset import build_loader, class_weights_from_train  # noqa: E402
+from src.dataset import (build_loader, class_weights_from_train,  # noqa: E402
+                         effective_micro_batch)
 from src.loss import build_loss                              # noqa: E402
 from src.model import build_model, count_params              # noqa: E402
 from src.evaluation.metrics import (bootstrap_plot_ci,       # noqa: E402
@@ -125,31 +126,56 @@ def evaluate(model, loader, cfg, device, task, boot_n=0):
 
 
 def train_one_epoch(model, loader, crit, opt, device, task, log_every=10,
-                    max_batches=None):
+                    max_batches=None, accum=1, amp=False):
+    """One epoch, with gradient accumulation and optional bf16 autocast.
+
+    `accum` micro-batches contribute to each optimiser step, so the effective
+    batch stays `training.batch_size` while only `micro_batch_size` samples sit
+    on the GPU at once. The loss is divided by `accum` so the accumulated
+    gradient equals the gradient of the mean over the full effective batch.
+    """
     model.train()
     total, n = 0.0, 0
+    opt.zero_grad(set_to_none=True)
+    pending = 0
     for i, batch in enumerate(loader):
         if max_batches and i >= max_batches:
             break
         inputs, masks = to_device(batch, device)
         y = masks[task].long()
-        opt.zero_grad(set_to_none=True)
-        out = model(inputs)
-        loss = crit(out, y)
+
+        if amp:
+            with torch.autocast("cuda", dtype=torch.bfloat16):
+                loss = crit(model(inputs), y)
+        else:
+            loss = crit(model(inputs), y)
+
         if not torch.isfinite(loss):
-            # A non-finite loss poisons every subsequent step. Skip the update
-            # and say so, rather than letting NaNs propagate into a checkpoint
+            # A non-finite loss poisons every subsequent step. Skip this
+            # micro-batch rather than letting NaNs propagate into a checkpoint
             # that then reports a plausible-looking number.
-            print(f"   WARNING batch {i}: non-finite loss {loss.item()}, "
-                  f"skipping update", flush=True)
+            print(f"   WARNING micro-batch {i}: non-finite loss "
+                  f"{loss.item()}, skipped", flush=True)
             continue
-        loss.backward()
-        opt.step()
+
+        (loss / accum).backward()
+        pending += 1
         total += float(loss.item())
         n += 1
-        if log_every and (i + 1) % log_every == 0:
-            print(f"   batch {i + 1}/{len(loader)}  loss {total / max(n,1):.4f}",
-                  flush=True)
+
+        if pending == accum:
+            opt.step()
+            opt.zero_grad(set_to_none=True)
+            pending = 0
+
+        if log_every and (i + 1) % (log_every * accum) == 0:
+            print(f"   micro-batch {i + 1}/{len(loader)}  "
+                  f"loss {total / max(n,1):.4f}", flush=True)
+
+    # A trailing partial accumulation would otherwise be silently discarded.
+    if pending:
+        opt.step()
+        opt.zero_grad(set_to_none=True)
     return total / max(n, 1)
 
 
@@ -198,6 +224,13 @@ def main() -> int:
           f"{cfg['temporal']['mode']}   model {cfg['model']['name']}")
     print("=" * 72, flush=True)
 
+    micro, accum = effective_micro_batch(cfg)
+    use_amp = bool(cfg["training"].get("amp")) and device == "cuda"
+    if accum > 1 or use_amp:
+        print(f"  micro-batch {micro} x {accum} accumulation "
+              f"= effective batch {cfg['training']['batch_size']}"
+              + ("   bf16 autocast" if use_amp else ""), flush=True)
+
     tr_loader, tr_df = build_loader(cfg, cfg["data"]["train_split"], "train",
                                     seed=args.seed)
     va_loader, va_df = build_loader(cfg, cfg["data"]["eval_split"], "eval")
@@ -227,6 +260,14 @@ def main() -> int:
         "class_weights": (None if cw is None else [float(x) for x in cw]),
         "smoke": bool(args.smoke),
         "runtime_patch": patch_id,
+        "micro_batch_size": micro,
+        "grad_accum_steps": accum,
+        "amp_bf16": use_amp,
+        "precision_note": ("Training uses bf16 autocast and gradient "
+                           "accumulation to fit an 8.5 GB card. EVALUATION "
+                           "runs in fp32 at the pinned batch size, so every "
+                           "reported metric is computed exactly as the "
+                           "reproduction gate computed it."),
     })
     utils.write_json(out / "manifest.json", man)
     utils.write_json(out / "config_resolved.json", cfg)
@@ -236,7 +277,8 @@ def main() -> int:
     for ep in range(1, epochs + 1):
         te = time.time()
         loss = train_one_epoch(model, tr_loader, crit, opt, device, task,
-                               max_batches=args.max_batches)
+                               max_batches=args.max_batches,
+                               accum=accum, amp=use_amp)
         if sched is not None:
             sched.step()
 

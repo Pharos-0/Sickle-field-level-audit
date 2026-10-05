@@ -18,13 +18,30 @@ from src import utils, patches
 from src.dataset import build_loader
 from src.model import build_model, count_params
 from src.loss import build_loss
+from src.dataset import effective_micro_batch
 
-NB_TRAIN = 61
+NB_TRAIN = 61   # effective batches per epoch (1937 samples / 32)
+
+
+def _one(model, crit, opt, inp, y, accum, amp):
+    """One EFFECTIVE batch: `accum` micro-batches, then a single step."""
+    import torch as _t
+    opt.zero_grad(set_to_none=True)
+    for _ in range(accum):
+        if amp:
+            with _t.autocast("cuda", dtype=_t.bfloat16):
+                loss = crit(model(inp), y)
+        else:
+            loss = crit(model(inp), y)
+        (loss / accum).backward()
+    opt.step()
 ROWS = []
 
 def bench(rung: str, nw: int, device: str = "cpu"):
     cfg = utils.load_config(rung)
     cfg["training"]["num_workers"] = nw
+    micro, accum = effective_micro_batch(cfg)
+    amp = bool(cfg["training"].get("amp")) and device == "cuda"
     utils.set_seed(0)
     loader, df = build_loader(cfg, "train", "train", seed=0)
     model, _ = build_model(cfg, device); model.train()
@@ -56,27 +73,25 @@ def bench(rung: str, nw: int, device: str = "cpu"):
     # CPU -- v1 measured 8.32 s on GPU against 0.52 s on CPU purely from this.
     N_WARMUP, N_TIMED = 3, 5
     for _ in range(N_WARMUP):
-        opt.zero_grad(set_to_none=True)
-        loss = crit(model(inp), y); loss.backward(); opt.step()
+        _one(model, crit, opt, inp, y, accum, amp)
     if device == "cuda":
         torch.cuda.synchronize()
 
     t0 = time.time()
     for _ in range(N_TIMED):
-        opt.zero_grad(set_to_none=True)
-        loss = crit(model(inp), y); loss.backward(); opt.step()
+        _one(model, crit, opt, inp, y, accum, amp)
     if device == "cuda":
         torch.cuda.synchronize()   # CUDA is async; timing without this lies
     comp = (time.time() - t0) / N_TIMED
 
     ep = NB_TRAIN * (io + comp)
-    ROWS.append(dict(rung=rung, device=device, sensors=",".join(sorted(cfg["satellites"])),
+    ROWS.append(dict(rung=rung, device=device, micro=micro, accum=accum, amp=amp, sensors=",".join(sorted(cfg["satellites"])),
                      model=cfg["model"]["name"], T=int(T),
                      params=count_params(model),
                      io_s=round(io, 2), compute_s=round(comp, 2),
                      epoch_s=round(ep, 0), hours_100ep=round(ep * 100 / 3600, 1)))
     print(f"{rung:5s} {ROWS[-1]['sensors']:10s} {cfg['model']['name']:9s} "
-          f"T={T:3d} params={count_params(model):>9,} io={io:5.2f}s "
+          f"T={T:3d} mb={micro:<3d}x{accum} amp={str(amp)[0]} io={io:5.2f}s "
           f"compute={comp:5.2f}s -> {ep/60:5.1f} min/epoch, "
           f"{ep*100/3600:5.1f} h/100ep", flush=True)
 
