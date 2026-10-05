@@ -12,7 +12,6 @@
 /reference_impl/
 
 # Scratch
-/outputs/
 *.log
 
 # ---------------------------------------------------------------------------
@@ -32,8 +31,7 @@
 #                           failure in docs/REPRODUCTION_GATE.md 4a stays
 #                           auditable. Not used for anything.
 #
-# Large training outputs (checkpoints, 155-run logs) are excluded by the
-# *.pth.tar rule above and by /outputs/.
+# Large training outputs (checkpoints) are excluded by the rules at the bottom.
 # ---------------------------------------------------------------------------
 
 # Python
@@ -47,8 +45,17 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
-# Training outputs: checkpoints are large and logs are per-run scratch.
-# best.json / manifest.json / trainlog.json ARE tracked (see below) because
-# they are the evidence; the weights are not.
+# Training outputs.
+#
+# The EVIDENCE is tracked, the WEIGHTS and SCRATCH are not. A run manifest
+# records a git commit hash; that is meaningless if the manifest itself is not
+# in the tree. So these ARE committed (a few KB each):
+#     outputs/<task>/<rung>_seed<n>/manifest.json         what produced it
+#     outputs/<task>/<rung>_seed<n>/config_resolved.json  the merged config
+#     outputs/<task>/<rung>_seed<n>/trainlog.json         per-epoch metrics
+#     outputs/<task>/<rung>_seed<n>/best.json             selected epoch
+#     outputs/<task>/<rung>_seed<n>/best_per_plot_iou.json
+# and these are not:
 /outputs/logs/
-/outputs/**/checkpoint_*.pth.tar
+/outputs/**/*.pth.tar
+/outputs/**/*.pth
