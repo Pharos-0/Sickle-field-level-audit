@@ -1,6 +1,8 @@
 {
-  // The venv lives OUTSIDE this folder, so VS Code cannot auto-detect it.
-  "python.defaultInterpreterPath": "D:\Final Project M.Tech\.venv\Scripts\python.exe",
+  // The interpreter lives INSIDE this project at .venv, so the project is
+  // self-contained. It used to point at D:\Final Project M.Tech\.venv, which
+  // belongs to a different project -- deleting that one broke this one.
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
   "python.terminal.activateEnvironment": true,
 
   "python.testing.pytestEnabled": true,
@@ -8,13 +10,15 @@
   "python.testing.pytestArgs": ["tests"],
 
   // Training writes thousands of small files; keep the watcher and search out
-  // of the data and output trees or the window stalls.
+  // of the data, venv and output trees or the window stalls.
   "files.watcherExclude": {
+    "**/.venv/**": true,
     "**/outputs/**": true,
     "**/reference_impl/**": true,
     "**/results/previews/**": true
   },
   "search.exclude": {
+    "**/.venv/**": true,
     "**/outputs/**": true,
     "**/reference_impl/**": true
   },

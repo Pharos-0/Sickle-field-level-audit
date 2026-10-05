@@ -29,6 +29,8 @@
 # ---------------------------------------------------------------------------
 
 # Python
+# The project's own interpreter lives at .venv -- 5+ GB, never committed.
+/.venv/
 __pycache__/
 *.py[cod]
 .venv/

@@ -26,7 +26,13 @@ from PIL import Image
 
 FPD = Path("D:/FPD")
 ZIP = FPD / "sickle_dataset-002.zip"
-TAB = Path("C:/ds/sickle/sickle_dataset_tabular.csv")
+# Was hard-coded to C:/ds/sickle/, a path outside this project left over
+# from an earlier session. Resolved from configs/base.yaml instead so
+# every script reads the same dataset as the ladder.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.utils import data_root as _data_root  # noqa: E402
+TAB = _data_root() / "sickle_dataset_tabular.csv"
 ART = Path(__file__).resolve().parents[1] / "artifacts"
 
 #: Pre-specified feasibility criterion for THIS study. Not a general

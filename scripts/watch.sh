@@ -7,7 +7,12 @@ cd "$(dirname "$0")/.."
 V="${1:-v1}"; S="${2:-0}"
 L="outputs/logs/${V}_seed${S}.log"
 D="outputs/crop_type/${V}_seed${S}"
-PY="${SICKLE_PY:-/d/Final Project M.Tech/.venv/Scripts/python.exe}"
+# Interpreter resolution, in order: $SICKLE_PY, the project's own .venv,
+# then whatever `python` is on PATH. The project is self-contained; it must not
+# depend on an environment belonging to a different project.
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PY="${SICKLE_PY:-$ROOT/.venv/Scripts/python.exe}"
+[ -x "$PY" ] || PY="$(command -v python3 || command -v python)"
 echo "=== $V seed $S ==="
 if [ ! -f "$L" ]; then echo "  NOT RUN (no log at $L)"; exit 0; fi
 echo "  epochs done : $(grep -cE '^ep ' "$L")"

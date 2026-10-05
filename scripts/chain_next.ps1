@@ -20,7 +20,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
-$py   = if ($env:SICKLE_PY) { $env:SICKLE_PY } else { "D:\Final Project M.Tech\.venv\Scripts\python.exe" }
+# Interpreter resolution, in order: $env:SICKLE_PY, the project's own .venv,
+# then `python` on PATH. The project must not depend on another project's env.
+$py = if ($env:SICKLE_PY) { $env:SICKLE_PY }
+      else { Join-Path (Split-Path -Parent $PSScriptRoot) ".venv\Scripts\python.exe" }
+if (-not (Test-Path $py)) { $py = "python" }
 $logs = Join-Path $root "outputs\logs"
 New-Item -ItemType Directory -Force -Path $logs | Out-Null
 $chainLog = Join-Path $logs "chain_$Next`_seed$Seed.status"

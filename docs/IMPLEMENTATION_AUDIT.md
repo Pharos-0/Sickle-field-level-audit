@@ -116,9 +116,13 @@ is deferred to the user per prompt Section 5.
   OpenCV can read these masks: PIL fails on the compression, and OpenCV refuses
   >4 channels (`Unsupported number of channels: 6`). This must go in
   `requirements.txt`.
-- Working interpreter: `D:\Final Project M.Tech\.venv` (torch 2.11.0+cu128,
-  CUDA available, timm 1.0.29). A dedicated environment for this project has
-  **not** been created yet.
+- Working interpreter: **`.venv` inside this project** (torch 2.11.0+cu128).
+  It previously borrowed `D:\Final Project M.Tech\.venv`, which belongs to a
+  **different** project -- deleting or moving that one would have broken this
+  one, and the dependency was hard-coded in 19 places. The project is now
+  self-contained; `scripts/*.sh` and `scripts/*.ps1` resolve the interpreter as
+  `$SICKLE_PY` -> `<project>/.venv` -> `python` on PATH, and the VS Code config
+  uses `${workspaceFolder}/.venv`.
 - Disk: D: has 128 GB free; the zip is unpacked lazily (read from the archive)
   so no extraction has been performed beyond the tabular CSV.
 

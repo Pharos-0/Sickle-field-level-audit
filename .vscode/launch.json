@@ -6,6 +6,7 @@
       "type": "debugpy", "request": "launch",
       "module": "src.train", "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
       "env": { "PYTHONIOENCODING": "utf-8" },
       "args": ["--config", "v1", "--seed", "0", "--smoke", "--max-batches", "2"]
     },
@@ -14,6 +15,7 @@
       "type": "debugpy", "request": "launch",
       "module": "src.train", "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
       "env": { "PYTHONIOENCODING": "utf-8" },
       "args": ["--config", "${input:rung}", "--seed", "${input:seed}"]
     },
@@ -22,6 +24,7 @@
       "type": "debugpy", "request": "launch",
       "module": "src.eval", "console": "integratedTerminal",
       "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
       "env": { "PYTHONIOENCODING": "utf-8" },
       "args": ["--config", "${input:rung}", "--seed", "${input:seed}"]
     },
@@ -30,6 +33,7 @@
       "type": "debugpy", "request": "launch",
       "program": "${workspaceFolder}/scripts/phase5_gate.py",
       "console": "integratedTerminal", "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
       "env": { "PYTHONIOENCODING": "utf-8" },
       "args": ["--run", "[S2]_unet3d", "--batch-size", "32"]
     }

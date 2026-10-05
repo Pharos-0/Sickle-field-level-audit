@@ -1,5 +1,32 @@
+# Install into the project's OWN venv, which lives at .venv in this folder.
+# The project must not borrow an interpreter from another project.
+#
+#   python -m venv .venv
+#   .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# ---------------------------------------------------------------------------
+# TORCH MUST BE INSTALLED FIRST, FROM THE CUDA INDEX, AND PINNED.
+#
+#   .\.venv\Scripts\python.exe -m pip install torch==2.11.0 torchvision \
+#       --index-url https://download.pytorch.org/whl/cu128
+#
+# The GPU here is an RTX 5060 Laptop (compute capability 12.0), which needs a
+# cu128 build. Plain `pip install torch` fetches a CPU-only wheel from PyPI and
+# `torch.cuda.is_available()` silently becomes False.
+#
+# This already happened once: installing `timm` afterwards pulled torch 2.14.1
+# +cpu over the working 2.11.0+cu128 build, with no error and no warning --
+# training simply fell back to CPU. Install anything that depends on torch with
+# --no-deps, or re-check cuda afterwards:
+#
+#   .\.venv\Scripts\python.exe -c "import torch; print(torch.cuda.is_available())"
+#
+# torch is therefore listed here PINNED, and deliberately not as `torch>=2.1`.
+# ---------------------------------------------------------------------------
+torch==2.11.0
+torchvision
+
 # Core
-torch>=2.1
 numpy
 pandas
 pyyaml
@@ -7,6 +34,9 @@ pyyaml
 # Dataset pipeline (the reference implementation's dependencies)
 albumentations
 opencv-python-headless
+tqdm
+timm
+einops
 
 # GeoTIFF masks.
 # rasterio is the reference's reader. Where Windows Smart App Control blocks

@@ -24,7 +24,7 @@ What actually changes the runtime is the GPU — see §7.
 
 The venv lives **outside** this folder, at
 
-    D:\Final Project M.Tech\.venv\Scripts\python.exe
+    .venv\Scripts\python.exe
 
 so VS Code cannot find it automatically. `.vscode/settings.json` already sets
 it. To confirm:
@@ -84,7 +84,7 @@ not to produce results.
 Monitor a run from a second terminal (``Ctrl+` ``):
 
 ```powershell
-& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' scripts/watch.py v1 0
+& '.\.venv\Scripts\python.exe' scripts/watch.py v1 0
 ```
 
 or **Tasks: Run Task → 7. Watch a running rung**.
@@ -97,7 +97,7 @@ instead:
 
 ```powershell
 cd 'D:\FPD\sickle-project'
-$py = 'D:\Final Project M.Tech\.venv\Scripts\python.exe'
+$py = '.\.venv\Scripts\python.exe'
 Start-Process $py -ArgumentList '-u','-m','src.train','--config','v1','--seed','0' `
   -RedirectStandardOutput 'outputs\logs\v1_seed0.log' `
   -RedirectStandardError  'outputs\logs\v1_seed0.err' `
@@ -143,7 +143,7 @@ Get-PnpDevice -Class Display | Format-List FriendlyName, Status, ProblemDescript
 Fixing this is worth far more than any software change here. Afterwards verify:
 
 ```powershell
-& 'D:\Final Project M.Tech\.venv\Scripts\python.exe' -c "import torch; print(torch.cuda.is_available())"
+& '.\.venv\Scripts\python.exe' -c "import torch; print(torch.cuda.is_available())"
 ```
 
 If it prints `True`, set `device: cuda` in `configs/base.yaml` (or leave
