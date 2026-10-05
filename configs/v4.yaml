@@ -1,0 +1,13 @@
+defaults:
+  - v3
+
+project:
+  version: v4
+  description: "V3 + class-weighted loss (CLASS IMBALANCE EFFECT)"
+
+# Paddy is the harder class in all twelve released cells, often by 20-30 IoU
+# points, despite being the plot-level majority (262 of 351 plots). Weights are
+# computed from the TRAIN split only, never from val.
+loss:
+  type: cross_entropy
+  class_weights: inverse_frequency

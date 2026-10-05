@@ -1,0 +1,19 @@
+defaults:
+  - base
+
+project:
+  version: v1
+  description: "FLOOR: single-acquisition Sentinel-2 (constant sequence, zero temporal information), unweighted CE, no augmentation"
+
+# v1 is the floor of the ladder. It deliberately removes the thing the study is
+# about -- time -- so that every later rung measures what adding it back buys.
+# One acquisition per plot, chosen by a fixed deterministic rule so the choice
+# is not a hidden source of variance.
+temporal:
+  mode: single
+  single_date_strategy: median_index
+  # NOTE: not "no temporal model" -- "single acquisition". U-Net3D cannot take
+  # a length-1 sequence (two temporal halvings collapse it to zero), so the one
+  # chosen frame is repeated to 4 constant timesteps. Zero temporal
+  # information, identical architecture and parameter count to v2.
+  repeat_to: 4

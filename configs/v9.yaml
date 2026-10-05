@@ -1,0 +1,13 @@
+defaults:
+  - v8
+
+project:
+  version: v9
+  description: "V8 + cosine LR schedule with warmup (OPTIMISATION EFFECT)"
+
+training:
+  lr: 0.001
+  scheduler: cosine
+  warmup_epochs: 5
+  optimizer: adamw
+  weight_decay: 0.0005

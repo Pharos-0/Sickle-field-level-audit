@@ -1,0 +1,29 @@
+# conda env create -f environment.yml && conda activate sickle
+#
+# Note on rasterio: it is listed because the reference code imports it, but on
+# the Windows development machine Smart App Control blocks its GDAL DLLs
+# ("An Application Control policy has blocked this file", 3/3 attempts). The
+# tifffile-backed shim in shims/rasterio.py supplies the single API the
+# reference uses, so the environment works without a functioning rasterio.
+name: sickle
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - pyyaml
+  - matplotlib
+  - scipy
+  - pytest
+  - jupyterlab
+  - pip:
+      - torch>=2.1
+      - torchvision
+      - albumentations
+      - opencv-python-headless
+      - tifffile
+      - imagecodecs
+      - rasterio

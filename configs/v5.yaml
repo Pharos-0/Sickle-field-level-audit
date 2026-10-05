@@ -1,0 +1,20 @@
+defaults:
+  - v4
+
+project:
+  version: v5
+  description: "V4 + Sentinel-1 radar (RADAR FUSION EFFECT)"
+
+# S1 is cloud-penetrating. Roughly 40% of mid-season S2 frames in this dataset
+# are cloud-covered, so this rung tests whether radar recovers what cloud costs.
+satellites:
+  S2:
+    bands: [B1, B2, B3, B4, B5, B6, B7, B8, B8A, B9, B11, B12]
+    rgb_bands: [3, 2, 1]
+    mask_res: 10
+    img_size: [32, 32]
+  S1:
+    bands: [VV, VH]
+    rgb_bands: [0, 1, 0]
+    mask_res: 10
+    img_size: [32, 32]

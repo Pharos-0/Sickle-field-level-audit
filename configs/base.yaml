@@ -1,0 +1,124 @@
+# ---------------------------------------------------------------------------
+# SICKLE temporal-complexity study — shared defaults.
+#
+# Every v1..v10 config inherits from this and changes ONE thing, so that any
+# difference between two adjacent rungs is attributable to that one change
+# WITHIN THIS EXPERIMENTAL SYSTEM. This is controlled component attribution.
+# It is not causal identification and must never be described as causal.
+# ---------------------------------------------------------------------------
+
+project:
+  name: sickle-temporal-complexity
+  version: base
+  description: "Shared defaults. Not runnable on its own."
+
+data:
+  # The canonical extraction. This is the user's pre-existing full copy; it
+  # contains all 209,039 .npz arrays, all 6,492 masks and the full tabular CSV
+  # (md5 e804c1c165e3f55d03da8305a380ff77).
+  #
+  # Do NOT point this at "D:/FPD/WACV 2024" -- that is the TOY subset
+  # (19,859 npz, 651 masks) with a DIFFERENT csv (md5 0cb87468...). Mixing
+  # them silently changes the evaluation set.
+  root: "D:/FPD/sickledataset extracted"
+  tabular: sickle_dataset_tabular.csv
+  task: crop_type
+  num_classes: 2        # binary paddy vs non-paddy; paddy = class 0
+  ignore_index: -999
+  pad_value: 0
+  img_size: [32, 32]
+  # Splits are the released ones. phase0 verified 0 plots straddle splits.
+  # The TEST split is UNLABELLED (all 206 rows blank in PLOT_ID/CROP/PADDY_BIN
+  # and no masks exist), so all reported numbers are VALIDATION numbers and are
+  # not comparable to the paper's published test table.
+  train_split: train
+  eval_split: val
+  subset: null          # null = all train plots; else artifacts/subsets/<name>.json
+
+satellites:
+  S2:
+    bands: [B1, B2, B3, B4, B5, B6, B7, B8, B8A, B9, B11, B12]
+    rgb_bands: [3, 2, 1]
+    mask_res: 10
+    img_size: [32, 32]
+
+model:
+  name: unet3d
+  encoder_widths: [64, 128]
+  decoder_widths: [32, 128]
+  out_conv: [32, 16]
+  str_conv_k: 4
+  str_conv_s: 2
+  str_conv_p: 1
+  agg_mode: att_group
+  encoder_norm: group
+  n_head: 16
+  d_model: 256
+  d_k: 4
+  padding_mode: reflect
+
+temporal:
+  # mode: "single" collapses the time axis to ONE acquisition (the floor);
+  #       "full" keeps the whole sequence.
+  mode: single
+  single_date_strategy: median_index   # which frame when mode == single
+  # When mode == single the chosen frame is REPEATED to this many timesteps.
+  # It cannot be 1: pastis_unet3d halves the temporal axis twice, so T=1
+  # collapses to T=0 and the forward pass fails outright. A constant sequence
+  # carries zero temporal information while keeping the architecture, the
+  # parameter count and the collate path identical to the full-sequence rungs.
+  repeat_to: 4
+
+loss:
+  type: cross_entropy
+  class_weights: null    # null = unweighted
+
+training:
+  epochs: 100
+  # batch_size is FIXED AT 32 EVERYWHERE AND MUST NOT BE VARIED.
+  # Evaluation on this benchmark is batch-size dependent: pad_collate pads the
+  # temporal axis to the PER-BATCH maximum and pastis_unet3d realigns the pad
+  # mask by truncation rather than pooling. Measured swing on frozen weights:
+  # [L8]_unet3d scores 0.7071 / 0.6561 / 0.6409 at batch 32 / 16 / 8 -- 6.5 IoU
+  # points from batch size alone. See docs/REPRODUCTION_GATE.md section 2.
+  batch_size: 32
+  # DEVIATION FROM THE RELEASED CONFIG, STATED EXPLICITLY.
+  # The authors use lr 0.1 with Adam, but ALWAYS paired with CosineAnnealingLR
+  # (T_max = 3*epochs//4, eta_min = 1e-4). This ladder introduces the scheduler
+  # only at v9, as the optimisation rung, so v1-v8 would run bare Adam at 0.1 --
+  # which diverges (observed training loss ~46 against an expected ~0.69 for a
+  # 2-class problem on unnormalised 16-bit reflectance).
+  # 1e-3 is the standard stable Adam setting and is held CONSTANT across v1-v8,
+  # so every rung-to-rung delta remains controlled. The ladder is internally
+  # comparable; it is NOT lr-matched to the released baselines, and results from
+  # it must not be presented as reproductions of them. The reproduction of the
+  # released numbers is a separate artefact (docs/REPRODUCTION_GATE.md).
+  lr: 0.001
+  weight_decay: 0.0
+  optimizer: adam
+  scheduler: none
+  warmup_epochs: 0
+  num_workers: 0         # Windows + the rasterio shim; raise only on Linux
+  amp: false
+
+augmentation:
+  enabled: false
+
+sampling:
+  plot_balanced: false
+
+evaluation:
+  # Both metrics are always reported. They disagree materially on this dataset:
+  # on the released checkpoints the gap (pixel-pooled minus plot-macro) has a
+  # median of +0.18 and reorders which model wins. Reporting only one is how
+  # the published ranking gets built.
+  pixel_pooled: true       # the SICKLE-comparable benchmark number
+  plot_macro: true         # this study's spatial-generalisation metric
+  bootstrap_n: 2000        # resamples PLOTS, not pixels
+  report_per_class: true   # paddy IoU is 20-30 points below non-paddy; macro hides it
+
+seeds: [0, 1, 2]
+
+runtime:
+  device: auto
+  out_dir: outputs

@@ -46,3 +46,9 @@ __pycache__/
 # OS
 Thumbs.db
 desktop.ini
+
+# Training outputs: checkpoints are large and logs are per-run scratch.
+# best.json / manifest.json / trainlog.json ARE tracked (see below) because
+# they are the evidence; the weights are not.
+/outputs/logs/
+/outputs/**/checkpoint_*.pth.tar

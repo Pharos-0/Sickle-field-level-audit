@@ -1,0 +1,9 @@
+defaults:
+  - v2
+
+project:
+  version: v3
+  description: "V2 + augmentation (AUGMENTATION EFFECT)"
+
+augmentation:
+  enabled: true

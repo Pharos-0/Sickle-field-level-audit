@@ -1,0 +1,12 @@
+defaults:
+  - v7
+
+project:
+  version: v8
+  description: "V7 + wider encoder 64/128 -> 128/256 (MODEL CAPACITY EFFECT)"
+
+# With only 351 plots the hypothesis under test is that capacity costs more
+# than it buys. This rung is expected to be flat or negative; that is a result.
+model:
+  encoder_widths: [128, 256]
+  decoder_widths: [64, 256]

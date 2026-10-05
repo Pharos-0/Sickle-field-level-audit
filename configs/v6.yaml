@@ -1,0 +1,26 @@
+defaults:
+  - v5
+
+project:
+  version: v6
+  description: "V5 + Landsat-8 (THREE-SENSOR FUSION EFFECT)"
+
+# Completes the sensor set used by the released benchmark. In the authors' own
+# published numbers three-sensor fusion (81.07 IoU) does NOT beat S1 alone
+# (81.77), which is one of the two observations that motivated this study.
+satellites:
+  S2:
+    bands: [B1, B2, B3, B4, B5, B6, B7, B8, B8A, B9, B11, B12]
+    rgb_bands: [3, 2, 1]
+    mask_res: 10
+    img_size: [32, 32]
+  S1:
+    bands: [VV, VH]
+    rgb_bands: [0, 1, 0]
+    mask_res: 10
+    img_size: [32, 32]
+  L8:
+    bands: [SR_B1, SR_B2, SR_B3, SR_B4, SR_B5, SR_B6, SR_B7, ST_B10]
+    rgb_bands: [3, 2, 1]
+    mask_res: 30
+    img_size: [32, 32]

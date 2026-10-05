@@ -1,0 +1,14 @@
+defaults:
+  - v9
+
+project:
+  version: v10
+  description: "V9 + plot-balanced sampling (SPATIAL UNIT EFFECT)"
+
+# The plot is the independent spatial unit for generalisation, but plots differ
+# in pixel count by a large factor, so uniform pixel sampling over-weights big
+# plots. This rung makes training agree with how the study measures. Expected
+# to help Plot-Macro IoU more than pixel-pooled IoU -- if it moves them in
+# opposite directions, that is itself the finding.
+sampling:
+  plot_balanced: true

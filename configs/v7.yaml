@@ -1,0 +1,14 @@
+defaults:
+  - v6
+
+project:
+  version: v7
+  description: "V6 + UTAE temporal attention in place of U-Net3D (TEMPORAL ARCHITECTURE EFFECT)"
+
+# Swaps HOW time is modelled while holding WHAT is modelled constant.
+# Caution carried forward from the gate: three of the four released UTAE cells
+# never trained (best epoch 1), and two have paddy IoU exactly 0.000. If this
+# rung lands at 0.3812 with zero paddy IoU it has collapsed the same way and
+# must be reported as degenerate, not as a result.
+model:
+  name: utae

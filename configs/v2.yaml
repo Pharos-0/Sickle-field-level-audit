@@ -1,0 +1,12 @@
+defaults:
+  - v1
+
+project:
+  version: v2
+  description: "V1 + full temporal sequence (TEMPORAL EFFECT)"
+
+# The headline comparison of the whole study. v2 - v1 is the marginal value of
+# temporal modelling, holding sensor, architecture, loss, augmentation,
+# optimiser, seed and batch size constant.
+temporal:
+  mode: full

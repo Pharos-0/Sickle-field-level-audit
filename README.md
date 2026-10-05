@@ -7,9 +7,9 @@ A controlled empirical study on the **SICKLE** dataset (Cauvery Delta, Tamil
 Nadu, India). The contribution is a measurement, not an architecture — **no new
 model is proposed and none is claimed**.
 
-> **Status: PHASE 0–5 complete. No study training runs have been executed yet.**
-> Every number in this repository is either measured from the released
-> artefacts or marked `[RESULT NOT YET RUN]`.
+> **Status: PHASE 0–6 complete. v1 training is RUNNING. v2–v10 NOT RUN.**
+> Every number here is either measured from released artefacts or marked
+> `NOT RUN`.
 
 ---
 
@@ -24,77 +24,89 @@ season. **On SICKLE it doesn't.** From the authors' own published results:
 | Crop type: Sentinel-1 alone **81.77%** IoU beats three-sensor fusion **81.07%** | more sensors make it no better |
 
 With only **351 plots**, the suspect is that complexity carries a data cost
-this dataset cannot pay. The study measures where that cost turns.
+this dataset cannot pay. The ladder measures where that cost turns.
 
 ---
 
-## What has been established so far
+## The ladder
+
+Ten rungs, each inheriting from the previous one and changing **exactly one
+thing**, so any adjacent difference is attributable to that change *within this
+experimental system*. This is **controlled component attribution** — never
+"causal".
+
+| rung | adds | isolates |
+|---|---|---|
+| **v1** | single-acquisition S2, unweighted CE, no aug | the floor |
+| **v2** | full temporal sequence | **temporal effect** |
+| v3 | augmentation | augmentation effect |
+| v4 | class-weighted loss | class imbalance effect |
+| v5 | Sentinel-1 radar | radar fusion effect |
+| v6 | Landsat-8 | three-sensor fusion effect |
+| v7 | UTAE temporal attention | temporal architecture effect |
+| v8 | wider encoder | model capacity effect |
+| v9 | cosine LR + warmup | optimisation effect |
+| v10 | plot-balanced sampling | spatial unit effect |
+
+`v2 − v1` is the headline measurement.
+
+**v1 is "single-acquisition", not "a 2D baseline".** U-Net3D halves the temporal
+axis twice, so T=1 collapses to T=0 and the forward pass is impossible. The one
+chosen frame is therefore repeated to 4 **constant** timesteps: zero temporal
+information, identical architecture, parameter count and collate path to v2.
+
+```bash
+python scripts/check_configs.py       # resolve all 10 rungs, assert invariants
+bash scripts/smoke_test.sh v1 v2      # 2 batches each; NOT a result
+bash scripts/train.sh v1 0            # one rung, one seed
+SEEDS="0 1 2" bash scripts/run_ladder.sh
+python scripts/aggregate_ladder.py    # the table, with NOT RUN / DEGENERATE flags
+```
+
+---
+
+## What has been established
 
 ### Dataset facts — 51 checks, 0 refuted
-
-`scripts/phase0_verify.py` → `artifacts/phase0_verification.csv`
 
 | | |
 |---|---|
 | Samples / plots | 2,370 season-level samples from **351 plots** (the paper says 388) |
 | Splits | train 1,937 / 315 plots · val 227 / **36 plots** · test 206 / **0 plots** |
-| **Test split** | **Unlabelled.** All 206 rows blank in PLOT_ID, CROP and PADDY_BIN, and no masks exist for them. The 36 validation plots are the entire evaluation set. |
-| Split integrity | 0 plots straddle splits — the released splits are clean, use them |
-| Task | **Binary paddy vs non-paddy**, `num_classes: 2` (21 crop labels exist but the benchmark is binary) |
+| **Test split** | **Unlabelled.** All 206 rows blank in PLOT_ID, CROP and PADDY_BIN, and no masks exist. The 36 validation plots are the entire evaluation set. |
+| Task | **Binary paddy vs non-paddy**, `num_classes: 2`, **paddy = class 0** |
 
 ### The six mask bands — decoded from evidence
-
-Undocumented anywhere available; derived empirically and then independently
-confirmed against the authors' code.
 
 | Band | Meaning | Evidence |
 |---|---|---|
 | **0** | `PLOT_ID` | present in **600/600** sampled masks |
-| **1** | crop code | on own-plot pixels, exactly one value per crop over 800 samples |
+| **1** | crop code | exactly one value per crop over 800 samples |
 | 2 / 3 / 4 | sowing / transplanting / harvesting day | 45/45, 100/100, 45/45 |
 | **5** | **yield ÷ pixel count** | sums to the tabular YIELD in **200/200** |
 
-Codes: `1 Paddy · 2 Banana · 3 Coconut · 4 Banyan · 5 Sugarcane · 6 Palm ·
-7 Groundnut · 8 Eucalyptus · 9 Tamarind · 10 Mixed · 11 Cotton · 15 Betelwine`
-
-**Band 5 is a trap.** It is total plot yield spread over the plot's pixels, so
-a per-pixel regression target fits something that scales inversely with plot
-area. The target must be the **sum over the plot**.
-
-**Band 0 is what makes Plot-Macro IoU possible** — without it, per-plot metrics
-could not be computed at all.
+**Band 5 is a trap** — per-pixel yield regression fits something that scales
+inversely with plot area; the target must be the sum over the plot.
+**Band 0 is what makes Plot-Macro IoU possible.**
 
 ### Arm B (reduced multi-class): NOT VIABLE
 
 Tested against a criterion fixed before computing it (≥3 classes, each with ≥5
-validation plots). **Every threshold fails** — beyond Paddy (29 val plots) only
-Banana (4) and Coconut (3) have any validation support.
-`artifacts/arm_b_viability.json`. **Run count is 155, Arm A only.**
+validation plots). **Every threshold fails.** Run count is 155, Arm A only.
 
-### Reproduction gate — 12 cells, 9 PASS, and it produced a finding
+### Reproduction gate — 12 cells, 9 PASS
 
-`docs/REPRODUCTION_GATE.md`. Tolerance **±0.01 declared before any run** and
-never widened. Single sequential sweep at `batch_size = 32`, recorded in every
-output file.
+Tolerance **±0.01 declared before any run**, never widened.
+`PASS 9/12 · median |Δ| 0.0012 · max 0.0345`. Trainable parameter counts match
+the released configs exactly. Details in `docs/REPRODUCTION_GATE.md`.
 
-    PASS at +/-0.01 : 9/12
-    abs delta       : median 0.0012   min 0.0000   max 0.0345
+---
 
-Exact or near-exact: `[S2]_utae` 0.0000 · `[L8]_utae` 0.0000 ·
-`[S1]_convlstm` 0.0000 · `[L8]_convlstm` 0.0002 · `[L8]_unet3d` 0.0009 ·
-`[S2,L8,S1]_convlstm` 0.0005. Trainable parameter counts match the released
-configs exactly.
+## Three findings
 
-**Three released baselines never trained.** `[S2]_utae`, `[L8]_utae` and
-`[S2,L8,S1]_utae` are all best at **epoch 1**; the first two score an identical
-0.3812 with **paddy IoU exactly 0.000** -- they predict one class everywhere.
-Three of the four UTAE cells in the published benchmark are degenerate.
+### 1. Evaluation depends on batch size
 
-**Paddy is the harder class in all twelve cells**, often by 20-30 IoU points
-(best cell 0.731 vs 0.912). Macro IoU alone hides this.
-
-**The finding: evaluation results depend on batch size.** Same checkpoint, same
-data, same code — only batch size changed:
+Same checkpoint, same data, same code, frozen weights:
 
 | batch_size | `[L8]_unet3d` | Δ |
 |---:|---:|---:|
@@ -102,106 +114,122 @@ data, same code — only batch size changed:
 | 16 | 0.6561 | 0.0500 |
 | 8 | 0.6409 | 0.0652 |
 
-**A 6.5 IoU-point swing from batch size alone, at evaluation, with frozen
-weights.** Mechanism: `pad_collate` pads the temporal axis to the *per-batch
-maximum*, and in `pastis_unet3d.forward` the pad mask is realigned to the
-pooled temporal length by truncation (`pad_mask[:, :final.shape[-1]]`) rather
-than by pooling. Whether masking engages therefore depends on batch
-composition.
+**6.5 IoU points from batch size alone.** `pad_collate` pads the temporal axis
+to the per-batch maximum, and the pad mask is realigned by **truncation**
+instead of pooling. **Any IoU reported without its evaluation batch size is not
+reproducible.** This study pins `batch_size = 32` everywhere.
 
-**Consequence: any IoU reported on this benchmark without its evaluation batch
-size is not reproducible.** This study fixes `batch_size = 32` everywhere and
-records it in every run manifest.
+### 2. The released U-Net3D produces NaN, and nothing guards it
+
+The same truncated mask makes the masked-mean denominator **zero** for a sample
+whose early acquisitions are empty:
+
+| split | samples hitting 0/0 | share |
+|---|---:|---:|
+| train | **13 / 1937** | 0.7% |
+| val | **0 / 227** | 0.0% |
+
+`grep -rn "isnan\|isfinite\|nan_to_num" reference_impl/` returns **nothing**, so
+NaN gradients from one batch destroy every weight. Not an optimiser problem —
+the NaN count is identical at lr 0.1 / 0.01 / 0.001 / 0.0001, and appears with
+freshly initialised weights and zero optimiser steps.
+
+`src/patches.py` clamps the denominator, verified **bit-identical on 9/9 batches
+that were already finite, 0 differing, 3 NaN→finite**, so it cannot change any
+previously valid number. `reference_impl/` is never edited.
+See `docs/MODEL_DEFECTS.md`.
+
+### 3. Pixel-pooled and plot-weighted IoU disagree, and reorder the benchmark
+
+Across **11 of 12** released cells (one still `NOT RUN`):
+
+| | |
+|---|---|
+| median gap (pixel − plot) | **+0.18** |
+| range | +0.01 to +0.30, **negative in one cell** (−0.196) |
+| best cell, pixel-pooled | `[S2,L8,S1]_unet3d` **0.8217** |
+| best cell, **plot-weighted** | `[L8]_convlstm` **0.7557** |
+
+The three-sensor fusion model that wins the published metric **loses to a
+single sensor** on the plot-weighted one, with non-overlapping 95% CIs
+([0.422, 0.620] vs [0.629, 0.876]). Both metrics are reported everywhere.
+
+**Paddy is the harder class in all twelve cells**, often by 20–30 IoU points.
 
 ---
 
 ## Repository
 
 ```
-configs/          per-variant YAML                      [NOT YET WRITTEN]
+configs/        base.yaml + v1..v10.yaml   the ladder, one change per rung
 src/
-  evaluation/metrics.py   macro IoU, per-class IoU/F1, Plot-Macro IoU,
-                          plot-level bootstrap, paired seed deltas
+  utils.py      config resolution, seeding, run manifests
+  dataset.py    SICKLE wrapper: single-date mode, subsets, plot-balanced sampling
+  model.py      nested YAML -> the reference's flat CFG
+  loss.py       CE, optional inverse-frequency weights
+  patches.py    the UNet3D NaN fix, installed at runtime
+  train.py      training engine
+  eval.py       both metric families side by side
+  predict.py    qualitative prediction maps
+  evaluation/metrics.py   macro IoU, Plot-Macro IoU, plot bootstrap, paired deltas
 scripts/
-  phase0_verify.py        verify every claimed fact
-  phase1_inspect.py       Arm B viability + on-disk format
-  phase1_mask_semantics.py  decode the six mask bands
-  phase5_gate.py          THE REPRODUCTION GATE
-  extract_dataset.py      archive -> disk (skips the redundant raw tif tree)
-  make_subsets.py         nested plot-level subsets for the sweep
-  make_previews.py        human-viewable imagery
-shims/rasterio.py         tifffile-backed; Smart App Control blocks real GDAL
-reference_impl/           official SICKLE code (cloned, unmodified)
-tests/                    20 passing unit tests
-docs/
-  IMPLEMENTATION_AUDIT.md   PHASE 0 + 1 findings
-  REPRODUCTION_GATE.md      PHASE 5 and the batch-size finding
-  SICKLE_MASTER_PROMPT.md   the study specification
-artifacts/                verification, viability, subsets, dataset format
-results/previews/         contact sheet, per-plot overviews, time series
-results/gate/             one JSON per reproduced cell
+  check_configs.py    validate the ladder (no torch, no data)
+  train.sh/.ps1       run one rung
+  smoke_test.sh/.ps1  prove the pipeline moves
+  run_ladder.sh       the full ladder, SEQUENTIALLY
+  aggregate_ladder.py the results table (flags NOT RUN / DEGENERATE / smoke)
+  phase0_verify.py    verify every claimed fact
+  phase5_gate.py      the reproduction gate
+  plot_level_eval.py  Plot-Macro IoU on released checkpoints
+notebooks/      explore_sickle.ipynb
+shims/          tifffile-backed rasterio (Smart App Control blocks real GDAL)
+reference_impl/ official SICKLE code, cloned, UNMODIFIED
+tests/          29 passing
+docs/           MODEL_DEFECTS · REPRODUCTION_GATE · IMPLEMENTATION_AUDIT
+TRAINING_GUIDE.md
 ```
 
 ## Data
 
-| | |
-|---|---|
-| Archive | `D:\FPD\sickle_dataset-002.zip` (6.34 GB) |
-| Extracted | `D:\FPD\sickle_data` — **215,532 files, 3.0 GB** |
-| Released runs | `D:\FPD\runs\wacv_2024` — 78 runs with configs, 100-epoch logs, checkpoints |
+| | | |
+|---|---|---|
+| **Canonical** | `D:\FPD\sickledataset extracted` | 209,039 npz · 6,492 masks · csv md5 `e804c1c1…` |
+| Archive | `D:\FPD\sickle_dataset-002.zip` | 6.34 GB |
+| **Toy — do not use** | `D:\FPD\WACV 2024` | 19,859 npz · 651 masks · **different csv** `0cb87468…` |
+| Redundant | `D:\FPD\sickle_data` | npz-only subset; deletable, ~3 GB |
+| Released runs | `D:\FPD\runs\wacv_2024` | 78 runs over 5 tasks |
 
-The archive carries **two copies of the imagery**: `images/{SAT}/npy/` (209,039
-`.npz`, what the dataloader reads) and `images/{SAT}/tif/` (**2.99M raw
-per-band GeoTIFFs the reference code never touches**). Extraction skips the
-latter by default — 215k files instead of 3.2M.
-
-## Running it
-
-```bash
-# verification and inspection (no GPU)
-python scripts/phase0_verify.py
-python scripts/phase1_inspect.py
-python scripts/phase1_mask_semantics.py --n 300
-
-# the gate -- nothing proceeds until this passes
-python scripts/phase5_gate.py --run "[S2]_unet3d" --batch-size 32
-
-# sweep subsets and previews
-python scripts/make_subsets.py
-python scripts/make_previews.py
-
-pytest tests -q
-```
-
-`scripts/phase5_gate.py` sets `PYTHONPATH` for the rasterio shim internally.
+Pointing `data.root` at the toy folder loads without complaint and silently
+changes the evaluation set.
 
 ## Environment notes specific to this machine
 
-- **rasterio is blocked by Windows Smart App Control** (`DLL load failed ...
-  An Application Control policy has blocked this file`), consistently. The
-  shim at `shims/rasterio.py` supplies the one API the reference code uses and
-  raises on anything else rather than faking it.
-- **SciPy DLLs are intermittently blocked** by the same policy — a suite can
-  fail and then pass unchanged. Retry before debugging.
-- **The discrete GPU intermittently powers down.** CUDA was available early in
-  a session and gone later with no code change. The gate runs on CPU.
+- **rasterio is blocked by Windows Smart App Control** (3/3 attempts). The shim
+  supplies the one API the reference uses and raises on anything else.
+- **SciPy DLLs are intermittently blocked** by the same policy — retry before
+  debugging.
+- **The discrete GPU powers down when idle** and `nvidia-smi` needs admin.
+  CUDA was unavailable for the v1 launch; it runs on CPU at ~4.2 min/epoch.
 
 ## Limitations, stated up front
 
-- **Validation-set numbers only.** The test split is unlabelled; results are
-  not comparable to the paper's published table.
-- **351 plots**, phrased precisely: *351 unique plots producing 2,370
-  season-level samples and ~209k satellite observations; the independent
-  spatial unit for generalisation is the plot.* Never "209k independent
-  samples".
+- **Validation-set numbers only.** The test split is unlabelled.
+- **351 plots**: *351 unique plots producing 2,370 season-level samples and
+  ~209k satellite observations; the independent spatial unit for generalisation
+  is the plot.* Never "209k independent samples".
 - One region, one cropping system, paddy-dominated.
-- Attribution is **within this experimental system** — the term used is
-  *controlled component attribution*, never "causal".
+- Attribution is **within this experimental system** — *controlled component
+  attribution*, never "causal".
+- The ladder uses `lr 1e-3`, not the released `0.1`, because the scheduler the
+  authors always pair with 0.1 is itself a rung (v9). The ladder is internally
+  controlled but **not lr-matched to the released baselines**; its results are
+  not reproductions of them.
 - No architecture is proposed.
 
 ## Next
 
-1. Dataloader + config system
-2. Time one training run, budget the 155
-3. **Data-regime sweep (90 runs) — this is the paper**
-4. Ladder (65 runs), aggregation, statistics, figures
+1. v1 finishes (~7 h), then v2 — `v2 − v1` is the headline number
+2. v3–v10, then seeds 1 and 2
+3. Data-regime sweep (90 runs)
+4. **Open decision:** Arm B's replacement difficulty axis — held-out `YEAR`,
+   held-out `RIVER_PART`, or drop it
