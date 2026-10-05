@@ -50,13 +50,24 @@ def bench(rung: str, nw: int, device: str = "cpu"):
         return x
     inp = _to(inp)
     y = mask[cfg["data"]["task"]].long().to(device)
+
+    # WARM UP BEFORE TIMING. Without this the first rung measured absorbs CUDA
+    # context creation and cuDNN autotuning and reports a GPU slower than the
+    # CPU -- v1 measured 8.32 s on GPU against 0.52 s on CPU purely from this.
+    N_WARMUP, N_TIMED = 3, 5
+    for _ in range(N_WARMUP):
+        opt.zero_grad(set_to_none=True)
+        loss = crit(model(inp), y); loss.backward(); opt.step()
+    if device == "cuda":
+        torch.cuda.synchronize()
+
     t0 = time.time()
-    for _ in range(2):
+    for _ in range(N_TIMED):
         opt.zero_grad(set_to_none=True)
         loss = crit(model(inp), y); loss.backward(); opt.step()
     if device == "cuda":
         torch.cuda.synchronize()   # CUDA is async; timing without this lies
-    comp = (time.time() - t0) / 2
+    comp = (time.time() - t0) / N_TIMED
 
     ep = NB_TRAIN * (io + comp)
     ROWS.append(dict(rung=rung, device=device, sensors=",".join(sorted(cfg["satellites"])),
@@ -73,7 +84,7 @@ if __name__ == "__main__":
     nw = int(sys.argv[1]) if len(sys.argv) > 1 else 8
     device = sys.argv[2] if len(sys.argv) > 2 else "cpu"
     patches.install()
-    print(f"num_workers={nw}  threads={torch.get_num_threads()}  "
+    print(f"device={device}  num_workers={nw}  threads={torch.get_num_threads()}  "
           f"cuda={torch.cuda.is_available()}\n", flush=True)
     for r in [f"v{i}" for i in range(1, 11)]:
         try:
