@@ -256,6 +256,13 @@ def main() -> int:
                        out / "checkpoint_best.pth.tar")
             if per_plot:
                 utils.write_json(out / "best_per_plot_iou.json", per_plot)
+            # Written every time the best improves, not only at the end. A run
+            # that is killed -- and these are multi-hour CPU runs -- must still
+            # leave behind what it had reached, matching the checkpoint on disk.
+            utils.write_json(out / "best.json", {
+                "selection_metric": SELECTION_METRIC, "best_epoch": best_ep,
+                "epochs_run_so_far": ep, "epochs_planned": epochs,
+                "complete": False, **best})
 
         utils.write_json(out / "trainlog.json", log)
 
@@ -264,8 +271,9 @@ def main() -> int:
     man["total_seconds"] = round(time.time() - t0, 1)
     utils.write_json(out / "manifest.json", man)
     utils.write_json(out / "best.json", {
-        "selection_metric": SELECTION_METRIC,
-        "best_epoch": best_ep, "epochs_run": epochs, **(best or {})})
+        "selection_metric": SELECTION_METRIC, "best_epoch": best_ep,
+        "epochs_run": epochs, "epochs_planned": epochs,
+        "complete": True, **(best or {})})
 
     print("-" * 72)
     if best is None:

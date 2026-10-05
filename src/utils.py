@@ -78,6 +78,24 @@ def load_config(name: str, _seen: tuple[str, ...] = ()) -> dict:
     return cfg
 
 
+def data_root() -> Path:
+    """The canonical dataset root, from configs/base.yaml.
+
+    Single source of truth. The standalone scripts (the reproduction gate,
+    plot-level evaluation, subset construction) used to carry their own
+    hard-coded copy of this path, which is how a project ends up silently
+    reading two different datasets.
+    """
+    root = Path(load_config("base")["data"]["root"])
+    if not root.exists():
+        raise FileNotFoundError(
+            f"data.root does not exist: {root}\n"
+            f"Set it in configs/base.yaml. It must be the FULL extraction "
+            f"(209,039 npz, 6,492 masks, csv md5 e804c1c165e3f55d03da8305a380ff77) "
+            f"-- not 'WACV 2024', which is the toy subset with a different csv.")
+    return root
+
+
 def config_hash(cfg: dict) -> str:
     """Stable short hash of a resolved config, for run identity."""
     clean = {k: v for k, v in cfg.items() if not k.startswith("_")}

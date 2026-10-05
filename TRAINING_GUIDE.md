@@ -41,8 +41,11 @@ the model steps, both metric families compute and a checkpoint writes.
 19,859 npz, 651 masks — with a **different** CSV (md5 `0cb87468...`). It will
 load without complaint and silently evaluate on a different set.
 
-`D:/FPD/sickle_data` is a redundant npz-only copy and can be deleted to
-reclaim ~3 GB.
+`D:/FPD/sickle_data` has been **deleted** (it was a redundant npz-only copy;
+2.63 GB reclaimed). The gate, plot-level and subset scripts previously
+hard-coded it and now resolve `data.root` from `configs/base.yaml` via
+`src.utils.data_root()`, so no script can read a different dataset than the
+ladder does.
 
 ---
 

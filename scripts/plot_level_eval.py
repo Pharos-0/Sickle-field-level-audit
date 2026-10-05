@@ -39,7 +39,11 @@ sys.path.insert(0, str(PROJ / "reference_impl"))
 sys.path.insert(0, str(PROJ / "src"))
 
 RUNS = Path("D:/FPD/runs/wacv_2024")
-DATA = Path("D:/FPD/sickle_data")
+# Resolved from configs/base.yaml so this script and the ladder can never
+# read different datasets. Was hard-coded to the now-deleted D:/FPD/sickle_data.
+sys.path.insert(0, str(PROJ))
+from src.utils import data_root  # noqa: E402
+DATA = data_root()
 OUT = PROJ / "results" / "plot_level"
 
 

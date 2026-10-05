@@ -196,7 +196,7 @@ TRAINING_GUIDE.md
 | **Canonical** | `D:\FPD\sickledataset extracted` | 209,039 npz · 6,492 masks · csv md5 `e804c1c1…` |
 | Archive | `D:\FPD\sickle_dataset-002.zip` | 6.34 GB |
 | **Toy — do not use** | `D:\FPD\WACV 2024` | 19,859 npz · 651 masks · **different csv** `0cb87468…` |
-| Redundant | `D:\FPD\sickle_data` | npz-only subset; deletable, ~3 GB |
+| ~~`D:\FPD\sickle_data`~~ | **deleted** | redundant npz-only copy; 2.63 GB reclaimed |
 | Released runs | `D:\FPD\runs\wacv_2024` | 78 runs over 5 tasks |
 
 Pointing `data.root` at the toy folder loads without complaint and silently

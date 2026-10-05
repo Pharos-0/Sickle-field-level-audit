@@ -106,6 +106,14 @@ def main() -> int:
         dm, _, _ = agg(runs, "paddy_iou")
 
         status = "ok"
+        # best.json is rewritten whenever the best improves, so a killed run
+        # still leaves a usable record -- but it is NOT a finished result and
+        # must not be compared against completed rungs without saying so.
+        partial = [s for s, r in runs.items() if r.get("complete") is False]
+        if partial:
+            got = max((r.get("epochs_run_so_far") or 0) for r in runs.values())
+            plan = max((r.get("epochs_planned") or 0) for r in runs.values())
+            status = f"INCOMPLETE ({got}/{plan} epochs, seeds {sorted(partial)})"
         if dm is not None and dm < 1e-6:
             status = "DEGENERATE (predicts one class)"
         eps = [r.get("best_epoch") for r in runs.values()]
@@ -135,9 +143,14 @@ def main() -> int:
         if ra.get("status") == "NOT RUN" or rb.get("status") == "NOT RUN":
             print(f"{a}->{b:6s}{'--':>12s}{'--':>12s}  NOT RUN")
             continue
-        if "DEGENERATE" in str(ra.get("status")) or "DEGENERATE" in str(rb.get("status")):
+        bad = [n for n, r in ((a, ra), (b, rb))
+               if "DEGENERATE" in str(r.get("status"))
+               or "INCOMPLETE" in str(r.get("status"))]
+        if bad:
+            why = ("degenerate" if any("DEGENERATE" in str(r.get("status"))
+                                       for r in (ra, rb)) else "incomplete")
             print(f"{a}->{b:6s}{'--':>12s}{'--':>12s}  "
-                  f"skipped, a rung is degenerate")
+                  f"skipped, {', '.join(bad)} {why}")
             continue
         dp = (rb.get("pixel_macro_iou") or 0) - (ra.get("pixel_macro_iou") or 0)
         dg = ((rb.get("plot_macro_iou") or 0) - (ra.get("plot_macro_iou") or 0)

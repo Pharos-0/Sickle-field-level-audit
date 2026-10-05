@@ -25,13 +25,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import Counter
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-DATA = Path("D:/FPD/sickle_data")
+PROJ = Path(__file__).resolve().parents[1]
+
+# Resolved from configs/base.yaml so this script and the ladder can never
+# read different datasets. Was hard-coded to the now-deleted D:/FPD/sickle_data.
+sys.path.insert(0, str(PROJ))
+from src.utils import data_root  # noqa: E402
+DATA = data_root()
 ART = Path(__file__).resolve().parents[1] / "artifacts" / "subsets"
 
 PLOT_COUNTS = [50, 100, 150, 200, 250, 315]
