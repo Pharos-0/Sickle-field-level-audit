@@ -17,6 +17,7 @@ never interpolated or quietly skipped.
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 import time
@@ -32,6 +33,8 @@ def main() -> int:
     ap.add_argument("--seeds", nargs="+", type=int, default=[0])
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--num-workers", type=int, default=None)
+    ap.add_argument("--redo-complete", action="store_true",
+                    help="re-run rungs that already completed (default: skip)")
     args = ap.parse_args()
 
     results = []
@@ -42,6 +45,21 @@ def main() -> int:
     # than three seeds of the first few rungs, which is not.
     for seed in args.seeds:
         for rung in args.rungs:
+            # RESUMABLE. A multi-day ladder will be interrupted -- by a reboot,
+            # a sleep, or a stray kill -- and redoing finished rungs can cost
+            # tens of hours. A rung counts as done only when its best.json says
+            # complete=true, which the trainer writes after the final epoch.
+            done = PROJ / "outputs" / "crop_type" / f"{rung}_seed{seed}" / "best.json"
+            if not args.redo_complete and done.exists():
+                try:
+                    if json.loads(done.read_text(encoding="utf8")).get("complete"):
+                        print(f"--> {rung} seed {seed}: already COMPLETE, skipping",
+                              flush=True)
+                        results.append((rung, seed, 0, 0.0))
+                        continue
+                except json.JSONDecodeError:
+                    pass   # unreadable means not trustworthy; re-run it
+
             cmd = [sys.executable, "-u", "-m", "src.train",
                    "--config", rung, "--seed", str(seed)]
             if args.epochs is not None:
