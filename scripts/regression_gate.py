@@ -148,19 +148,45 @@ def main() -> int:
     t_f, p_f = aggregate_to_field_seasons(
         y_true, y_pred, pid, ignore_index=CFG.ignore_index,
         how=HOW[args.task], require_positive=(args.task == "crop_yield"))
+
+    # PIXEL-LEVEL, the unit the reference uses for the DATE tasks.
+    #
+    # get_regression_metrics only calls get_combined_yield for crop_yield. For
+    # the date tasks it falls through to MAPE(), which is
+    #     mean(|pred - true|) / 183.
+    # -- per pixel, with a CONSTANT denominator of 183 days. That is not a
+    # percentage error despite the column name, and it is verified: across 9
+    # released date runs the reported val_mape equals val_mae/183 exactly.
+    # So the date gate must reproduce val_mae at pixel level; the field-level
+    # numbers below are this study's contribution, not a reproduction target.
+    flat_t, flat_p = y_true.ravel(), y_pred.ravel()
+    keep = (flat_t != CFG.ignore_index) & np.isfinite(flat_t) & np.isfinite(flat_p)
+    px_mae = float(np.mean(np.abs(flat_p[keep] - flat_t[keep])))
+    px_rmse = float(np.sqrt(np.mean((flat_p[keep] - flat_t[keep]) ** 2)))
     m = regression_metrics(t_f, p_f)
     errs = field_errors(t_f, p_f)
     dist = error_distribution(errs)
     ci = bootstrap_field_ci(t_f, p_f, metric="mape", n_boot=args.n_boot)
 
-    repro = (m.mape or 0) / 100.0        # back to a fraction, to compare
-    delta_rel = (abs(repro - rel["val_mape"]) / max(rel["val_mape"], 1e-9))
+    if args.task == "crop_yield":
+        gate_on = "MAPE over field-seasons"
+        released_val, repro_val = rel["val_mape"], (m.mape or 0) / 100.0
+    else:
+        gate_on = "MAE over PIXELS (the reference's unit for date tasks)"
+        released_val, repro_val = rel["val_mae"], px_mae
+    delta_rel = abs(repro_val - released_val) / max(abs(released_val), 1e-9)
     verdict = "PASS" if delta_rel <= TOLERANCE_REL else "FAIL"
 
-    print("REPRODUCTION")
-    print(f"   released MAPE   {rel['val_mape']:.4f}  ({rel['val_mape']*100:.2f}%)")
-    print(f"   reproduced MAPE {repro:.4f}  ({m.mape:.2f}%)")
+    print(f"REPRODUCTION  -- gated on {gate_on}")
+    print(f"   released    {released_val:.4f}")
+    print(f"   reproduced  {repro_val:.4f}")
     print(f"   relative delta  {delta_rel*100:.1f}%     GATE: {verdict}")
+    if args.task != "crop_yield":
+        print(f"   NOTE: the released val_mape for date tasks is MAE/183, a "
+              f"CONSTANT denominator, not a percentage error "
+              f"({rel['val_mae']:.3f}/183 = {rel['val_mae']/183:.4f} = "
+              f"{rel['val_mape']:.4f}). Verified on 9 released runs.")
+        print(f"   pixel-level: MAE {px_mae:.3f}  RMSE {px_rmse:.3f}")
     print(f"   field-seasons   {m.n_fields}   excluded from MAPE: "
           f"{m.n_excluded_from_mape}")
 
@@ -180,6 +206,11 @@ def main() -> int:
         "released": rel, "released_best_epoch": int(best_ep),
         "mape_note": ("torchmetrics MeanAbsolutePercentageError returns a "
                       "FRACTION; 0.3274 means 32.74%. Verified numerically."),
+        "gated_on": gate_on,
+        "pixel_level": {"mae": px_mae, "rmse": px_rmse},
+        "date_mape_note": ("For date tasks the released val_mape is MAE/183 "
+                           "(constant denominator), not a percentage error. "
+                           "Verified: val_mape == val_mae/183 on 9/9 runs."),
         "reproduced": m.as_dict(), "relative_delta": delta_rel,
         "tolerance_rel": TOLERANCE_REL, "verdict": verdict,
         "per_field_error": dist, "mape_ci_fields": ci,
