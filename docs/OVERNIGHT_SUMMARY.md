@@ -185,3 +185,27 @@ drift. That was worth checking before trusting the sweep.
 5. Ladder (65 runs), aggregation, statistics, figures.
 
 The gate is cleared, so step 2 onward is unblocked.
+
+---
+
+## DECISION (2026-10-10): the difficulty axis is DROPPED
+
+Arm B (reduced multi-class) was declared `NOT_VIABLE` against a criterion fixed
+before it was computed: >=3 classes each with >=5 validation plots. Every
+threshold tested (3, 5, 10, 15, 20) fails, because at each one some retained
+class has **zero** validation plots. Beyond Paddy (29 val plots) only Banana (4)
+and Coconut (3) have any validation support at all.
+
+Arm B was also to have supplied the study's second axis -- a *difficulty* axis.
+The open question since then was whether to replace it with held-out `YEAR`,
+held-out `RIVER_PART`, or to drop it.
+
+**Dropped, by the project owner's decision.** The data-regime sweep supplies a
+better second dimension -- plot count, 50 -> 315 -- and it is tied to a
+hypothesis registered before any run. Adding a third axis would require new
+splits and a re-implementation of adjacent-plot masking to answer a question
+nobody posed.
+
+The study therefore has two dimensions: the **ladder** (v1..v10, what each
+component buys) and the **data-regime sweep** (how those effects scale with
+independent spatial diversity).

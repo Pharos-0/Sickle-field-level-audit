@@ -208,8 +208,18 @@ def build_manifest(cfg: dict, seed: int, device: str, extra: dict | None = None)
 
 
 def run_dir(cfg: dict, seed: int) -> Path:
+    """Where a run writes. A subset run goes somewhere else entirely.
+
+    The data-regime sweep trains the SAME rung on different plot subsets. If
+    those shared a directory with the full-data ladder run they would silently
+    overwrite it -- 109 hours of completed work -- and nothing would say so.
+    Sweep runs therefore live under `sweep/<subset>/`.
+    """
     v = cfg.get("project", {}).get("version", "unknown")
-    d = PROJ / cfg["runtime"]["out_dir"] / cfg["data"]["task"] / f"{v}_seed{seed}"
+    base = PROJ / cfg["runtime"]["out_dir"] / cfg["data"]["task"]
+    subset = cfg["data"].get("subset")
+    d = (base / "sweep" / str(subset) / f"{v}_seed{seed}" if subset
+         else base / f"{v}_seed{seed}")
     d.mkdir(parents=True, exist_ok=True)
     return d
 

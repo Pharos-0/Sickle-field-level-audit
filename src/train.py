@@ -191,6 +191,9 @@ def main() -> int:
     ap.add_argument("--lr", type=float, default=None, help="override")
     ap.add_argument("--num-workers", type=int, default=None,
                     help="override dataloader workers")
+    ap.add_argument("--subset", default=None,
+                    help="train-plot manifest in artifacts/subsets/ "
+                         "(data-regime sweep); output goes under sweep/<subset>/")
     args = ap.parse_args()
 
     cfg = utils.load_config(args.config)
@@ -200,6 +203,8 @@ def main() -> int:
         cfg["training"]["lr"] = args.lr
     if args.num_workers is not None:
         cfg["training"]["num_workers"] = args.num_workers
+    if args.subset is not None:
+        cfg["data"]["subset"] = args.subset
     if args.smoke:
         cfg["training"]["epochs"] = min(cfg["training"]["epochs"], 1)
 
@@ -260,6 +265,7 @@ def main() -> int:
         "class_weights": (None if cw is None else [float(x) for x in cw]),
         "smoke": bool(args.smoke),
         "runtime_patch": patch_id,
+        "subset": cfg["data"].get("subset"),
         "micro_batch_size": micro,
         "grad_accum_steps": accum,
         "amp_bf16": use_amp,
