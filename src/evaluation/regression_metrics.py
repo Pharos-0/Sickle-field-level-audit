@@ -242,44 +242,53 @@ def error_distribution(errors: dict, thresholds=None) -> dict:
 
 
 def geographic_holdout(signal: dict, bad: set, region: dict,
-                       workload: float = 0.5) -> list[dict]:
-    """Hold out each region; set the referral threshold from the others only.
+                       workload: float = 0.5, min_threshold_fields: int = 2):
+    """Screen each region using a threshold set from the OTHER regions only.
 
-    A threshold that only works where it was fitted is of no use, so each
-    region is held out in turn and judged by a threshold computed WITHOUT ANY
-    of its own fields. The exclusion is the whole point of the experiment and
-    is pinned by tests/test_geographic_holdout.py.
+    A referral threshold that only works where it was fitted is of no use. This
+    holds out each labelled region in turn, sets the threshold from every field
+    outside it, and applies it to the held-out region. No field contributes to
+    the threshold that judges it, which `tests/test_geographic_holdout.py`
+    pins by spiking a region's own values and checking its threshold does not
+    move.
 
-    Fields whose region is unknown are never the held-out region, but they do
-    contribute to every other region's threshold. That is not leakage -- they
-    are disjoint from the held-out set either way -- but the count is
-    returned as `n_unlabelled_in_rest` so it can be stated rather than hidden.
+    Fields with no region label are never held out, but they do count toward
+    the thresholds of the regions that are; `n_unlabelled_in_rest` records how
+    many, so the composition of each threshold is visible rather than implied.
 
-    Returns one record per region. `recall` is None where the held-out region
-    contains no unreliable field, because a recall over zero cases is not 0,
-    it is undefined.
+    `recall` is None, not 0.0, for a region containing no unreliable field. A
+    recall over zero cases is undefined, and reporting it as zero would make a
+    region with nothing to find look like a failure.
+
+    Returns one dict per region, each carrying the sample sizes, because with
+    regions this small the rates mean nothing without them.
     """
-    import numpy as _np
+    def labelled(v):
+        return isinstance(v, str) and v
+
     fields = sorted(signal)
-    named = sorted({region.get(f) for f in fields
-                    if isinstance(region.get(f), str)})
-    n_unlabelled = sum(1 for f in fields
-                       if not isinstance(region.get(f), str))
+    regions = sorted({region.get(f) for f in fields if labelled(region.get(f))})
+
     out = []
-    for rg in named:
+    for rg in regions:
         held = [f for f in fields if region.get(f) == rg]
         rest = [f for f in fields if region.get(f) != rg]
-        if not held or len(rest) < 2:
+        if len(rest) < min_threshold_fields or not held:
             continue
-        assert not (set(held) & set(rest)), "held-out field leaked into rest"
-        thr = float(_np.quantile([signal[f] for f in rest], 1.0 - workload))
+        thr = float(np.quantile([signal[f] for f in rest], 1.0 - workload))
         flagged = [f for f in held if signal[f] >= thr]
-        hb = [f for f in held if f in bad]
+        held_bad = [f for f in held if f in bad]
         out.append({
-            "region": rg, "n_fields": len(held), "n_bad": len(hb),
-            "n_flagged": len(flagged), "threshold": thr,
+            "region": rg,
+            "threshold": thr,
+            "workload": workload,
+            "n_fields": len(held),
+            "n_bad": len(held_bad),
+            "n_flagged": len(flagged),
             "n_threshold_fields": len(rest),
-            "n_unlabelled_in_rest": n_unlabelled,
-            "recall": (len(set(flagged) & set(hb)) / len(hb)) if hb else None,
+            "n_unlabelled_in_rest": sum(
+                1 for f in rest if not labelled(region.get(f))),
+            "recall": (len(set(flagged) & set(held_bad)) / len(held_bad)
+                       if held_bad else None),
         })
     return out

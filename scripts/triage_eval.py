@@ -50,6 +50,8 @@ from src import patches, utils                       # noqa: E402
 from src.dataset import build_loader                 # noqa: E402
 from src.model import build_model                    # noqa: E402
 from src.evaluation.metrics import plot_macro_iou    # noqa: E402
+from src.evaluation.regression_metrics import (      # noqa: E402
+    geographic_holdout)
 
 OUT = PROJ / "results" / "triage"
 
@@ -260,31 +262,16 @@ def main() -> int:
     tab = pd.read_csv(Path(cfg["data"]["root"]) / cfg["data"]["tabular"])
     region = (tab.dropna(subset=["PLOT_ID"])
               .groupby("PLOT_ID").RIVER_PART.first().to_dict())
-    geo = {"note": ("Threshold set from the other regions only, then applied "
-                    "to the held-out region. Reported per region because the "
-                    "regions are small; see n_fields."),
+    geo = {"note": ("Threshold set from the other regions only -- no field "
+                    "contributes to the threshold that judges it; see "
+                    "tests/test_geographic_holdout.py. Reported per region "
+                    "with sample sizes, because the regions are small."),
            "target_workload": 0.5, "regions": []}
     for name, sig in (("seed_disagreement", sig_dis),
                       ("low_confidence", sig_conf)):
-        # RIVER_PART is NaN for some plots; keep only real region labels so a
-        # float NaN cannot be compared against a string.
-        regions_present = sorted({region.get(f) for f in common
-                                  if isinstance(region.get(f), str)})
-        for rg in regions_present:
-            held = [f for f in common if region.get(f) == rg]
-            rest = [f for f in common if region.get(f) != rg]
-            if not held or len(rest) < 2:
-                continue
-            thr = float(np.quantile([sig[f] for f in rest], 0.5))
-            flagged = [f for f in held if sig[f] >= thr]
-            hb = [f for f in held if f in bad]
-            geo["regions"].append({
-                "signal": name, "region": rg, "n_fields": len(held),
-                "n_bad": len(hb),
-                "n_flagged": len(flagged),
-                "recall": (len(set(flagged) & set(hb)) / len(hb)
-                           if hb else None),
-            })
+        for r_ in geographic_holdout(sig, bad, region, workload=0.5):
+            r_["signal"] = name
+            geo["regions"].append(r_)
     results["geographic_holdout"] = geo
     print("\n  === GEOGRAPHICALLY HELD-OUT (threshold from other regions) ===")
     print(f"    {'signal':20s}{'region':18s}{'fields':>7s}{'bad':>5s}"
