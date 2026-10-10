@@ -239,3 +239,47 @@ def error_distribution(errors: dict, thresholds=None) -> dict:
         out["share_above"] = {
             str(t): float((v > t).mean()) for t in thresholds}
     return out
+
+
+def geographic_holdout(signal: dict, bad: set, region: dict,
+                       workload: float = 0.5) -> list[dict]:
+    """Hold out each region; set the referral threshold from the others only.
+
+    A threshold that only works where it was fitted is of no use, so each
+    region is held out in turn and judged by a threshold computed WITHOUT ANY
+    of its own fields. The exclusion is the whole point of the experiment and
+    is pinned by tests/test_geographic_holdout.py.
+
+    Fields whose region is unknown are never the held-out region, but they do
+    contribute to every other region's threshold. That is not leakage -- they
+    are disjoint from the held-out set either way -- but the count is
+    returned as `n_unlabelled_in_rest` so it can be stated rather than hidden.
+
+    Returns one record per region. `recall` is None where the held-out region
+    contains no unreliable field, because a recall over zero cases is not 0,
+    it is undefined.
+    """
+    import numpy as _np
+    fields = sorted(signal)
+    named = sorted({region.get(f) for f in fields
+                    if isinstance(region.get(f), str)})
+    n_unlabelled = sum(1 for f in fields
+                       if not isinstance(region.get(f), str))
+    out = []
+    for rg in named:
+        held = [f for f in fields if region.get(f) == rg]
+        rest = [f for f in fields if region.get(f) != rg]
+        if not held or len(rest) < 2:
+            continue
+        assert not (set(held) & set(rest)), "held-out field leaked into rest"
+        thr = float(_np.quantile([signal[f] for f in rest], 1.0 - workload))
+        flagged = [f for f in held if signal[f] >= thr]
+        hb = [f for f in held if f in bad]
+        out.append({
+            "region": rg, "n_fields": len(held), "n_bad": len(hb),
+            "n_flagged": len(flagged), "threshold": thr,
+            "n_threshold_fields": len(rest),
+            "n_unlabelled_in_rest": n_unlabelled,
+            "recall": (len(set(flagged) & set(hb)) / len(hb)) if hb else None,
+        })
+    return out
