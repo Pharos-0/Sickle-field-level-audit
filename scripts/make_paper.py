@@ -134,9 +134,11 @@ def build():
         "0.5; for the regression tasks the typical field is better than the "
         "aggregate but roughly one field-season in ten is two to four times "
         "worse. Crucially, these failures are systematic rather than random "
-        "(seed-to-seed correlation r = +0.52), which makes selective "
-        "automation feasible: reliable fields can be processed "
-        "automatically and the rest referred for verification.")
+        "(seed-to-seed correlation r = +0.52). In a preliminary experiment, "
+        "two label-free signals identify these fields without ground truth, "
+        "referring half the fields to capture 92% of the unreliable ones "
+        "(95% CI 68-100%), which suggests selective automation is feasible "
+        "but does not establish an operating threshold on 36 fields.")
 
     kw = d.add_paragraph(); kw.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     kw.add_run("Keywords—").bold = True
@@ -153,17 +155,26 @@ def build():
             "(YES-TECH), introduced by the Ministry of Agriculture and "
             "Farmers Welfare in 2023, blends satellite-derived yield "
             "estimates with manual Crop Cutting Experiments to determine "
-            "insurance payouts. In 2025–26 it operated across 344 "
-            "districts in 12 states. The national floor is a 30% weightage "
-            "to modelled yield, states may raise it at discretion, and the "
-            "manual places no upper cap; Madhya Pradesh has adopted 100%.")
+            "insurance payouts. The manual [3] sets a national floor of 30% "
+            "weightage to modelled yield, permits states to raise it at "
+            "discretion, and places no upper cap. Figures for the scale of "
+            "deployment and for individual states’ chosen weightings "
+            "are not in the manual; press reporting [8] places the 2025–26 "
+            "rollout at 344 districts across 12 states and states that Madhya "
+            "Pradesh has adopted 100% technology weightage. We have not "
+            "independently verified those figures and cite them as "
+            "reported.")
     body(d, "The unit of assessment is administrative. The YES-TECH manual "
             "states its objective as yield estimation “at the smallest "
             "administrative unit, i.e., Gram Panchayat”. Across the "
             "full 116-page manual we found fifteen references to the "
             "Insurance Unit and seven to the Gram Panchayat, and no "
             "occurrence of plot-level, field-level, per-farmer or "
-            "sub-Insurance-Unit validation. The single numeric accuracy "
+            "sub-Insurance-Unit validation. We state this as what the "
+            "document requires, not as a description of practice: the "
+            "absence of a field-level requirement in the manual does not "
+            "establish that no field-level checking occurs anywhere in "
+            "implementation, which we have no means to observe. The single numeric accuracy "
             "criterion we located applies to crop mapping, not yield, and is "
             "evaluated at Insurance Unit average. Section 5.1.5 further "
             "provides that past estimates “shall not be entertained in "
@@ -436,29 +447,45 @@ def build():
                 "that is how they would be used: what share of fields must "
                 "be referred for verification (workload), and what share of "
                 "genuinely unreliable fields that referral catches (recall).")
+        loo_d = {r["target_workload"]: r for r in dis["leave_one_out"]}
+        loo_c = {r["target_workload"]: r for r in conf["leave_one_out"]}
+        d50, c33 = loo_d[0.5], loo_c[0.33]
         body(d, f"Both signals correlate with per-field IoU in the useful "
                 f"direction — seed disagreement at r = "
                 f"{dis['corr_with_iou']:+.3f} and confidence at r = "
-                f"{conf['corr_with_iou']:+.3f}. Referring the "
-                f"{best['workload']:.0%} of fields with the highest seed "
-                f"disagreement captures {best['recall']:.0%} of the "
-                f"unreliable fields ({best['n_caught']} of {tg['n_bad']}), "
-                f"against {best['precision']:.0%} precision. Confidence "
-                f"alone, which needs only one trained model, captures "
-                f"{bconf['recall']:.0%} at a workload of "
-                f"{bconf['workload']:.0%}. Random referral would capture a "
-                f"share equal to the workload, so both signals carry real "
-                f"information. This converts the recommendation of Section "
-                f"IV-E from a proposal into a measured procedure: a "
-                f"deployment can process the majority of fields "
-                f"automatically while referring a minority that contains "
-                f"most of the failures.")
-        body(d, f"This result rests on {tg['n_fields']} validation fields, "
-                f"of which {tg['n_bad']} are unreliable. A single field is "
-                f"{100/tg['n_fields']:.1f} percentage points of any rate "
-                f"quoted above. These numbers establish that the signals are "
-                f"informative; they do not establish an operating threshold, "
-                f"which would require a substantially larger evaluation set.")
+                f"{conf['corr_with_iou']:+.3f}. The referral rule itself uses "
+                f"no labels: it refers the fields whose signal falls in the "
+                f"top fraction of the signal distribution, a quantity "
+                f"computable at inference time. To ensure that no field "
+                f"contributes to the threshold deciding its own fate, "
+                f"thresholds are set leave-one-out, from the other fields "
+                f"only. Referring the top half by seed disagreement captures "
+                f"{d50['recall']:.0%} of the unreliable fields "
+                f"({d50['n_caught']} of {tg['n_bad']}) at "
+                f"{d50['precision']:.0%} precision; confidence alone, which "
+                f"needs only one trained model, captures {c33['recall']:.0%} "
+                f"at a {c33['workload']:.0%} workload. Random referral would "
+                f"capture a share equal to the workload, so both signals "
+                f"carry information.")
+        body(d, f"These rates must be read with their uncertainty, which is "
+                f"large. Resampling fields gives a 95% interval of "
+                f"[{d50['recall_ci']['lo']:.0%}, "
+                f"{d50['recall_ci']['hi']:.0%}] on the "
+                f"{d50['recall']:.0%} figure, and "
+                f"[{c33['recall_ci']['lo']:.0%}, "
+                f"{c33['recall_ci']['hi']:.0%}] on the "
+                f"{c33['recall']:.0%} figure. Recall is measured over the "
+                f"{tg['n_bad']} unreliable fields, so a single field moves it "
+                f"by {100/tg['n_bad']:.1f} percentage points, against "
+                f"{100/tg['n_fields']:.1f} points for workload. We therefore "
+                f"present this as a PRELIMINARY result: it establishes that "
+                f"label-free signals carry information about which fields a "
+                f"model will handle badly, and it does not establish an "
+                f"operating threshold or a deployment-ready capture rate. "
+                f"Confirming either would require an evaluation set far "
+                f"larger than the {tg['n_fields']} labelled fields this "
+                f"benchmark provides, and ideally a geographically held-out "
+                f"one.")
         figure(d, "fig6_triage.png",
                "Fig. 6. Screening performance of two label-free signals. "
                "The diagonal is random referral.", width=4.3)
@@ -493,9 +520,10 @@ def build():
     # ---------------------------------------------------------- V
     d.add_heading("Conclusion", level=1)
     body(d, "India has begun automating crop-insurance payouts from "
-            "satellite data. Under YES-TECH, modelled yield carries at least "
-            "30% weightage across 344 districts and up to 100% in Madhya "
-            "Pradesh, while validation is specified only at the Gram "
+            "satellite data. Under YES-TECH the manual requires at least 30% "
+            "weightage to modelled yield and sets no upper cap, with "
+            "reporting placing the rollout at 344 districts and Madhya "
+            "Pradesh at 100%, while validation is specified only at the Gram "
             "Panchayat and the resulting estimates are neither appealable in "
             "court nor obtainable under the Right to Information Act. "
             "Decisions, however, are ultimately about individual fields, and "
@@ -560,9 +588,12 @@ def build():
         "O. Çiçek, A. Abdulkadir, S. S. Lienkamp, T. Brox, and "
         "O. Ronneberger, “3D U-Net: Learning Dense Volumetric "
         "Segmentation from Sparse Annotation,” in Proc. MICCAI, 2016.",
-        "Centre for Science and Environment, “Assessment of "
-        "technology-based yield estimation under PMFBY in Madhya "
-        "Pradesh,” 2025.",
+        "Down To Earth, “Can technology make India’s crop "
+        "insurance payouts more accurate? YES-TECH vs manual crop cutting "
+        "under PMFBY,” and “Beyond the lens: Madhya Pradesh "
+        "farmers struggle with satellite-based crop insurance under "
+        "PMFBY,” 2025. (Source for deployment scale and state-level "
+        "weightings, which do not appear in [3].)",
     ]
     for i, r_ in enumerate(refs, 1):
         p = d.add_paragraph(f"[{i}] {r_}")

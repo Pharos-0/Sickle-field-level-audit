@@ -81,6 +81,53 @@ def collect(cfg, ckpt, device, task, ig):
             np.concatenate([a.ravel() for a in pids]))
 
 
+def screen_loo(signal: dict, bad: set, workload: float):
+    """Leave-one-out screening at a target workload.
+
+    The rule -- refer the fields whose signal is in the top `workload`
+    fraction -- needs no labels, so there is no label leakage in the rule
+    itself. What it does use is the signal distribution of the evaluation
+    fields, which includes the field being judged. Under LOO, each field's
+    threshold is computed from the OTHER fields only, so no field helps set
+    the threshold that decides its own fate.
+    """
+    fields = sorted(signal)
+    flagged = set()
+    for f in fields:
+        others = np.array([signal[g] for g in fields if g != f])
+        thr = np.quantile(others, 1.0 - workload)
+        if signal[f] >= thr:
+            flagged.add(f)
+    tp = len(flagged & bad)
+    return {"target_workload": workload,
+            "workload": len(flagged) / len(fields),
+            "recall": tp / len(bad) if bad else float("nan"),
+            "precision": tp / len(flagged) if flagged else float("nan"),
+            "n_flagged": len(flagged), "n_caught": tp}
+
+
+def bootstrap_recall(signal: dict, bad: set, workload: float,
+                     n_boot: int = 2000, seed: int = 0):
+    """CI on recall by resampling FIELDS -- the uncertainty, not just a caveat."""
+    fields = sorted(signal)
+    rng = np.random.default_rng(seed)
+    vals = []
+    for _ in range(n_boot):
+        samp = [fields[i] for i in rng.integers(0, len(fields), len(fields))]
+        x = np.array([signal[f] for f in samp])
+        thr = np.quantile(x, 1.0 - workload)
+        nb = sum(1 for f in samp if f in bad)
+        if nb == 0:
+            continue
+        tp = sum(1 for f in samp if f in bad and signal[f] >= thr)
+        vals.append(tp / nb)
+    if not vals:
+        return {"lo": float("nan"), "hi": float("nan"), "n_boot": 0}
+    v = np.array(vals)
+    return {"lo": float(np.percentile(v, 2.5)),
+            "hi": float(np.percentile(v, 97.5)), "n_boot": len(v)}
+
+
 def screen(signal: dict, bad: set, thresholds):
     """Workload / recall / precision as the flag threshold varies."""
     fields = sorted(signal)
@@ -104,11 +151,15 @@ def main() -> int:
     ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
     ap.add_argument("--bad-threshold", type=float, default=0.5)
     ap.add_argument("--device", default=None)
+    ap.add_argument("--num-workers", type=int, default=None,
+                    help="override; use 0 when another job is running")
     args = ap.parse_args()
 
     OUT.mkdir(parents=True, exist_ok=True)
     patches.install()
     cfg = utils.load_config(args.config)
+    if args.num_workers is not None:
+        cfg["training"]["num_workers"] = args.num_workers
     device = args.device or utils.pick_device(cfg["runtime"]["device"])
     task, ig = cfg["data"]["task"], cfg["data"]["ignore_index"]
 
@@ -170,7 +221,15 @@ def main() -> int:
         r = float(np.corrcoef(x, y)[0, 1])
         qs = np.quantile(x, [0.5, 0.6, 0.667, 0.75, 0.8, 0.9])
         rows = screen(sig, bad, qs)
-        results[name] = {"corr_with_iou": r, "screening": rows}
+        # Pre-specifiable, label-free operating points, validated
+        # leave-one-out so no field sets its own threshold.
+        loo = []
+        for w in (0.50, 0.33, 0.25):
+            d_ = screen_loo(sig, bad, w)
+            d_["recall_ci"] = bootstrap_recall(sig, bad, w)
+            loo.append(d_)
+        results[name] = {"corr_with_iou": r, "screening": rows,
+                         "leave_one_out": loo}
 
         print(f"\n  === {name} ===")
         print(f"    correlation with per-field IoU: {r:+.3f} "
@@ -181,6 +240,15 @@ def main() -> int:
             print(f"    {row['threshold']:9.3f}{row['workload']:10.0%}"
                   f"{row['recall']:9.0%}{row['precision']:11.0%}"
                   f"   {row['n_caught']}/{len(bad)}")
+        print(f"    leave-one-out, with 95% CI on recall from resampling "
+              f"fields:")
+        for d_ in loo:
+            ci = d_["recall_ci"]
+            print(f"      refer top {d_['target_workload']:.0%}: "
+                  f"workload {d_['workload']:.0%}  "
+                  f"recall {d_['recall']:.0%} "
+                  f"[{ci['lo']:.0%}, {ci['hi']:.0%}]  "
+                  f"precision {d_['precision']:.0%}")
 
     utils.write_json(OUT / f"triage_{args.config}.json", results)
     print(f"\nwrote {OUT / f'triage_{args.config}.json'}")

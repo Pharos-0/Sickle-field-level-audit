@@ -59,6 +59,47 @@
         "n_flagged": 4,
         "n_caught": 3
       }
+    ],
+    "leave_one_out": [
+      {
+        "target_workload": 0.5,
+        "workload": 0.5,
+        "recall": 0.9166666666666666,
+        "precision": 0.6111111111111112,
+        "n_flagged": 18,
+        "n_caught": 11,
+        "recall_ci": {
+          "lo": 0.6842105263157895,
+          "hi": 1.0,
+          "n_boot": 2000
+        }
+      },
+      {
+        "target_workload": 0.33,
+        "workload": 0.3333333333333333,
+        "recall": 0.5833333333333334,
+        "precision": 0.5833333333333334,
+        "n_flagged": 12,
+        "n_caught": 7,
+        "recall_ci": {
+          "lo": 0.38461538461538464,
+          "hi": 1.0,
+          "n_boot": 2000
+        }
+      },
+      {
+        "target_workload": 0.25,
+        "workload": 0.25,
+        "recall": 0.4166666666666667,
+        "precision": 0.5555555555555556,
+        "n_flagged": 9,
+        "n_caught": 5,
+        "recall_ci": {
+          "lo": 0.25,
+          "hi": 0.7779761904761894,
+          "n_boot": 2000
+        }
+      }
     ]
   },
   "low_confidence": {
@@ -111,6 +152,47 @@
         "precision": 0.75,
         "n_flagged": 4,
         "n_caught": 3
+      }
+    ],
+    "leave_one_out": [
+      {
+        "target_workload": 0.5,
+        "workload": 0.5,
+        "recall": 0.8333333333333334,
+        "precision": 0.5555555555555556,
+        "n_flagged": 18,
+        "n_caught": 10,
+        "recall_ci": {
+          "lo": 0.6428571428571429,
+          "hi": 1.0,
+          "n_boot": 2000
+        }
+      },
+      {
+        "target_workload": 0.33,
+        "workload": 0.3333333333333333,
+        "recall": 0.6666666666666666,
+        "precision": 0.6666666666666666,
+        "n_flagged": 12,
+        "n_caught": 8,
+        "recall_ci": {
+          "lo": 0.4,
+          "hi": 0.9090909090909091,
+          "n_boot": 2000
+        }
+      },
+      {
+        "target_workload": 0.25,
+        "workload": 0.25,
+        "recall": 0.4166666666666667,
+        "precision": 0.5555555555555556,
+        "n_flagged": 9,
+        "n_caught": 5,
+        "recall_ci": {
+          "lo": 0.26666666666666666,
+          "hi": 0.8,
+          "n_boot": 2000
+        }
       }
     ]
   }
