@@ -1,0 +1,25 @@
+{
+  "task": "crop_type",
+  "run": "[L8]_unet3d",
+  "device": "cpu",
+  "released_best_val_iou": 0.7061231136322021,
+  "released_best_epoch": 49,
+  "reproduced": 0.7070658206939697,
+  "abs_delta": 0.0009427070617675781,
+  "tolerance": 0.01,
+  "verdict": "PASS",
+  "val_samples": 227,
+  "val_plots": 36,
+  "trainable_params": 3100962,
+  "all_metrics": {
+    "f1_macro": 0.8198484182357788,
+    "acc": 0.8758620619773865,
+    "iou": 0.7070658206939697,
+    "paddy_f1": 0.7193947434425354,
+    "non_paddy_f1": 0.9203020930290222,
+    "paddy_acc": 0.6699402332305908,
+    "non_paddy_acc": 0.940010666847229,
+    "paddy_iou": 0.5617615580558777,
+    "non_paddy_iou": 0.852370023727417
+  }
+}

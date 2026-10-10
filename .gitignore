@@ -41,6 +41,30 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
-# Results and training outputs -- regenerated, not committed (see above).
-/outputs/
-/results/
+# ---------------------------------------------------------------------------
+# EVIDENCE is tracked; WEIGHTS and LOGS are not.
+#
+# A run manifest records a git commit hash and git_dirty. That is meaningless
+# unless the manifest itself is in the tree, so the per-run JSON is committed:
+#     manifest.json          what produced the run
+#     config_resolved.json   the fully merged config
+#     trainlog.json          per-epoch metrics
+#     best.json              selected epoch
+#     best_per_plot_iou.json per-plot IoU at that epoch
+# plus the aggregated tables under results/ (*.json, *.csv).
+#
+# ~2-3 MB in total. The checkpoints (686 MB of *.pth.tar) and the raw stdout
+# logs stay out.
+#
+# Git cannot re-include a file inside an ignored DIRECTORY, so the directories
+# are un-ignored first (`!/outputs/**/`) and then the file types.
+# ---------------------------------------------------------------------------
+/outputs/**
+!/outputs/**/
+!/outputs/**/*.json
+/outputs/logs/**
+
+/results/**
+!/results/**/
+!/results/**/*.json
+!/results/**/*.csv

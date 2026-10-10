@@ -1,0 +1,112 @@
+[
+  {
+    "rung": "v1",
+    "sensors": "S2",
+    "model": "unet3d",
+    "T": 4,
+    "params": 3107874,
+    "io_s": 0.06,
+    "compute_s": 0.52,
+    "epoch_s": 35.0,
+    "hours_100ep": 1.0
+  },
+  {
+    "rung": "v2",
+    "sensors": "S2",
+    "model": "unet3d",
+    "T": 72,
+    "params": 3107874,
+    "io_s": 0.02,
+    "compute_s": 8.62,
+    "epoch_s": 527.0,
+    "hours_100ep": 14.6
+  },
+  {
+    "rung": "v3",
+    "sensors": "S2",
+    "model": "unet3d",
+    "T": 72,
+    "params": 3107874,
+    "io_s": 0.04,
+    "compute_s": 7.65,
+    "epoch_s": 469.0,
+    "hours_100ep": 13.0
+  },
+  {
+    "rung": "v4",
+    "sensors": "S2",
+    "model": "unet3d",
+    "T": 72,
+    "params": 3107874,
+    "io_s": 0.05,
+    "compute_s": 7.96,
+    "epoch_s": 489.0,
+    "hours_100ep": 13.6
+  },
+  {
+    "rung": "v5",
+    "sensors": "S1,S2",
+    "model": "unet3d",
+    "T": 73,
+    "params": 4653314,
+    "io_s": 0.15,
+    "compute_s": 10.38,
+    "epoch_s": 642.0,
+    "hours_100ep": 17.8
+  },
+  {
+    "rung": "v6",
+    "sensors": "L8,S1,S2",
+    "model": "unet3d",
+    "T": 74,
+    "params": 6203938,
+    "io_s": 0.33,
+    "compute_s": 12.29,
+    "epoch_s": 770.0,
+    "hours_100ep": 21.4
+  },
+  {
+    "rung": "v7",
+    "sensors": "L8,S1,S2",
+    "model": "utae",
+    "T": 74,
+    "params": 2136738,
+    "io_s": 0.08,
+    "compute_s": 13.54,
+    "epoch_s": 831.0,
+    "hours_100ep": 23.1
+  },
+  {
+    "rung": "v8",
+    "sensors": "L8,S1,S2",
+    "model": "utae",
+    "T": 74,
+    "params": 7627170,
+    "io_s": 0.23,
+    "compute_s": 43.75,
+    "epoch_s": 2682.0,
+    "hours_100ep": 74.5
+  },
+  {
+    "rung": "v9",
+    "sensors": "L8,S1,S2",
+    "model": "utae",
+    "T": 74,
+    "params": 7627170,
+    "io_s": 0.11,
+    "compute_s": 56.32,
+    "epoch_s": 3443.0,
+    "hours_100ep": 95.6
+  },
+  {
+    "rung": "v10",
+    "sensors": "L8,S1,S2",
+    "model": "utae",
+    "T": 73,
+    "params": 7627170,
+    "io_s": 0.02,
+    "compute_s": 46.81,
+    "epoch_s": 2857.0,
+    "hours_100ep": 79.4
+  }
+]
