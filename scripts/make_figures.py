@@ -183,10 +183,42 @@ def fig5_seed_consistency():
     print(f"  fig5: r={r:+.3f}, {both} fields fail in both seeds")
 
 
+def fig6_triage():
+    """Can unreliable fields be flagged without ground truth?"""
+    f = PROJ / "results" / "triage" / "triage_v5.json"
+    if not f.exists():
+        print("  fig6 SKIPPED"); return
+    d = json.loads(f.read_text(encoding="utf8"))
+    fig, ax = plt.subplots(figsize=(4.6, 3.3))
+    style = {"seed_disagreement": ("#1f3b73", "o", "seed disagreement"),
+             "low_confidence": ("#e67e22", "s", "low confidence")}
+    for k, (col, mk, lab) in style.items():
+        rows = sorted(d[k]["screening"], key=lambda r: r["workload"])
+        ax.plot([r["workload"] for r in rows], [r["recall"] for r in rows],
+                marker=mk, lw=1.8, color=col,
+                label=f"{lab} (r={d[k]['corr_with_iou']:+.2f})")
+    ax.plot([0, 1], [0, 1], ls=":", color="grey", lw=1,
+            label="random flagging")
+    ax.set_xlabel("fields referred for verification (workload)")
+    ax.set_ylabel("unreliable fields caught (recall)")
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1.05)
+    ax.xaxis.set_major_formatter(lambda v, _: f"{v:.0%}")
+    ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0%}")
+    ax.set_title("Unreliable fields can be flagged without labels\n"
+                 f"checking half the fields catches 92% of them "
+                 f"({d['n_bad']} of {d['n_fields']} are unreliable)",
+                 fontsize=9)
+    ax.legend(fontsize=7.5, loc="lower right")
+    fig.savefig(OUT / "fig6_triage.png")
+    plt.close(fig)
+    print(f"  fig6: triage screening, {d['n_fields']} fields")
+
+
 if __name__ == "__main__":
     fig1_per_field_vs_headline()
     fig2_ladder()
     fig3_tails()
     fig4_batch_size()
     fig5_seed_consistency()
+    fig6_triage()
     print(f"\n  wrote {len(list(OUT.glob('*.png')))} figures to {OUT}")

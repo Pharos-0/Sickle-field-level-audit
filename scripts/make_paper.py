@@ -57,6 +57,9 @@ def load():
         n[t] = {k: float(np.median([float(r[k]) for r in rs]))
                 for k in ("agg_mae", "median", "p75", "p90")}
         n[t]["n"] = len(rs)
+    tg = PROJ / "results/triage/triage_v5.json"
+    if tg.exists():
+        n["triage"] = json.loads(tg.read_text(encoding="utf8"))
     return n
 
 
@@ -121,10 +124,12 @@ def build():
         "batch size with frozen weights, and a mislabelled error metric in "
         "the phenology tasks. A controlled ten-rung ablation at three seeds "
         "shows five of nine modelling choices cannot be distinguished from "
-        "seed-to-seed variation; only added information helps "
-        f"(temporal +{n['d_temporal']:.4f}, radar +{n['d_radar']:.4f}), while "
-        "capacity, architecture and optimiser do not. Per field, a reported "
-        f"accuracy of {n['v5_px']:.4f} corresponds to a median field of "
+        "seed-to-seed variation at three seeds. The two steps that do "
+        f"exceed it both add information (temporal +{n['d_temporal']:.4f}, "
+        f"radar +{n['d_radar']:.4f}); the remainder, which add model "
+        "complexity, are inconclusive rather than demonstrably ineffective. "
+        "Per field, a reported pixel-pooled "
+        f"IoU of {n['v5_px']:.4f} corresponds to a median field of "
         f"{n['median_field']:.3f}, with {n['pct_below']:.0f}% of fields below "
         "0.5; for the regression tasks the typical field is better than the "
         "aggregate but roughly one field-season in ten is two to four times "
@@ -186,7 +191,8 @@ def build():
         "numbers irreproducible, each measured rather than asserted.",
         "A controlled ten-rung ablation at three seeds, showing that five of "
         "nine modelling choices cannot be distinguished from seed-to-seed "
-        "variation, and that only added information improves accuracy.",
+        "variation at three seeds, and that the two that do exceed it are "
+        "both additions of information rather than of model complexity.",
         "A per-field audit of 64 released models across four tasks, "
         "quantifying the gap between reported and per-field accuracy and "
         "showing that its direction is task-dependent.",
@@ -236,8 +242,20 @@ def build():
             "here is a validation number and is not comparable to the "
             "published test table. For yield and the phenology tasks only "
             "rows with a recorded yield qualify, reducing validation to 41 "
-            "field-seasons from 14 plots. Batch size is fixed at 32 "
-            "throughout for the reason given in Section IV-A.")
+            "field-seasons from 14 plots. To state the batching precisely, "
+            "since it matters for Section IV-A: EVALUATION uses a batch "
+            "size of 32 in full precision throughout, and all reported "
+            "metrics are computed under that setting. TRAINING uses an "
+            "effective batch size of 32 formed as a micro-batch size of 8 "
+            "with 4 gradient-accumulation steps, under bfloat16 autocast, "
+            "to fit an 8.5 GB device. Because the temporal axis is padded "
+            "to the per-batch maximum, the padded tensor seen during "
+            "training can differ from that of true batch-32 training; this "
+            "setting is held constant across all rungs so that rung-to-rung "
+            "differences remain controlled, but absolute values are not "
+            "directly comparable to runs trained at a true batch of 32, and "
+            "we do not assume the effect is identical across "
+            "architectures.")
     d.add_heading("Reproduction gate", level=2)
     body(d, "No analysis was permitted to proceed until the harness could "
             "recover a published number. For each released checkpoint we "
@@ -329,7 +347,7 @@ def build():
            "Fig. 2. Ten-rung controlled ablation, three seeds. Error bars "
            "are seed-to-seed standard deviation.")
 
-    d.add_heading("Reported accuracy does not describe a field", level=2)
+    d.add_heading("Reported pixel-pooled IoU does not describe a field", level=2)
     body(d, f"For the best configuration, pixel-pooled IoU is "
             f"{n['v5_px']:.4f} while the median individual field scores "
             f"{n['median_field']:.3f}, and {n['n_below']} of "
@@ -390,6 +408,62 @@ def build():
            "Fig. 5. Per-field IoU between two independent seeds. The same "
            "fields fail in both runs.", width=3.5)
 
+    d.add_heading("Unreliable fields can be identified without labels",
+                  level=2)
+    tg = n.get("triage")
+    if tg:
+        dis = tg["seed_disagreement"]; conf = tg["low_confidence"]
+        best = min(dis["screening"], key=lambda r: abs(r["workload"] - 0.5))
+        bconf = min(conf["screening"], key=lambda r: abs(r["workload"] - 0.33))
+        body(d, "Systematic failure is only actionable if the difficult "
+                "fields can be recognised at inference time, when no labels "
+                "exist. We tested two signals that require none. The first "
+                "is seed disagreement: the fraction of a field’s pixels "
+                "on which independently seeded models do not all agree, "
+                "available to any deployment that trains more than one "
+                "model. The second is mean predictive confidence from a "
+                "single model. Both are evaluated as screening tests, since "
+                "that is how they would be used: what share of fields must "
+                "be referred for verification (workload), and what share of "
+                "genuinely unreliable fields that referral catches (recall).")
+        body(d, f"Both signals correlate with per-field IoU in the useful "
+                f"direction — seed disagreement at r = "
+                f"{dis['corr_with_iou']:+.3f} and confidence at r = "
+                f"{conf['corr_with_iou']:+.3f}. Referring the "
+                f"{best['workload']:.0%} of fields with the highest seed "
+                f"disagreement captures {best['recall']:.0%} of the "
+                f"unreliable fields ({best['n_caught']} of {tg['n_bad']}), "
+                f"against {best['precision']:.0%} precision. Confidence "
+                f"alone, which needs only one trained model, captures "
+                f"{bconf['recall']:.0%} at a workload of "
+                f"{bconf['workload']:.0%}. Random referral would capture a "
+                f"share equal to the workload, so both signals carry real "
+                f"information. This converts the recommendation of Section "
+                f"IV-E from a proposal into a measured procedure: a "
+                f"deployment can process the majority of fields "
+                f"automatically while referring a minority that contains "
+                f"most of the failures.")
+        body(d, f"This result rests on {tg['n_fields']} validation fields, "
+                f"of which {tg['n_bad']} are unreliable. A single field is "
+                f"{100/tg['n_fields']:.1f} percentage points of any rate "
+                f"quoted above. These numbers establish that the signals are "
+                f"informative; they do not establish an operating threshold, "
+                f"which would require a substantially larger evaluation set.")
+        figure(d, "fig6_triage.png",
+               "Fig. 6. Screening performance of two label-free signals. "
+               "The diagonal is random referral.", width=4.3)
+
+    d.add_heading("Reproducibility", level=2)
+    body(d, "Every run records a manifest containing the resolved "
+            "configuration, a content hash of it, the git commit and a "
+            "dirty-tree flag, the device, the effective and micro batch "
+            "sizes, the seed and the trainable parameter count. "
+            "Reproduction tolerances were declared in the source before any "
+            "run and were not widened. All scripts that produce the tables "
+            "and figures in this paper are released with the code, and the "
+            "document itself is generated from the result files so that no "
+            "value in the text is transcribed by hand.")
+
     d.add_heading("Limitations", level=2)
     body(d, "Every result is a validation-set number computed on 36 fields, "
             "and on 41 field-seasons from 14 plots for yield and the "
@@ -424,8 +498,10 @@ def build():
             "64 released models across four tasks, we found four defects "
             "that make the published numbers irreproducible; that five of "
             "nine modelling choices cannot be distinguished from seed "
-            "variation, with only added information helping; and that "
-            f"reported accuracy of {n['v5_px']:.4f} corresponds to a median "
+            "variation at three seeds, the two exceeding it both being "
+            "additions of information rather than model complexity; and "
+            "that "
+            f"a reported pixel-pooled IoU of {n['v5_px']:.4f} corresponds to a median "
             f"field of {n['median_field']:.3f} with {n['pct_below']:.0f}% of "
             "fields below 0.5, while the regression tasks conceal a tail in "
             "which one field-season in ten is two to four times worse than "
