@@ -27,7 +27,8 @@ far fewer than all of them. The baseline to beat is "check everything"
 (workload 1.0, recall 1.0) and "check nothing" (workload 0, recall 0).
 
 CAUTION, and it bounds everything here: there are 36 validation fields. Each
-one is 2.8 percentage points of any rate below. These numbers indicate whether
+one is 2.8 percentage points of WORKLOAD, and 8.3 points of RECALL, which is
+measured over the 12 unreliable fields only. These numbers indicate whether
 the idea is worth pursuing; they do not establish an operating threshold.
 """
 
@@ -250,10 +251,60 @@ def main() -> int:
                   f"[{ci['lo']:.0%}, {ci['hi']:.0%}]  "
                   f"precision {d_['precision']:.0%}")
 
+    # ---- geographically held-out check ---------------------------------
+    # The reviewer's request: does a threshold set in one part of the delta
+    # transfer to another? SICKLE labels each plot with a RIVER_PART. We hold
+    # out each sub-region in turn, set the referral threshold from the
+    # remaining regions only, and apply it to the held-out one.
+    import pandas as pd
+    tab = pd.read_csv(Path(cfg["data"]["root"]) / cfg["data"]["tabular"])
+    region = (tab.dropna(subset=["PLOT_ID"])
+              .groupby("PLOT_ID").RIVER_PART.first().to_dict())
+    geo = {"note": ("Threshold set from the other regions only, then applied "
+                    "to the held-out region. Reported per region because the "
+                    "regions are small; see n_fields."),
+           "target_workload": 0.5, "regions": []}
+    for name, sig in (("seed_disagreement", sig_dis),
+                      ("low_confidence", sig_conf)):
+        # RIVER_PART is NaN for some plots; keep only real region labels so a
+        # float NaN cannot be compared against a string.
+        regions_present = sorted({region.get(f) for f in common
+                                  if isinstance(region.get(f), str)})
+        for rg in regions_present:
+            held = [f for f in common if region.get(f) == rg]
+            rest = [f for f in common if region.get(f) != rg]
+            if not held or len(rest) < 2:
+                continue
+            thr = float(np.quantile([sig[f] for f in rest], 0.5))
+            flagged = [f for f in held if sig[f] >= thr]
+            hb = [f for f in held if f in bad]
+            geo["regions"].append({
+                "signal": name, "region": rg, "n_fields": len(held),
+                "n_bad": len(hb),
+                "n_flagged": len(flagged),
+                "recall": (len(set(flagged) & set(hb)) / len(hb)
+                           if hb else None),
+            })
+    results["geographic_holdout"] = geo
+    print("\n  === GEOGRAPHICALLY HELD-OUT (threshold from other regions) ===")
+    print(f"    {'signal':20s}{'region':18s}{'fields':>7s}{'bad':>5s}"
+          f"{'flagged':>9s}{'recall':>9s}")
+    for r_ in geo["regions"]:
+        rec = "n/a" if r_["recall"] is None else f"{r_['recall']:.0%}"
+        print(f"    {r_['signal']:20s}{r_['region']:18s}{r_['n_fields']:7d}"
+              f"{r_['n_bad']:5d}{r_['n_flagged']:9d}{rec:>9s}")
+    big = [r_ for r_ in geo["regions"] if r_["n_fields"] >= 6]
+    print(f"\n    Only {len(big)} of {len(geo['regions'])} region-signal "
+          f"combinations have 6 or more fields. The remainder cannot support "
+          f"a rate at all.")
+
     utils.write_json(OUT / f"triage_{args.config}.json", results)
     print(f"\nwrote {OUT / f'triage_{args.config}.json'}")
-    print(f"\nCAUTION: {len(common)} fields. One field is "
-          f"{100/len(common):.1f} percentage points of any rate above.")
+    print(f"\nCAUTION: {len(common)} fields, {len(bad)} of them unreliable. "
+          f"One field is {100/len(common):.1f} pp of WORKLOAD but "
+          f"{100/len(bad):.1f} pp of RECALL, since recall is measured over "
+          f"the unreliable fields only. The bootstrap intervals above are "
+          f"the honest statement of that uncertainty.")
     return 0
 
 

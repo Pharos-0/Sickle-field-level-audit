@@ -486,6 +486,29 @@ def build():
                 f"larger than the {tg['n_fields']} labelled fields this "
                 f"benchmark provides, and ideally a geographically held-out "
                 f"one.")
+        geo = tg.get("geographic_holdout")
+        if geo:
+            big = [r for r in geo["regions"] if r["n_fields"] >= 6]
+            body(d, "We also attempted a geographically held-out check, since "
+                    "a threshold that only works where it was set is of "
+                    "little use. SICKLE labels each plot with a sub-region of "
+                    "the delta, so we held out each in turn, set the "
+                    "threshold from the remaining regions, and applied it to "
+                    "the held-out one. The signal does transfer, but the "
+                    "benchmark cannot support a firm statement: of ten "
+                    f"region-signal combinations only {len(big)} involve six "
+                    "or more fields, and three sub-regions contribute two or "
+                    "three validation fields each. In the two largest "
+                    "regions, Upper Cauvery (8 fields, 4 unreliable) and "
+                    "Middle Vennar (7 fields, 2 unreliable), recall under a "
+                    "threshold set entirely outside the region ranges from "
+                    "50% to 100% depending on region and signal. We report "
+                    "this as evidence that the approach is worth testing "
+                    "properly, and as a concrete statement of what this "
+                    "benchmark's validation split can and cannot support: a "
+                    "geographically held-out evaluation of field-level "
+                    "reliability needs a labelled set substantially larger "
+                    "than 36 fields spread across five sub-regions.")
         figure(d, "fig6_triage.png",
                "Fig. 6. Screening performance of two label-free signals. "
                "The diagonal is random referral.", width=4.3)

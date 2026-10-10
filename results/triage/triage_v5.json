@@ -195,5 +195,91 @@
         }
       }
     ]
+  },
+  "geographic_holdout": {
+    "note": "Threshold set from the other regions only, then applied to the held-out region. Reported per region because the regions are small; see n_fields.",
+    "target_workload": 0.5,
+    "regions": [
+      {
+        "signal": "seed_disagreement",
+        "region": "Coastal Cauvery",
+        "n_fields": 3,
+        "n_bad": 3,
+        "n_flagged": 3,
+        "recall": 1.0
+      },
+      {
+        "signal": "seed_disagreement",
+        "region": "Coastal Vennar",
+        "n_fields": 2,
+        "n_bad": 0,
+        "n_flagged": 0,
+        "recall": null
+      },
+      {
+        "signal": "seed_disagreement",
+        "region": "Lower Cauvery",
+        "n_fields": 2,
+        "n_bad": 0,
+        "n_flagged": 1,
+        "recall": null
+      },
+      {
+        "signal": "seed_disagreement",
+        "region": "Middle Vennar",
+        "n_fields": 7,
+        "n_bad": 2,
+        "n_flagged": 4,
+        "recall": 0.5
+      },
+      {
+        "signal": "seed_disagreement",
+        "region": "Upper Cauvery",
+        "n_fields": 8,
+        "n_bad": 4,
+        "n_flagged": 6,
+        "recall": 1.0
+      },
+      {
+        "signal": "low_confidence",
+        "region": "Coastal Cauvery",
+        "n_fields": 3,
+        "n_bad": 3,
+        "n_flagged": 3,
+        "recall": 1.0
+      },
+      {
+        "signal": "low_confidence",
+        "region": "Coastal Vennar",
+        "n_fields": 2,
+        "n_bad": 0,
+        "n_flagged": 0,
+        "recall": null
+      },
+      {
+        "signal": "low_confidence",
+        "region": "Lower Cauvery",
+        "n_fields": 2,
+        "n_bad": 0,
+        "n_flagged": 0,
+        "recall": null
+      },
+      {
+        "signal": "low_confidence",
+        "region": "Middle Vennar",
+        "n_fields": 7,
+        "n_bad": 2,
+        "n_flagged": 4,
+        "recall": 0.5
+      },
+      {
+        "signal": "low_confidence",
+        "region": "Upper Cauvery",
+        "n_fields": 8,
+        "n_bad": 4,
+        "n_flagged": 4,
+        "recall": 0.75
+      }
+    ]
   }
 }

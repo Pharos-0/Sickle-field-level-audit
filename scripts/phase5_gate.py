@@ -158,6 +158,17 @@ def main() -> int:
     # reference_impl/utils/metric.py::get_metrics returns, for crop_type:
     #   (f1_macro, acc, iou, paddy_f1, non_paddy_f1,
     #    paddy_acc, non_paddy_acc, paddy_iou, non_paddy_iou, (y_pred, y_true))
+    # reference_impl/utils/metric.py pins its torchmetrics objects to
+    # `cuda if torch.cuda.is_available() else cpu` AT IMPORT. Tensors are
+    # collected on CPU here, so on a machine where CUDA is present the two
+    # disagree and torchmetrics raises. Move the tensors to whatever device
+    # the reference chose rather than editing reference_impl. Class
+    # predictions are integers, so this does not change the metric value --
+    # verified by reproducing the committed batch-32 result exactly.
+    from utils import metric as _refmetric
+    _dev = _refmetric.device
+    y_pred, y_true, pid_masks = (y_pred.to(_dev), y_true.to(_dev),
+                                 pid_masks.to(_dev))
     m = get_metrics(y_pred, y_true, pid_masks,
                     ignore_index=CFG.ignore_index, task=args.task)
     names = ["f1_macro", "acc", "iou", "paddy_f1", "non_paddy_f1",
