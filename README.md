@@ -7,9 +7,10 @@ A controlled empirical study on the **SICKLE** dataset (Cauvery Delta, Tamil
 Nadu, India). The contribution is a measurement, not an architecture — **no new
 model is proposed and none is claimed**.
 
-> **Status: PHASE 0–6 complete. v1 training is RUNNING. v2–v10 NOT RUN.**
-> Every number here is either measured from released artefacts or marked
-> `NOT RUN`.
+> **Status: the LADDER IS COMPLETE — 30/30 runs (v1–v10 x 3 seeds), 109 h,
+> zero failures. Results in `docs/LADDER_RESULTS.md`.
+> The data-regime sweep (90 runs) is RUNNING.**
+> Every number here is either measured or marked `NOT RUN`.
 
 ---
 
@@ -226,10 +227,25 @@ changes the evaluation set.
   not reproductions of them.
 - No architecture is proposed.
 
+## Results so far
+
+**Ladder complete** (`docs/LADDER_RESULTS.md`). Two effects survive three
+seeds, both 4-10x the seed-to-seed spread:
+
+| | d pixel | d plot |
+|---|---:|---:|
+| temporal information (v1->v2) | **+0.1198** | **+0.1998** |
+| Sentinel-1 radar (v4->v5) | **+0.1860** | +0.0518 |
+
+Everything adding model complexity is inconclusive or negative: capacity
+(+0.0004), optimiser (-0.0078), UTAE (-0.0696). Five of nine steps are
+inconclusive at three seeds, and two of those looked like results at one seed.
+
 ## Next
 
-1. v1 finishes (~7 h), then v2 — `v2 − v1` is the headline number
-2. v3–v10, then seeds 1 and 2
-3. Data-regime sweep (90 runs)
-4. **Open decision:** Arm B's replacement difficulty axis — held-out `YEAR`,
-   held-out `RIVER_PART`, or drop it
+1. **Data-regime sweep (90 runs, ~54 h) — RUNNING.** Tests the pre-registered
+   hypothesis that temporal complexity's advantage grows with plot count.
+2. Figures and write-up.
+
+**Decided 2026-10-10:** the difficulty axis is DROPPED. Arm B was already
+`NOT_VIABLE`; the sweep supplies the second dimension instead.
