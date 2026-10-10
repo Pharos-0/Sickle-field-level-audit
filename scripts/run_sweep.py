@@ -12,7 +12,7 @@ Design, from docs/SICKLE_MASTER_PROMPT.md:
 
     6 plot counts  x  3 configurations  x  5 seeds  =  90 runs
     counts : 50, 100, 150, 200, 250, 315   (train split has 315 plots)
-    configs: v1 single-acquisition, v2 temporal, v5 multi-sensor
+    configs: v1 single-acquisition, v2 temporal, v2_radar multi-sensor
     eval   : the SAME 36 validation plots every time, never subsetted
 
 NAMING TRAP. The master prompt calls these configurations "V2, V6, V7". That
@@ -21,11 +21,17 @@ into the ladder's configs:
 
     prompt "V2" single-image   -> v1   (single acquisition, zero temporal info)
     prompt "V6" temporal       -> v2   (full temporal sequence)
-    prompt "V7" multi-sensor   -> v5   (S2 + S1 radar)
+    prompt "V7" multi-sensor   -> v2_radar  (v2 + S1 radar, nothing else)
 
-v5 rather than v6 for multi-sensor: the ladder measured v5->v6 (adding
-Landsat-8) as INCONCLUSIVE at three seeds (+0.0075 pixel, -0.0270 plot), so v5
-is where the multi-sensor effect actually lives and it costs less to run.
+NOT v5 for multi-sensor, and this matters. The ladder is cumulative, so v5
+carries augmentation (v3) and class weighting (v4) as well as radar. For the
+ladder that is fine -- each rung is compared only to the one before it. For the
+sweep, where three curves are compared to each other, a v2-to-v5 gap would
+confound radar with two factors the ladder measured as inconclusive or
+metric-dependent. configs/v2_radar.yaml changes exactly one thing from v2.
+
+Not v6 either: v5->v6 (adding Landsat-8) was INCONCLUSIVE at three seeds
+(+0.0075 pixel, -0.0270 plot).
 
 Subsets are NESTED -- the 100-plot set contains the 50-plot set -- so the curve
 is not confounded by which plots were drawn. Paddy fraction stays 0.385-0.426
@@ -47,7 +53,7 @@ from pathlib import Path
 PROJ = Path(__file__).resolve().parents[1]
 
 COUNTS = [50, 100, 150, 200, 250, 315]
-CONFIGS = ["v1", "v2", "v5"]
+CONFIGS = ["v1", "v2", "v2_radar"]
 SEEDS = [1, 2, 3, 4, 5]          # subset manifests are seed001..seed005
 
 

@@ -1,0 +1,49 @@
+defaults:
+  - v2
+
+project:
+  version: v2_radar
+  description: "V2 + Sentinel-1 radar ONLY (clean multi-sensor point for the data-regime sweep)"
+
+# ---------------------------------------------------------------------------
+# WHY THIS CONFIG EXISTS, AND WHY THE SWEEP DOES NOT USE v5.
+#
+# The ladder is cumulative, so by the time it reaches v5 the config carries
+# four changes relative to v2:
+#
+#     v3  + augmentation
+#     v4  + class-weighted loss
+#     v5  + Sentinel-1 radar
+#
+# That is fine for the ladder, where each rung is compared only to the one
+# before it. It is NOT fine for the sweep, where three configs are compared to
+# each other at every plot count: a gap between the v2 curve and the v5 curve
+# would confound radar with augmentation and class weighting. The ladder
+# measured both of those as inconclusive or metric-dependent at three seeds
+# (v2->v3 -0.0110 pixel / -0.1104 plot; v3->v4 -0.0484 pixel / +0.1613 plot),
+# so they are not negligible and cannot be waved away.
+#
+# This config changes EXACTLY ONE thing from v2: it adds the radar sensor.
+# The sweep's three configs are then properly nested and differ by one factor
+# each:
+#     v1        single acquisition          (floor)
+#     v2        + full temporal sequence    (temporal effect)
+#     v2_radar  + Sentinel-1                (radar effect)
+#
+# Note this is deliberately NOT the best-performing configuration -- v5 scores
+# higher (0.8665 vs v2's 0.7399 pixel macro IoU). The sweep is measuring how
+# individual effects scale with independent spatial diversity, not how the
+# best available setup scales. Those are different questions and the second
+# one is already answered by the ladder at full data.
+# ---------------------------------------------------------------------------
+satellites:
+  S2:
+    bands: [B1, B2, B3, B4, B5, B6, B7, B8, B8A, B9, B11, B12]
+    rgb_bands: [3, 2, 1]
+    mask_res: 10
+    img_size: [32, 32]
+  S1:
+    bands: [VV, VH]
+    rgb_bands: [0, 1, 0]
+    mask_res: 10
+    img_size: [32, 32]
