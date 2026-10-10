@@ -34,5 +34,7 @@
   "micro_batch_size": 8,
   "grad_accum_steps": 4,
   "amp_bf16": true,
-  "precision_note": "Training uses bf16 autocast and gradient accumulation to fit an 8.5 GB card. EVALUATION runs in fp32 at the pinned batch size, so every reported metric is computed exactly as the reproduction gate computed it."
+  "precision_note": "Training uses bf16 autocast and gradient accumulation to fit an 8.5 GB card. EVALUATION runs in fp32 at the pinned batch size, so every reported metric is computed exactly as the reproduction gate computed it.",
+  "finished_utc": "2026-10-10T08:28:50+00:00",
+  "total_seconds": 2528.1
 }
