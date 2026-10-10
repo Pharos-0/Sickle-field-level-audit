@@ -88,6 +88,59 @@ def aggregate_to_fields(y_true, y_pred, plot_ids, ignore_index: int = -999,
     return out_true, out_pred
 
 
+def aggregate_to_field_seasons(y_true, y_pred, plot_ids, ignore_index=-999,
+                               how: str = "sum", require_positive=True):
+    """Collapse to one value per (SAMPLE, plot) -- a field in a given season.
+
+    This, not `aggregate_to_fields`, is the unit the reference implementation
+    uses (`get_combined_yield`) and the unit an insurance decision is made on:
+    a crop is insured for a season, not a field in perpetuity. A plot that
+    appears in three season-samples contributes three observations.
+
+    Getting this wrong is not a rounding difference. Pooling a plot's pixels
+    across all its seasons instead gave MAPE 0.2874 against the released
+    0.3274 -- a 12% relative error, enough to fail the reproduction gate --
+    while this unit gives 0.3269.
+
+    Arrays must keep their sample axis: shape (N, H, W) or (N, H*W).
+
+    `require_positive` mirrors the reference, which skips a (sample, plot)
+    whose true total is not > 0. For yield those are fields with no recorded
+    harvest, which carry no percentage error.
+    """
+    if how not in ("sum", "mean"):
+        raise ValueError(f"how must be 'sum' or 'mean', got {how!r}")
+
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    plot_ids = np.asarray(plot_ids)
+    if y_true.ndim < 2:
+        raise ValueError(
+            "arrays must keep their sample axis, e.g. (N, H, W); a flattened "
+            "array has already lost the season boundary this function needs")
+
+    n = y_true.shape[0]
+    yt = y_true.reshape(n, -1)
+    yp = y_pred.reshape(n, -1)
+    pm = plot_ids.reshape(n, -1)
+
+    out_true, out_pred = {}, {}
+    for i in range(n):
+        for pid in np.unique(pm[i]):
+            if pid <= 0 or pid == ignore_index:
+                continue
+            m = (pm[i] == pid) & (yt[i] != ignore_index) & np.isfinite(yt[i])
+            if not m.any():
+                continue
+            tv = yt[i][m].sum() if how == "sum" else yt[i][m].mean()
+            if require_positive and not (tv > 0):
+                continue
+            pv = yp[i][m].sum() if how == "sum" else yp[i][m].mean()
+            out_true[(i, float(pid))] = float(tv)
+            out_pred[(i, float(pid))] = float(pv)
+    return out_true, out_pred
+
+
 def field_errors(true_by_field: dict, pred_by_field: dict) -> dict:
     """Absolute error per field. The distribution is the point, not the mean."""
     common = sorted(set(true_by_field) & set(pred_by_field))

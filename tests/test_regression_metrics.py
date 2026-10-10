@@ -154,3 +154,55 @@ def test_bootstrap_is_deterministic_and_brackets_the_estimate():
 def test_bootstrap_degrades_gracefully_on_one_field():
     r = bootstrap_field_ci({1.0: 5.0}, {1.0: 6.0}, n_boot=100)
     assert np.isnan(r["lo"]) and r["n_boot"] == 0
+
+
+# --------------------------------------------------------------------------
+# field-SEASON aggregation -- the unit the reproduction gate actually needs
+# --------------------------------------------------------------------------
+
+def test_field_season_keeps_seasons_separate():
+    """One plot in two samples is TWO observations, not one pooled total.
+
+    Pooling instead gave MAPE 0.2874 against a released 0.3274 and failed the
+    gate; this unit gives 0.3269.
+    """
+    from src.evaluation.regression_metrics import aggregate_to_field_seasons
+    pid = np.array([[[5, 5]], [[5, 5]]])          # same plot, two samples
+    true = np.array([[[10.0, 10.0]], [[30.0, 30.0]]])
+    pred = np.array([[[9.0, 9.0]], [[31.0, 31.0]]])
+    t, p = aggregate_to_field_seasons(true, pred, pid, how="sum")
+    assert set(t) == {(0, 5.0), (1, 5.0)}
+    assert t[(0, 5.0)] == 20.0 and t[(1, 5.0)] == 60.0
+    assert p[(0, 5.0)] == 18.0 and p[(1, 5.0)] == 62.0
+
+
+def test_field_season_rejects_flattened_input():
+    """A flattened array has already lost the season boundary -- fail loudly."""
+    from src.evaluation.regression_metrics import aggregate_to_field_seasons
+    with pytest.raises(ValueError, match="sample axis"):
+        aggregate_to_field_seasons(np.array([1.0, 2.0]), np.array([1.0, 2.0]),
+                                   np.array([1, 1]))
+
+
+def test_require_positive_skips_zero_truth_field_seasons():
+    """Mirrors the reference: a field-season with no recorded yield is skipped."""
+    from src.evaluation.regression_metrics import aggregate_to_field_seasons
+    pid = np.array([[[1, 1, 2, 2]]])
+    true = np.array([[[5.0, 5.0, 0.0, 0.0]]])
+    pred = np.array([[[4.0, 4.0, 9.0, 9.0]]])
+    t, _ = aggregate_to_field_seasons(true, pred, pid, how="sum",
+                                      require_positive=True)
+    assert set(t) == {(0, 1.0)}
+    t2, _ = aggregate_to_field_seasons(true, pred, pid, how="sum",
+                                       require_positive=False)
+    assert set(t2) == {(0, 1.0), (0, 2.0)}
+
+
+def test_field_season_drops_ignore_index_pixels():
+    from src.evaluation.regression_metrics import aggregate_to_field_seasons
+    pid = np.array([[[3, 3, 3]]])
+    true = np.array([[[4.0, 4.0, -999.0]]])
+    pred = np.array([[[3.0, 3.0, 500.0]]])
+    t, p = aggregate_to_field_seasons(true, pred, pid, ignore_index=-999,
+                                      how="sum")
+    assert t[(0, 3.0)] == 8.0 and p[(0, 3.0)] == 6.0
