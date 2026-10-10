@@ -180,6 +180,16 @@ def build():
             "insurance payout, a field’s harvest date for procurement "
             "scheduling, and a field’s transplanting date for "
             "irrigation timing.")
+    body(d, "Scope. This paper reports a reproducibility and per-field "
+            "reliability audit of a published benchmark. It is deliberately "
+            "distinct from a second study, in progress, which asks how the "
+            "benefit of temporal and multi-sensor modelling scales with the "
+            "number of independent training plots; that question requires a "
+            "data-regime sweep over nested plot subsets and is not addressed "
+            "here. The ablation of Section III-C is used in this paper to "
+            "characterise the benchmark’s sensitivity to modelling "
+            "choices at full data, not to answer the scaling question, and "
+            "the two sets of results are not combined.")
     body(d, "We do not have access to YES-TECH’s operational models, "
             "which are not public. We therefore audit the research "
             "benchmark on which models of this kind are developed and "
