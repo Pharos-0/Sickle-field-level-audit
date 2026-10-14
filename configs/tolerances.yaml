@@ -1,0 +1,420 @@
+# Declared tolerances for every headline number in the manuscript.
+#
+# WHAT THIS FILE IS FOR
+# ---------------------
+# scripts/build_all.py rebuilds the deliverables, and scripts/verify_all.py
+# checks that the claims hold. Neither answers the question an auditor
+# actually asks: "is this the same number it was last time, and if not, by
+# how much, and is that amount allowed?"
+#
+# scripts/drift_check.py reads this file, recomputes each value from the
+# primary artefacts, and FAILS the build when any value moves further than
+# the tolerance declared here. A tolerance is therefore a commitment, not a
+# convenience: widening one to make a build pass is an amendment and must be
+# recorded at the bottom with a reason and a date.
+#
+# WHY MOST TOLERANCES ARE ZERO
+# ----------------------------
+# Almost every number is recomputed from stored artefacts by deterministic
+# arithmetic. Under those conditions the only legitimate variation is
+# floating-point summation order, which is why the "exact" class allows 1e-9
+# rather than literal equality. A number that moves more than that moved
+# because an input changed, and the build should stop and say so.
+#
+# The non-zero classes are:
+#
+#   inference   2e-3. Values that would change if the evaluation were re-run
+#               on a different device. CPU and CUDA reductions disagree in
+#               the last few digits, and cuDNN algorithm selection can move
+#               a pooled IoU slightly. The reproduction gate itself allows
+#               10% relative; this is roughly 200x tighter.
+#   resample    0. Bootstrap and permutation figures are seeded, and both
+#               the seed and the replicate count are declared alongside the
+#               value, so they are exactly reproducible. If either changes,
+#               that is an amendment, not drift.
+#
+# SEED-DEPENDENT ENTRIES
+# ----------------------
+# Ladder values are means over the seeds listed in `depends_on_seeds`.
+# Training a further seed legitimately changes them. drift_check.py reports
+# that case separately from drift, because it is new evidence rather than a
+# fault -- but it still FAILS the build, so that the new values have to be
+# written down here deliberately.
+
+version: 1
+declared_on: "2026-10-11"
+policy: >
+  A value outside its declared tolerance fails the build. Tolerances are
+  widened only by amendment, recorded below with a reason and a date. A
+  failing check is never resolved by editing the expected value alone.
+
+# Completed seeds per rung when the expectations below were declared.
+# drift_check.py compares the current counts against this, so seeds
+# added to ANY rung are reported as new evidence rather than as drift.
+seed_signature:
+  v1: 3
+  v2: 3
+  v3: 8
+  v4: 8
+  v5: 3
+  v6: 3
+  v7: 3
+  v8: 3
+  v9: 3
+  v10: 3
+
+classes:
+  exact: 1.0e-9
+  inference: 2.0e-3
+  resample: 0.0
+
+entries:
+
+  # ---------------------------------------------------------- ablation
+  - id: ladder_v5_pixel_pooled_iou
+    description: >
+      Pixel-pooled macro IoU of rung v5, the manuscript headline that the
+      field-level result is contrasted against.
+    extractor: csv_cell
+    file: results/ladder_crop_type.csv
+    match_column: rung
+    match_value: v5
+    column: pixel_macro_iou
+    expected: 0.8664970952674632
+    manuscript_rounding: 0.8665
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: ladder_v5_plot_macro_iou
+    description: Per-field (plot-weighted) macro IoU of rung v5.
+    extractor: csv_cell
+    file: results/ladder_crop_type.csv
+    match_column: rung
+    match_value: v5
+    column: plot_macro_iou
+    expected: 0.6754550878084589
+    manuscript_rounding: 0.6755
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: ladder_sigma_max
+    description: >
+      Largest across-seed SD over all rungs, the yardstick the ablation
+      steps are judged against.
+    extractor: derived
+    fn: ladder_sigma_max
+    expected: 0.04168038030655138
+    manuscript_rounding: 0.0417
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: ladder_n_steps
+    description: Adjacent rung-to-rung steps in the ablation ladder.
+    extractor: derived
+    fn: ladder_n_steps
+    expected: 9
+    tolerance_class: exact
+
+  - id: ladder_n_exceeding_sigma
+    description: >
+      Steps whose magnitude exceeds sigma_max. The manuscript partitions
+      the ladder into these and the inconclusive remainder, so both counts
+      are pinned.
+    extractor: derived
+    fn: ladder_n_exceeding
+    expected: 4
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: ladder_n_inconclusive
+    description: Steps smaller than sigma_max.
+    extractor: derived
+    fn: ladder_n_inconclusive
+    expected: 5
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  # ------------------------------------------------- field-level spread
+  - id: field_n_validation_fields
+    description: Validation fields carrying at least one scored pixel.
+    extractor: json_path
+    file: results/field_size_val.json
+    path: n_plots
+    expected: 36
+    tolerance_class: exact
+
+  - id: field_scored_pixels
+    description: >
+      Pixels entering the pooled confusion matrix. Reconstructed from the
+      masks alone and cross-checked against the released evaluations.
+    extractor: json_path
+    file: results/field_size_val.json
+    path: n_pixels_in_pooled_metric
+    expected: 9860
+    tolerance_class: exact
+
+  - id: field_share_largest
+    description: >
+      Share of all scored pixels held by the single largest validation
+      field. This is the mechanism behind the pooled-versus-per-field gap.
+    extractor: json_path
+    file: results/field_size_val.json
+    path: share_largest
+    expected: 0.4728194726166329
+    manuscript_rounding: 0.473
+    tolerance_class: exact
+
+  - id: field_share_top_quartile
+    description: Share of scored pixels held by the 9 largest fields.
+    extractor: json_path
+    file: results/field_size_val.json
+    path: share_top_quartile
+    expected: 0.8294117647058824
+    tolerance_class: exact
+
+  - id: field_median_iou
+    description: Median per-field IoU at rung v5, averaged over seeds.
+    extractor: json_path
+    file: results/field_distributions.json
+    path: ladder_crop_type/quantiles/50
+    expected: 0.9570333880678707
+    manuscript_rounding: 0.957
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: field_n_below_half
+    description: Fields whose seed-averaged IoU is below 0.50.
+    extractor: json_path
+    file: results/field_distributions.json
+    path: ladder_crop_type/below/0.5/n
+    expected: 4.0
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: field_spearman_size_vs_iou
+    description: >
+      Rank correlation between a field's pixel weight and its IoU. Near
+      zero, which is why the gap must not be described as large fields
+      being easier.
+    extractor: json_path
+    file: results/field_distributions.json
+    path: ladder_crop_type/size/spearman_weight_vs_iou
+    expected: 0.16177582367309654
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  # ------------------------------------- released yield vs a constant
+  - id: const_predictor_value
+    description: Mean training-split yield, the constant baseline.
+    extractor: derived
+    fn: const_value
+    expected: 1841.8675886524825
+    tolerance_class: exact
+
+  - id: const_predictor_mae
+    description: MAE of that constant on the 41 validation field-seasons.
+    extractor: derived
+    fn: const_mae
+    expected: 435.89635446271
+    manuscript_rounding: 435.9
+    tolerance_class: exact
+
+  - id: const_predictor_mape
+    description: MAPE of that constant.
+    extractor: derived
+    fn: const_mape
+    expected: 30.876450029536734
+    manuscript_rounding: 30.88
+    tolerance_class: exact
+
+  - id: n_released_yield_checkpoints
+    description: Released yield checkpoints audited, excluding smoke tests.
+    extractor: derived
+    fn: n_yield_checkpoints
+    expected: 24
+    tolerance_class: exact
+
+  - id: n_worse_than_constant_mae
+    description: Released yield checkpoints with MAE worse than the constant.
+    extractor: derived
+    fn: n_worse_mae
+    expected: 24
+    tolerance_class: exact
+
+  - id: n_worse_than_constant_mape
+    description: The same on MAPE.
+    extractor: derived
+    fn: n_worse_mape
+    expected: 23
+    tolerance_class: exact
+
+  - id: best_checkpoint_mae
+    description: MAE of the best released yield checkpoint by MAE.
+    extractor: derived
+    fn: best_ckpt_mae
+    expected: 497.0463078196456
+    manuscript_rounding: 497.0
+    tolerance_class: inference
+
+  # ------------------------------------------------- reproduction gate
+  - id: n_regression_runs_audited
+    description: Regression gate runs audited, excluding 2-epoch smoke tests.
+    extractor: derived
+    fn: n_regression_audited
+    expected: 48
+    tolerance_class: exact
+
+  - id: n_regression_runs_pass
+    description: Of those, how many reproduced within tolerance.
+    extractor: derived
+    fn: n_regression_pass
+    expected: 48
+    tolerance_class: exact
+
+  # ----------------------------------------------- yield screen (null)
+  - id: yield_screen_auroc
+    description: >
+      AUROC of inter-model disagreement against large yield error. A
+      negative result, pinned so it cannot quietly improve.
+    extractor: json_path
+    file: results/triage/yield_screen.json
+    path: threshold_free/auroc
+    expected: 0.3106060606060606
+    manuscript_rounding: 0.311
+    tolerance_class: exact
+
+  - id: yield_screen_n_plots
+    description: Independent units in the yield screen.
+    extractor: json_path
+    file: results/triage/yield_screen.json
+    path: n_plots
+    expected: 14
+    tolerance_class: exact
+
+  # ------------------------------------------ crop-type screen (item 5)
+  - id: crop_screen_seed_disagreement_auroc
+    extractor: json_path
+    file: results/triage/screen_validate.json
+    path: signals/seed_disagreement/auroc
+    description: AUROC of seed disagreement against per-field IoU below 0.50.
+    expected: 0.7421875
+    manuscript_rounding: 0.742
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: crop_screen_low_confidence_auroc
+    extractor: json_path
+    file: results/triage/screen_validate.json
+    path: signals/low_confidence/auroc
+    description: AUROC of mean low confidence against the same target.
+    expected: 0.8046875
+    manuscript_rounding: 0.805
+    tolerance_class: exact
+    depends_on_seeds: 3
+
+  - id: crop_screen_permutation_null_p97_5
+    extractor: json_path
+    file: results/triage/screen_validate.json
+    path: permutation_null/auroc_p97_5
+    description: >
+      Upper 97.5th percentile of AUROC under random referral. Declared
+      because it is the number that makes the screen result meaningful at
+      this sample size.
+    expected: 0.8046875
+    tolerance_class: resample
+    resample_seed: 0
+    resample_n: 10000
+
+  # -------------------------------------------- dataset shape, invariant
+  - id: dataset_n_val_rows
+    description: Rows in the released validation split.
+    extractor: derived
+    fn: n_val_rows
+    expected: 227
+    tolerance_class: exact
+
+  - id: dataset_n_train_rows
+    extractor: derived
+    fn: n_train_rows
+    description: Rows in the released training split.
+    expected: 1937
+    tolerance_class: exact
+
+  # ------------------------------------------ batch-size dependence (D1)
+  - id: bs_spread_focus_run
+    description: >
+      IoU swing of the checkpoint Section V-A narrates, across the batch
+      sizes it was evaluated at. Was written into the manuscript as "6.5
+      IoU points"; the saved cells give 0.0662.
+    extractor: derived
+    fn: bs_spread_focus
+    expected: 0.06614488363265991
+    manuscript_rounding: 0.066
+    tolerance_class: exact
+
+  - id: bs_spread_largest
+    description: >
+      The largest batch-size swing over every checkpoint evaluated at more
+      than one batch size. Declared because the abstract quotes it.
+    extractor: derived
+    fn: bs_spread_max
+    expected: 0.32721036672592163
+    manuscript_rounding: 0.327
+    tolerance_class: exact
+
+amendments:
+  - date: "2026-10-11"
+    entries: [bs_spread_focus_run, bs_spread_largest]
+    change: >
+      Expected values written from rounded figures, then corrected to the
+      computed ones by drift_check.py --update.
+    reason: >
+      Same mistake as the amendment above, made again while adding two new
+      entries: the full-precision digits were typed rather than computed.
+      Recorded a second time rather than folded into the first, because a
+      repeated mistake is information about the process. The working rule
+      from here is to add an entry with a placeholder and let --update fill
+      it, never to type a value at a precision that was not measured.
+    measured_values_unchanged: true
+  - date: "2026-10-11"
+    entries: [ladder_sigma_max, field_spearman_size_vs_iou]
+    change: >
+      Expected values corrected to the figures the artefacts actually
+      produce: ladder_sigma_max 0.0417005565322455 -> 0.04168038030655138,
+      field_spearman_size_vs_iou -0.0428731762065096 ->
+      -0.04286701560135529.
+    reason: >
+      Both values were entered into this registry at full precision when
+      only a rounded figure (0.0417 and -0.043) had actually been computed;
+      the remaining digits were not derived from anything. No measurement
+      changed -- the registry was wrong, and drift_check.py caught it on
+      its first run, which is the behaviour the file is meant to have.
+      Recorded here rather than silently edited, because an expected value
+      that can be adjusted without a note is not a control.
+    measured_values_unchanged: true
+  - date: "2026-10-12"
+    entries: [field_median_iou, field_n_below_half, field_spearman_size_vs_iou,
+              crop_screen_seed_disagreement_auroc,
+              crop_screen_low_confidence_auroc,
+              crop_screen_permutation_null_p97_5]
+    change: >
+      Per-field IoU is now the IoU of the crop(s) a field holds, computed
+      from per-field confusion matrices (scripts/field_confusions.py), not
+      the trainer's macro IoU over both classes. field_median_iou
+      0.6721 -> 0.9570; field_n_below_half 12 -> 4;
+      field_spearman_size_vs_iou -0.0429 -> +0.1618. The crop-type screen's
+      target (field IoU below 0.50) changed with it, so its AUROCs and the
+      permutation null moved: seed disagreement 0.8056 -> 0.7422, low
+      confidence 0.8229 -> 0.8047, null p97.5 0.7014 -> 0.8047.
+    reason: >
+      A MEASUREMENT DEFECT, not drift. 35 of the 36 validation fields hold
+      one crop in every season; for such a field macro IoU is 1.0 when
+      every pixel is right and at most 0.5 once one pixel is predicted as
+      the absent class, whose IoU then becomes 0. The declared values
+      measured that step. Found on 2026-10-12 while rendering prediction
+      maps. The superseded values are kept in results/field_distributions.json
+      (macro_contrast) and results/triage/*_macro.json, which reproduce the
+      originals exactly, and the conditional screen protocol carries a
+      post-hoc amendment for its target.
+    measured_values_unchanged: false
+    reviewed: true

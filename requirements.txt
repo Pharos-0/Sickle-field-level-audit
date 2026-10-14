@@ -49,5 +49,15 @@ imagecodecs
 # Figures and previews
 matplotlib
 
+# Statistics (plot-clustered intervals, correlation decomposition)
+scipy
+
+# Manuscripts, reference table, PDF export
+python-docx
+openpyxl
+# PDF export drives Microsoft Word through COM: Windows only, and Word must be
+# installed. Use build_all.py --skip-pdf elsewhere.
+pywin32; sys_platform == "win32"
+
 # Tests
 pytest

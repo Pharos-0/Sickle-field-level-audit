@@ -68,3 +68,30 @@ desktop.ini
 !/results/**/
 !/results/**/*.json
 !/results/**/*.csv
+
+# A README inside outputs/ explains evidence kept there; keep it.
+!/outputs/_interrupted_runs/README.md
+
+# ---------------------------------------------------------------------------
+# SICKLE LABELS stay out of git (2026-10-14). The dataset is shared only
+# through its authors' access form and carries no licence, so no file that
+# holds per-field labels, or values derived field by field from them, is
+# committed. These rules come last so they override the evidence rules above.
+# The files stay on disk, so every build and check still runs; after
+# obtaining data access, regenerate them with:
+#   scripts/regression_gate.py   -> results/regression_gate/crop_yield_*.json
+#   scripts/yield_screen.py      -> results/triage/yield_per_field.csv
+#   scripts/field_confusions.py  -> results/field_confusions/*.json
+# ---------------------------------------------------------------------------
+/results/regression_gate/crop_yield_*.json
+/results/triage/yield_per_field.csv
+/results/field_confusions/
+
+# ---------------------------------------------------------------------------
+# Generated manuscripts stay out until a venue is chosen (2026-10-14). The
+# scripts that build them are committed; scripts/build_all.py regenerates all
+# of them and docs/deliverable_hashes.json records what was built.
+# ---------------------------------------------------------------------------
+/docs/*.docx
+/docs/*.pdf
+/docs/*.xlsx
