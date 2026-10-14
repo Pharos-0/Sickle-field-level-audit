@@ -1,0 +1,212 @@
+{
+  "protocol_version": 1,
+  "protocol_frozen": "2026-10-11",
+  "n_checkpoints": 24,
+  "checkpoints": [
+    "[L8]_convlstm",
+    "[L8]_convlstm_season",
+    "[L8]_unet3d",
+    "[L8]_unet3d_season",
+    "[L8]_utae",
+    "[L8]_utae_season",
+    "[S1]_convlstm",
+    "[S1]_convlstm_season",
+    "[S1]_unet3d",
+    "[S1]_unet3d_season",
+    "[S1]_utae",
+    "[S1]_utae_season",
+    "[S2,L8,S1]_convlstm",
+    "[S2,L8,S1]_convlstm_season",
+    "[S2,L8,S1]_unet3d",
+    "[S2,L8,S1]_unet3d_season",
+    "[S2,L8,S1]_utae",
+    "[S2,L8,S1]_utae_season",
+    "[S2]_convlstm",
+    "[S2]_convlstm_season",
+    "[S2]_unet3d",
+    "[S2]_unet3d_season",
+    "[S2]_utae",
+    "[S2]_utae_season"
+  ],
+  "checkpoints_without_predictions": [],
+  "n_field_seasons": 41,
+  "n_plots": 14,
+  "independent_unit": "plot",
+  "excluded_ragged": 0,
+  "excluded_low_truth": 0,
+  "ape_threshold": 50.0,
+  "n_bad": 8,
+  "threshold_free": {
+    "spearman_signal_vs_ape": 0.04634146341463416,
+    "auroc": 0.3106060606060606,
+    "auroc_ci": {
+      "lo": 0.10342592592592592,
+      "hi": 0.6335921431509667,
+      "n_boot": 1980
+    },
+    "auroc_ci_excludes_half": false
+  },
+  "baseline_auroc": {
+    "disagreement": 0.3106060606060606,
+    "small_area_first": 0.36742424242424243,
+    "low_predicted_yield_first": 0.5909090909090909
+  },
+  "screening": [
+    {
+      "target_workload": 0.25,
+      "workload_realised": 0.2926829268292683,
+      "n_referred": 12,
+      "n_caught": 1,
+      "n_missed": 7,
+      "recall": 0.125,
+      "precision": 0.08333333333333333,
+      "recall_ci": {
+        "lo": 0.0,
+        "hi": 0.42857142857142855,
+        "workload_lo": 0.125,
+        "workload_hi": 0.5,
+        "n_boot": 1980
+      },
+      "random_expected_recall": 0.2926829268292683,
+      "beats_random": false
+    },
+    {
+      "target_workload": 0.33,
+      "workload_realised": 0.36585365853658536,
+      "n_referred": 15,
+      "n_caught": 2,
+      "n_missed": 6,
+      "recall": 0.25,
+      "precision": 0.13333333333333333,
+      "recall_ci": {
+        "lo": 0.0,
+        "hi": 0.8571428571428571,
+        "workload_lo": 0.16279069767441862,
+        "workload_hi": 0.5681818181818182,
+        "n_boot": 1980
+      },
+      "random_expected_recall": 0.36585365853658536,
+      "beats_random": false
+    },
+    {
+      "target_workload": 0.5,
+      "workload_realised": 0.5121951219512195,
+      "n_referred": 21,
+      "n_caught": 3,
+      "n_missed": 5,
+      "recall": 0.375,
+      "precision": 0.14285714285714285,
+      "recall_ci": {
+        "lo": 0.0,
+        "hi": 0.8571428571428571,
+        "workload_lo": 0.325,
+        "workload_hi": 0.6914377289377287,
+        "n_boot": 1980
+      },
+      "random_expected_recall": 0.5121951219512195,
+      "beats_random": false
+    },
+    {
+      "target_workload": 0.75,
+      "workload_realised": 0.7317073170731707,
+      "n_referred": 30,
+      "n_caught": 3,
+      "n_missed": 5,
+      "recall": 0.375,
+      "precision": 0.1,
+      "recall_ci": {
+        "lo": 0.0,
+        "hi": 0.8571428571428571,
+        "workload_lo": 0.5294117647058824,
+        "workload_hi": 0.8888888888888888,
+        "n_boot": 1980
+      },
+      "random_expected_recall": 0.7317073170731707,
+      "beats_random": false
+    }
+  ],
+  "selective_prediction": [
+    {
+      "coverage": 1.0,
+      "n_kept": 41,
+      "median_ape": 18.104517043485068,
+      "mean_ape": 32.28110726438179
+    },
+    {
+      "coverage": 0.75,
+      "n_kept": 31,
+      "median_ape": 18.104517043485068,
+      "mean_ape": 33.32686362736998
+    },
+    {
+      "coverage": 0.67,
+      "n_kept": 27,
+      "median_ape": 14.764023039740746,
+      "mean_ape": 32.23699746478065
+    },
+    {
+      "coverage": 0.5,
+      "n_kept": 20,
+      "median_ape": 13.517400662436629,
+      "mean_ape": 32.92340969890227
+    }
+  ],
+  "sensitivity": [
+    {
+      "ape_threshold": 50.0,
+      "n_bad": 8,
+      "auroc": 0.3106060606060606
+    },
+    {
+      "ape_threshold": 30.0,
+      "n_bad": 18,
+      "auroc": 0.5700483091787439
+    },
+    {
+      "ape_threshold": 40.0,
+      "n_bad": 15,
+      "auroc": 0.4641025641025641
+    },
+    {
+      "ape_threshold": 75.0,
+      "n_bad": 3,
+      "auroc": 0.21929824561403508
+    },
+    {
+      "ape_threshold": 100.0,
+      "n_bad": 2,
+      "auroc": 0.32051282051282054
+    }
+  ],
+  "ensemble_independence": {
+    "pairwise_corr_median": 0.9240463717233991,
+    "pairwise_corr_min": 0.8071793193974053,
+    "pairwise_corr_max": 0.9969087897036121,
+    "families": {
+      "convlstm": 8,
+      "unet3d": 8,
+      "utae": 8
+    }
+  },
+  "model_subset_sensitivity": {
+    "base_runs_only": {
+      "n_models": 12,
+      "auroc": 0.3125,
+      "n_bad": 9,
+      "median_ape": 19.38898810024919
+    },
+    "season_runs_only": {
+      "n_models": 12,
+      "auroc": 0.4583333333333333,
+      "n_bad": 9,
+      "median_ape": 19.865414831373432
+    }
+  },
+  "field_size": {
+    "n": 41,
+    "spearman_area_vs_ape": 0.21550522648083625,
+    "spearman_area_vs_signal": -0.13519163763066205
+  },
+  "verdict": "not demonstrated",
+  "caveat": "With 14 independent plots this experiment can indicate whether the signal carries information. It cannot establish an operating threshold, and no threshold from it should be described as deployable.\n"
+}

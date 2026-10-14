@@ -1,0 +1,278 @@
+{
+  "sigma_max": 0.04168038030655138,
+  "power": 0.8,
+  "alpha": 0.05,
+  "sigma_max_seed_set": [
+    0,
+    1,
+    2
+  ],
+  "n_seeds_available": {
+    "v1": 3,
+    "v2": 3,
+    "v3": 8,
+    "v4": 8,
+    "v5": 3,
+    "v6": 3,
+    "v7": 3,
+    "v8": 3,
+    "v9": 3,
+    "v10": 3
+  },
+  "steps": [
+    {
+      "step": "v1->v2",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        0.131,
+        0.1406,
+        0.0879
+      ],
+      "paired_mean": 0.11984716868806326,
+      "paired_sd": 0.0280963671359622,
+      "ci95_paired": [
+        0.050046290297122834,
+        0.18964804707900368
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": 0.11984716868806322,
+      "exceeds_sigma_max": true,
+      "required_n_for_80pc_power": 2,
+      "verdict": "resolved at n=3"
+    },
+    {
+      "step": "v2->v3",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        -0.0496,
+        -0.0268,
+        0.0434
+      ],
+      "paired_mean": -0.011012957850552377,
+      "paired_sd": 0.04846278787129415,
+      "ci95_paired": [
+        -0.13141091344105896,
+        0.10938499773995419
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": -0.001338577061279822,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 152,
+      "verdict": "underpowered: a large effect is still compatible"
+    },
+    {
+      "step": "v3->v4",
+      "n_seeds": 8,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "per_seed_differences": [
+        0.0056,
+        -0.088,
+        -0.0629,
+        -0.0177,
+        -0.0143,
+        -0.0368,
+        -0.0655,
+        0.041
+      ],
+      "paired_mean": -0.029819200296946416,
+      "paired_sd": 0.042168328169094584,
+      "ci95_paired": [
+        -0.06507840681755205,
+        0.005440006223659213
+      ],
+      "t_crit": 2.365,
+      "unpaired_mean": -0.029819200296946402,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 16,
+      "verdict": "underpowered: a large effect is still compatible"
+    },
+    {
+      "step": "v4->v5",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        0.1652,
+        0.2201,
+        0.1726
+      ],
+      "paired_mean": 0.18599734259703807,
+      "paired_sd": 0.029784461526244817,
+      "ci95_paired": [
+        0.1120026668130629,
+        0.25999201838101327
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": 0.1577312208017524,
+      "exceeds_sigma_max": true,
+      "required_n_for_80pc_power": 2,
+      "verdict": "resolved at n=3"
+    },
+    {
+      "step": "v5->v6",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        0.0013,
+        0.0136,
+        0.0077
+      ],
+      "paired_mean": 0.007545458635545159,
+      "paired_sd": 0.00615790563447677,
+      "ci95_paired": [
+        -0.007752861615432718,
+        0.022843778886523034
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": 0.0075454586355452324,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 6,
+      "verdict": "small: the interval rules out a large effect"
+    },
+    {
+      "step": "v6->v7",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        -0.0868,
+        -0.075,
+        -0.047
+      ],
+      "paired_mean": -0.06959508367067435,
+      "paired_sd": 0.020419631545448964,
+      "ci95_paired": [
+        -0.12032435451891002,
+        -0.018865812822438682
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": -0.06959508367067435,
+      "exceeds_sigma_max": true,
+      "required_n_for_80pc_power": 2,
+      "verdict": "resolved at n=3"
+    },
+    {
+      "step": "v7->v8",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        -0.0098,
+        -0.001,
+        0.0121
+      ],
+      "paired_mean": 0.00043629301587829367,
+      "paired_sd": 0.01103954668209264,
+      "ci95_paired": [
+        -0.02698967460900941,
+        0.027862260640765996
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": 0.0004362930158783307,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 5026,
+      "verdict": "small: the interval rules out a large effect"
+    },
+    {
+      "step": "v8->v9",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        -0.008,
+        0.004,
+        -0.0193
+      ],
+      "paired_mean": -0.00777991880019487,
+      "paired_sd": 0.011661034038322485,
+      "ci95_paired": [
+        -0.036749871210154,
+        0.02119003360976426
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": -0.007779918800194907,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 18,
+      "verdict": "small: the interval rules out a large effect"
+    },
+    {
+      "step": "v9->v10",
+      "n_seeds": 3,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "per_seed_differences": [
+        -0.0177,
+        -0.0011,
+        -0.0143
+      ],
+      "paired_mean": -0.01102843023623105,
+      "paired_sd": 0.008774183831519906,
+      "ci95_paired": [
+        -0.032826470375725496,
+        0.010769609903263396
+      ],
+      "t_crit": 4.303,
+      "unpaired_mean": -0.011028430236231124,
+      "exceeds_sigma_max": false,
+      "required_n_for_80pc_power": 5,
+      "verdict": "small: the interval rules out a large effect"
+    }
+  ],
+  "summary": {
+    "resolved": [
+      "v1->v2",
+      "v4->v5",
+      "v6->v7"
+    ],
+    "small": [
+      "v5->v6",
+      "v7->v8",
+      "v8->v9",
+      "v9->v10"
+    ],
+    "underpowered": [
+      "v2->v3",
+      "v3->v4"
+    ]
+  },
+  "method_note": "Paired on seed. Required n is the normal-approximation paired-t sample size for 80% power at alpha=0.05 two-sided, using the observed mean and SD as if they were true values. With three seeds both are badly estimated, so required n is a guide to which rungs are worth re-running and not a commitment.",
+  "interpretation_note": "resolved = the paired interval excludes zero; small = the interval lies entirely within +/- sigma_max, so a large effect is ruled out; underpowered = the interval still admits an effect larger than sigma_max. The manuscript's single 'inconclusive' label covers the last two, which are not the same claim."
+}

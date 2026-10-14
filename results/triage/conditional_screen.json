@@ -1,0 +1,105 @@
+{
+  "target": "field",
+  "protocol_version": 1,
+  "protocol_frozen": "2026-10-11",
+  "n_fields": 36,
+  "n_bad": 4,
+  "size_only_auroc": 0.2265625,
+  "strata": {
+    "0": {
+      "n": 12,
+      "n_bad": 2
+    },
+    "1": {
+      "n": 12,
+      "n_bad": 2
+    },
+    "2": {
+      "n": 12,
+      "n_bad": 0
+    }
+  },
+  "test_1_conditional_permutation": {
+    "low_confidence": {
+      "observed_auroc": 0.8046875,
+      "p_one_sided": 0.0301969803019698,
+      "null_mean": 0.53650078125,
+      "null_p95": 0.7734375,
+      "n_permutations": 10000,
+      "beats_size_conditioned_null": true
+    },
+    "seed_disagreement": {
+      "observed_auroc": 0.7421875,
+      "p_one_sided": 0.056894310568943104,
+      "null_mean": 0.4882328125,
+      "null_p95": 0.7421875,
+      "n_permutations": 10000,
+      "beats_size_conditioned_null": false
+    }
+  },
+  "test_2_out_of_sample": {
+    "fit_free": {
+      "size alone": {
+        "auroc": 0.2265625
+      },
+      "size alone (smaller first)": {
+        "auroc": 0.7734375
+      },
+      "screen alone": {
+        "auroc": 0.8046875,
+        "delta_vs_size_alone": 0.578125,
+        "ci": [
+          0.19117647058823536,
+          0.9117647058823529
+        ],
+        "improves": true,
+        "delta_vs_size_smaller_first": 0.03125,
+        "ci_vs_smaller_first": [
+          -0.2571428571428571,
+          0.4571428571428572
+        ],
+        "improves_vs_smaller_first": false,
+        "improves_vs_size_both_directions": false
+      },
+      "size + screen (rank average)": {
+        "auroc": 0.49609375,
+        "delta_vs_size_alone": 0.26953125,
+        "ci": [
+          -0.02857142857142858,
+          0.5
+        ],
+        "improves": false
+      }
+    },
+    "size only": {
+      "loo_auroc": 0.078125
+    },
+    "screen only": {
+      "loo_auroc": 0.703125
+    },
+    "size + screen": {
+      "loo_auroc": 0.75
+    },
+    "paired_delta_vs_size_only": {
+      "delta": 0.671875,
+      "ci": [
+        0.4117647058823529,
+        0.8857142857142857
+      ],
+      "improves": true
+    }
+  },
+  "loo_noise_null": {
+    "mean": 0.2853515625,
+    "median": 0.25,
+    "share_below_half": 0.7,
+    "n_draws": 40,
+    "note": "leave-one-out logistic regression at this sample size is systematically anti-correlated for an uninformative feature: removing a point weakens the association that point creates, so each held-out field is scored by a model biased against it. A LOO AUROC near 0.5 is therefore ABOVE this null, not at chance."
+  },
+  "verdict": "partial",
+  "verdict_components": {
+    "conditional_permutation": true,
+    "out_of_sample_gain": false
+  },
+  "power_note": "36 fields and 12 below threshold. One field is 2.8 percentage points of workload and 8.3 of recall. This can indicate whether the screen is a restatement of size. It cannot establish an operating threshold.\n"
+}

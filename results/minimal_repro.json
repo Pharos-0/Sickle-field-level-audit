@@ -1,0 +1,62 @@
+{
+  "blocks": [
+    {
+      "id": "D1",
+      "title": "Evaluation depends on batch size with frozen weights",
+      "as_published": "macro IoU 0.8011 for [S1]_unet3d",
+      "as_measured": "bs1: 0.4616  bs4: 0.5412  bs8: 0.6278  bs16: 0.7888  bs32: 0.7888  bs64: 0.7888   spread 0.3272 (32.7 IoU points)",
+      "why": "the weights are identical in every cell; only the number of samples per forward pass changes, so a published IoU on this benchmark is not defined without its evaluation batch size",
+      "source": "results/gate/gate_crop_type_[S1]_unet3d_bs1.json, results/gate/gate_crop_type_[S1]_unet3d_bs4.json, results/gate/gate_crop_type_[S1]_unet3d_bs8.json, results/gate/gate_crop_type_[S1]_unet3d_bs16.json, results/gate/gate_crop_type_[S1]_unet3d_bs32.json, results/gate/gate_crop_type_[S1]_unet3d_bs64.json",
+      "checkpoints": "[S1]_unet3d, checkpoint_best.pth.tar, one file, 6 evaluations",
+      "reproduced": true,
+      "units": "macro IoU"
+    },
+    {
+      "id": "D3",
+      "title": "Released baselines that never predict the positive class",
+      "as_published": "reported as crop-type baselines, with a macro IoU",
+      "as_measured": "[L8]_utae: macro IoU 0.3812 but paddy IoU 0.0000 and non-paddy recall 1.000; [S2]_utae: macro IoU 0.3812 but paddy IoU 0.0000 and non-paddy recall 1.000",
+      "why": "a model that labels every pixel non-paddy still earns a macro IoU near 0.38 from the negative class alone, so the headline metric does not reveal that the model has learned nothing about paddy",
+      "source": "results/plot_level/plotlevel_crop_type_*.json",
+      "checkpoints": "[L8]_utae, [S2]_utae",
+      "reproduced": true,
+      "units": "macro IoU"
+    },
+    {
+      "id": "D4",
+      "title": "The phenology column labelled MAPE is MAE / 183",
+      "as_published": "harvesting_date [L8]_convlstm: val_mape = 0.093895, which reads as 9.39 %",
+      "as_measured": "val_mae / 183 = 17.1828 / 183 = 0.093895; matches for 24 of 24 released phenology runs, worst disagreement 1.05e-08",
+      "why": "183 is a constant, not each field's true day, so the column is a rescaled MAE and not a percentage error. The dataset paper defines it this way; the released logs do not, which is where the misreading comes from. This is reported as a metric that invites misreading, not as a defect in the benchmark's definition",
+      "source": "results/regression_gate/{harvesting,transplanting}_date_*_bs32.json",
+      "checkpoints": "24 released phenology checkpoints",
+      "reproduced": true,
+      "units": "fraction"
+    },
+    {
+      "id": "Y",
+      "title": "Every released yield model has a higher MAE than a constant",
+      "as_published": "24 released yield checkpoints, reported with MAE, RMSE and MAPE, with no constant baseline in the benchmark",
+      "as_measured": "constant = training-split mean = 1841.9 kg/acre, MAE 435.9; best checkpoint [S2]_utae MAE 497.0; 24 of 24 checkpoints worse than the constant",
+      "why": "the comparison is on the same 41 validation field-seasons and the same ground truth the gate uses; the constant uses no imagery at all",
+      "source": "results/regression_gate/crop_yield_*_bs32.json and the released tabular index",
+      "checkpoints": "[S2]_utae, [S2]_utae_season, [S2,L8,S1]_utae_season, and 21 more",
+      "reproduced": true,
+      "units": "kg/acre"
+    }
+  ],
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.2",
+    "torch": "2.11.0+cu128",
+    "sklearn": "1.5.2",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "torch_cuda": "12.8",
+    "cuda_available": true
+  },
+  "n_reproduced": 4,
+  "n_blocks": 4,
+  "scope": "reads cached evaluation artefacts; does not re-execute any model"
+}

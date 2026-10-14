@@ -1,0 +1,38 @@
+{
+  "n_field_seasons": 41,
+  "n_plots": 14,
+  "features": [
+    "cv",
+    "iqr_rel",
+    "range_rel",
+    "pred_mean",
+    "pred_min",
+    "pred_max",
+    "skew",
+    "log_area"
+  ],
+  "lambda": 10.0,
+  "metric": "skill = 1 - MAE/MAE_intercept_only, same LOPO split",
+  "mae_pp": 35.566008472188706,
+  "mae_null_pp": 26.78934178736355,
+  "skill": -0.32761785468596627,
+  "skill_ci": {
+    "lo": -0.51686743450991,
+    "hi": -0.11454698713850607
+  },
+  "skill_ci_excludes_zero": true,
+  "spearman_pred_vs_actual": -0.6114982578397213,
+  "spearman_intercept_only_null": -0.8937282229965158,
+  "spearman_note": "rank correlation is artefact-dominated here: an intercept-only model scores -0.894 using no features at all",
+  "single_feature_skill": {
+    "cv": -0.056348071088329066,
+    "iqr_rel": -0.05766470756924624,
+    "range_rel": -0.038076077567901434,
+    "pred_mean": -0.18173517179185494,
+    "pred_min": -0.15150006365963575,
+    "pred_max": -0.1265555198774979,
+    "skew": -0.0027552420917573706,
+    "log_area": -0.004663597486795457
+  },
+  "verdict": "reliably worse than the fold mean"
+}

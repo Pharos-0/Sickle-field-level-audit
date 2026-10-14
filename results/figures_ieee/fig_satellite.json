@@ -1,0 +1,34 @@
+{
+  "rung": "v5",
+  "seed_shown": 0,
+  "seeds_for_selection": [
+    0,
+    1,
+    2
+  ],
+  "typical_fields_rule": "largest, then 75th/50th/25th percentile by labelled pixels (render_sickle_gallery)",
+  "typical_fields": [
+    211,
+    248,
+    383,
+    341
+  ],
+  "failing_fields_rule": "mean field IoU over completed seeds < 0.5 (as the manuscript)",
+  "failing_fields": {
+    "124": 0.0,
+    "20": 0.16666666666666666,
+    "143": 0.3333333333333333,
+    "219": 0.3703703703703704
+  },
+  "seed0_field_iou": {
+    "20": 0.5,
+    "124": 0.0,
+    "143": 0.0,
+    "211": 0.9802659802659802,
+    "219": 0.4074074074074074,
+    "248": 0.9941520467836257,
+    "341": 0.9736842105263158,
+    "383": 0.825
+  },
+  "chip_rule": "(a) the field's chip with the most labelled pixels; (b) the chip with the most wrong pixels at seed 0; both cropped to the field plus margin (14-32 px)"
+}

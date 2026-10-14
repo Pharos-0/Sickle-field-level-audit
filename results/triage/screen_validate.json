@@ -1,0 +1,638 @@
+{
+  "target": "field",
+  "n_fields": 36,
+  "n_bad": 4,
+  "bad_threshold": 0.5,
+  "rung": "v5",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "n_boot": 10000,
+  "permutation_null": {
+    "auroc_mean": 0.50296875,
+    "auroc_p2_5": 0.1953125,
+    "auroc_p97_5": 0.8046875,
+    "n_permutations": 10000,
+    "recall": {
+      "0.25": {
+        "mean": 0.25345,
+        "p97_5": 0.75
+      },
+      "0.33": {
+        "mean": 0.3369,
+        "p97_5": 0.75
+      },
+      "0.5": {
+        "mean": 0.501975,
+        "p97_5": 1.0
+      },
+      "0.75": {
+        "mean": 0.754825,
+        "p97_5": 1.0
+      }
+    }
+  },
+  "signals": {
+    "seed_disagreement": {
+      "auroc": 0.7421875,
+      "auroc_ci": [
+        0.23492647058823532,
+        1.0
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.3333333333333333,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.5,
+          "recall_excess_ci": [
+            -0.25,
+            0.75
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.25,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.4166666666666667,
+          "recall_excess_ci": [
+            -0.3333333333333333,
+            0.6666666666666667
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.16666666666666666,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.5,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.1111111111111111,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.0,
+          "recall_excess_ci": [
+            -0.4166666666666667,
+            0.25
+          ],
+          "beats_random": false
+        }
+      ],
+      "vs_baseline": {
+        "smallest_first": {
+          "delta_auroc": -0.03125,
+          "ci": [
+            -0.43434343434343436,
+            0.4
+          ],
+          "wins": false
+        },
+        "largest_first": {
+          "delta_auroc": 0.515625,
+          "ci": [
+            -0.09032258064516131,
+            0.9696969696969697
+          ],
+          "wins": false
+        },
+        "fewest_seasons": {
+          "delta_auroc": 0.01953125,
+          "ci": [
+            -0.7647058823529411,
+            0.603225806451613
+          ],
+          "wins": false
+        }
+      }
+    },
+    "low_confidence": {
+      "auroc": 0.8046875,
+      "auroc_ci": [
+        0.535483870967742,
+        1.0
+      ],
+      "informative": true,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 2,
+          "n_missed": 2,
+          "recall": 0.5,
+          "precision": 0.2222222222222222,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.25,
+            0.75
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.25,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.4166666666666667,
+          "recall_excess_ci": [
+            -0.3333333333333333,
+            0.6666666666666667
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.16666666666666666,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.16666666666666669,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 4,
+          "n_missed": 0,
+          "recall": 1.0,
+          "precision": 0.14814814814814814,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            0.25,
+            0.25
+          ],
+          "beats_random": true
+        }
+      ],
+      "vs_baseline": {
+        "smallest_first": {
+          "delta_auroc": 0.03125,
+          "ci": [
+            -0.2571428571428571,
+            0.4571428571428572
+          ],
+          "wins": false
+        },
+        "largest_first": {
+          "delta_auroc": 0.578125,
+          "ci": [
+            0.19117647058823536,
+            0.9117647058823529
+          ],
+          "wins": true
+        },
+        "fewest_seasons": {
+          "delta_auroc": 0.08203125,
+          "ci": [
+            -0.43403149138443253,
+            0.6714285714285715
+          ],
+          "wins": false
+        }
+      }
+    },
+    "smallest_first": {
+      "auroc": 0.7734375,
+      "auroc_ci": [
+        0.47058823529411764,
+        1.0
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 2,
+          "n_missed": 2,
+          "recall": 0.5,
+          "precision": 0.2222222222222222,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.25,
+            0.75
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 2,
+          "n_missed": 2,
+          "recall": 0.5,
+          "precision": 0.16666666666666666,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.16666666666666669,
+          "recall_excess_ci": [
+            -0.3333333333333333,
+            0.6666666666666667
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.16666666666666666,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.25,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 4,
+          "n_missed": 0,
+          "recall": 1.0,
+          "precision": 0.14814814814814814,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            0.25,
+            0.25
+          ],
+          "beats_random": true
+        }
+      ]
+    },
+    "largest_first": {
+      "auroc": 0.2265625,
+      "auroc_ci": [
+        0.0,
+        0.5294117647058824
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 0,
+          "n_missed": 4,
+          "recall": 0.0,
+          "precision": 0.0,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": -0.25,
+          "recall_excess_ci": [
+            -0.25,
+            -0.25
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 0,
+          "n_missed": 4,
+          "recall": 0.0,
+          "precision": 0.0,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": -0.3333333333333333,
+          "recall_excess_ci": [
+            -0.3333333333333333,
+            0.0
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 1,
+          "n_missed": 3,
+          "recall": 0.25,
+          "precision": 0.05555555555555555,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": -0.25,
+          "recall_excess_ci": [
+            -0.5,
+            0.25
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 2,
+          "n_missed": 2,
+          "recall": 0.5,
+          "precision": 0.07407407407407407,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": -0.25,
+          "recall_excess_ci": [
+            -0.75,
+            0.25
+          ],
+          "beats_random": false
+        }
+      ]
+    },
+    "fewest_seasons": {
+      "auroc": 0.72265625,
+      "auroc_ci": [
+        0.3239430147058824,
+        1.0
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 2,
+          "n_missed": 2,
+          "recall": 0.5,
+          "precision": 0.2222222222222222,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.25,
+            0.75
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.25,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.4166666666666667,
+          "recall_excess_ci": [
+            -0.3333333333333333,
+            0.6666666666666667
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 3,
+          "n_missed": 1,
+          "recall": 0.75,
+          "precision": 0.16666666666666666,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.5,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 4,
+          "n_missed": 0,
+          "recall": 1.0,
+          "precision": 0.14814814814814814,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            -0.35,
+            0.25
+          ],
+          "beats_random": false
+        }
+      ]
+    }
+  },
+  "geographic_holdout": {
+    "seed_disagreement": {
+      "per_region": [
+        {
+          "region": "Coastal Cauvery",
+          "n_fields": 3,
+          "n_bad": 1,
+          "n_flagged": 3,
+          "threshold": 0.0387596899,
+          "n_fields_setting_threshold": 33
+        },
+        {
+          "region": "Coastal Vennar",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.09761904760000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Lower Cauvery",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 1,
+          "threshold": 0.08668154759999999,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Middle Vennar",
+          "n_fields": 7,
+          "n_bad": 2,
+          "n_flagged": 4,
+          "threshold": 0.078125,
+          "n_fields_setting_threshold": 29
+        },
+        {
+          "region": "Upper Cauvery",
+          "n_fields": 8,
+          "n_bad": 1,
+          "n_flagged": 6,
+          "threshold": 0.0360465116,
+          "n_fields_setting_threshold": 28
+        },
+        {
+          "region": "nan",
+          "n_fields": 14,
+          "n_bad": 0,
+          "n_flagged": 4,
+          "threshold": 0.11238331925,
+          "n_fields_setting_threshold": 22
+        }
+      ],
+      "pooled": {
+        "n_fields": 36,
+        "n_bad": 4,
+        "n_flagged": 18,
+        "workload_realised": 0.5,
+        "n_caught": 3,
+        "recall": 0.75,
+        "precision": 0.16666666666666666,
+        "recall_ci": [
+          0.0,
+          1.0
+        ],
+        "random_expected_recall": 0.5,
+        "beats_random": false
+      },
+      "note": "no field contributes to the threshold that judges it. Regions are small, so only the pooled line is interpretable; per-region recalls on 2-8 fields are not."
+    },
+    "low_confidence": {
+      "per_region": [
+        {
+          "region": "Coastal Cauvery",
+          "n_fields": 3,
+          "n_bad": 1,
+          "n_flagged": 3,
+          "threshold": 0.0909474194,
+          "n_fields_setting_threshold": 33
+        },
+        {
+          "region": "Coastal Vennar",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.10579283910000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Lower Cauvery",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.10579283910000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Middle Vennar",
+          "n_fields": 7,
+          "n_bad": 2,
+          "n_flagged": 4,
+          "threshold": 0.0998216569,
+          "n_fields_setting_threshold": 29
+        },
+        {
+          "region": "Upper Cauvery",
+          "n_fields": 8,
+          "n_bad": 1,
+          "n_flagged": 4,
+          "threshold": 0.1005322486,
+          "n_fields_setting_threshold": 28
+        },
+        {
+          "region": "nan",
+          "n_fields": 14,
+          "n_bad": 0,
+          "n_flagged": 7,
+          "threshold": 0.10064512865,
+          "n_fields_setting_threshold": 22
+        }
+      ],
+      "pooled": {
+        "n_fields": 36,
+        "n_bad": 4,
+        "n_flagged": 18,
+        "workload_realised": 0.5,
+        "n_caught": 3,
+        "recall": 0.75,
+        "precision": 0.16666666666666666,
+        "recall_ci": [
+          0.0,
+          1.0
+        ],
+        "random_expected_recall": 0.5,
+        "beats_random": false
+      },
+      "note": "no field contributes to the threshold that judges it. Regions are small, so only the pooled line is interpretable; per-region recalls on 2-8 fields are not."
+    }
+  },
+  "verdict": {
+    "seed_disagreement": {
+      "auroc_interval_excludes_chance": false,
+      "above_permutation_p97_5": false,
+      "recall_beats_random_at_some_workload": false,
+      "beats_every_label_free_baseline": false,
+      "per_baseline": {
+        "smallest_first": false,
+        "largest_first": false,
+        "fewest_seasons": false
+      },
+      "held_out_by_region_beats_random": false,
+      "verdict": "not demonstrated",
+      "claim_supported": "not shown to rank bad fields better than chance"
+    },
+    "low_confidence": {
+      "auroc_interval_excludes_chance": true,
+      "above_permutation_p97_5": false,
+      "recall_beats_random_at_some_workload": true,
+      "beats_every_label_free_baseline": false,
+      "per_baseline": {
+        "smallest_first": false,
+        "largest_first": true,
+        "fewest_seasons": false
+      },
+      "held_out_by_region_beats_random": false,
+      "verdict": "not demonstrated",
+      "claim_supported": "ranks bad fields better than chance on the bootstrap interval, though not above the permutation null's 97.5th percentile, and better than random referral at a 75% workload; NOT separable at this sample size from the weaker label-free baselines smallest_first, fewest_seasons, whose own AUROC intervals also include chance -- the comparison is inconclusive for want of fields, not because those baselines were shown to be as good"
+    }
+  },
+  "decision_rule": "demonstrated requires all three of: the AUROC bootstrap interval excludes 0.5; the paired recall excess over random excludes 0 at some workload; and the paired AUROC difference against EVERY label-free baseline excludes 0. The region holdout is reported but secondary, because regions hold 2 to 8 fields.",
+  "scope_note": "CROP-TYPE screening only. The yield screen is a different experiment with a different target, reported separately in results/triage/yield_screen.json. The two must not be combined into one reliability claim.",
+  "cost_note": "seed_disagreement requires several independently seeded models of the same configuration and cannot be computed by a deployment that trains once. low_confidence requires one model.",
+  "power_note": "36 fields, 4 bad. One field is 2.8% of workload and 25.0% of recall. Intervals are wide and this cannot establish an operating threshold."
+}

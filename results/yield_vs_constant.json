@@ -1,0 +1,729 @@
+{
+  "constant": 1841.8675886524825,
+  "constant_source": "mean YIELD of SPLIT == train rows, YIELD > 0",
+  "constant_mae": 435.89635446271,
+  "n_checkpoints": 24,
+  "n_field_seasons": 41,
+  "n_plots": 14,
+  "field_seasons_per_plot": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "method": {
+    "statistic": "MAE(checkpoint) - MAE(constant) on the same field-seasons; positive = checkpoint worse",
+    "resampling": "cluster bootstrap over plots; all field-seasons of a drawn plot kept together; same draws for every checkpoint",
+    "interval": "percentile 95 %",
+    "B": 10000,
+    "seed": 0,
+    "monte_carlo_check": "recomputed at seed 1",
+    "max_bound_change_seed0_vs_seed1": 7.6592728267594055,
+    "caveat": "with 14 clusters a percentile bootstrap tends to be too narrow; an interval including zero is the conservative reading"
+  },
+  "n_worse_point_estimate": 24,
+  "n_ci_above_zero": 0,
+  "n_ci_below_zero": 0,
+  "per_checkpoint": [
+    {
+      "run": "[S2]_utae",
+      "mae": 497.04630781964556,
+      "mae_minus_constant": 61.14995335693562,
+      "ci95": [
+        -239.9024319479789,
+        404.7706733720574
+      ],
+      "ci95_seed1": [
+        -241.54548954532194,
+        408.0801481906958
+      ],
+      "share_of_draws_worse": 0.6358,
+      "field_seasons_where_worse": 20,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2]_utae_season",
+      "mae": 514.4634607826791,
+      "mae_minus_constant": 78.56710631996916,
+      "ci95": [
+        -208.68842512997088,
+        403.970517680281
+      ],
+      "ci95_seed1": [
+        -206.03408231289905,
+        405.9666850300334
+      ],
+      "share_of_draws_worse": 0.6884,
+      "field_seasons_where_worse": 20,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_utae_season",
+      "mae": 520.893858374619,
+      "mae_minus_constant": 84.99750391190894,
+      "ci95": [
+        -229.82878126631476,
+        443.44639712596785
+      ],
+      "ci95_seed1": [
+        -224.97968233463314,
+        441.1449906461241
+      ],
+      "share_of_draws_worse": 0.6815,
+      "field_seasons_where_worse": 20,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_unet3d_season",
+      "mae": 532.5470618271246,
+      "mae_minus_constant": 96.65070736441466,
+      "ci95": [
+        -202.6797735854269,
+        465.4181181392973
+      ],
+      "ci95_seed1": [
+        -200.83810515196043,
+        463.4743911099292
+      ],
+      "share_of_draws_worse": 0.7028,
+      "field_seasons_where_worse": 19,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2]_unet3d",
+      "mae": 551.7046612995426,
+      "mae_minus_constant": 115.80830683683273,
+      "ci95": [
+        -171.56422019305364,
+        431.8273979159417
+      ],
+      "ci95_seed1": [
+        -163.90494736629424,
+        430.9314313794494
+      ],
+      "share_of_draws_worse": 0.7703,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2]_convlstm_season",
+      "mae": 555.8553221167588,
+      "mae_minus_constant": 119.9589676540488,
+      "ci95": [
+        -183.45829939336932,
+        445.6242785910495
+      ],
+      "ci95_seed1": [
+        -180.51931040001242,
+        445.30018015255814
+      ],
+      "share_of_draws_worse": 0.7677,
+      "field_seasons_where_worse": 22,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2]_convlstm",
+      "mae": 557.7351267744855,
+      "mae_minus_constant": 121.83877231177556,
+      "ci95": [
+        -203.28562077769524,
+        482.57773569410864
+      ],
+      "ci95_seed1": [
+        -204.79620835327705,
+        478.33664812836986
+      ],
+      "share_of_draws_worse": 0.7547,
+      "field_seasons_where_worse": 20,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_utae",
+      "mae": 558.0806773115949,
+      "mae_minus_constant": 122.18432284888493,
+      "ci95": [
+        -120.10334504403397,
+        415.70779377946354
+      ],
+      "ci95_seed1": [
+        -119.69849864264808,
+        409.38572519286413
+      ],
+      "share_of_draws_worse": 0.8123,
+      "field_seasons_where_worse": 22,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_utae",
+      "mae": 561.5143975978945,
+      "mae_minus_constant": 125.61804313518448,
+      "ci95": [
+        -173.05783728245308,
+        462.0318979477459
+      ],
+      "ci95_seed1": [
+        -170.4042077356024,
+        460.4245808333031
+      ],
+      "share_of_draws_worse": 0.7834,
+      "field_seasons_where_worse": 19,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2]_unet3d_season",
+      "mae": 564.494873046875,
+      "mae_minus_constant": 128.59851858416505,
+      "ci95": [
+        -157.46160716472932,
+        425.73684378705593
+      ],
+      "ci95_seed1": [
+        -156.91152414266207,
+        427.66326543856303
+      ],
+      "share_of_draws_worse": 0.8031,
+      "field_seasons_where_worse": 25,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_utae",
+      "mae": 572.0953830625953,
+      "mae_minus_constant": 136.1990285998853,
+      "ci95": [
+        -111.38508228547225,
+        403.61477703876943
+      ],
+      "ci95_seed1": [
+        -106.65076822787891,
+        403.8281357707666
+      ],
+      "share_of_draws_worse": 0.854,
+      "field_seasons_where_worse": 23,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_convlstm",
+      "mae": 573.8360000238185,
+      "mae_minus_constant": 137.93964556110865,
+      "ci95": [
+        -172.71183743591868,
+        490.4941028586798
+      ],
+      "ci95_seed1": [
+        -170.69252966474107,
+        487.96285903788237
+      ],
+      "share_of_draws_worse": 0.7906,
+      "field_seasons_where_worse": 19,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_utae_season",
+      "mae": 574.4882202148438,
+      "mae_minus_constant": 138.5918657521338,
+      "ci95": [
+        -185.83302880313298,
+        468.5359056204811
+      ],
+      "ci95_seed1": [
+        -180.9398012276826,
+        468.08327181246176
+      ],
+      "share_of_draws_worse": 0.7981,
+      "field_seasons_where_worse": 22,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_unet3d",
+      "mae": 575.0126275783632,
+      "mae_minus_constant": 139.11627311565323,
+      "ci95": [
+        -160.28181698876273,
+        474.954985796959
+      ],
+      "ci95_seed1": [
+        -153.045714527184,
+        469.8081707955967
+      ],
+      "share_of_draws_worse": 0.8008,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_unet3d_season",
+      "mae": 579.8174445919874,
+      "mae_minus_constant": 143.92109012927747,
+      "ci95": [
+        -230.0261504370044,
+        541.8442858404694
+      ],
+      "ci95_seed1": [
+        -224.80077129640202,
+        540.482705086874
+      ],
+      "share_of_draws_worse": 0.7729,
+      "field_seasons_where_worse": 24,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_unet3d",
+      "mae": 581.4436824147294,
+      "mae_minus_constant": 145.54732795201946,
+      "ci95": [
+        -199.4221240926354,
+        499.2194219046867
+      ],
+      "ci95_seed1": [
+        -194.72671306593304,
+        501.1449803294645
+      ],
+      "share_of_draws_worse": 0.7993,
+      "field_seasons_where_worse": 26,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_convlstm_season",
+      "mae": 585.3701097441883,
+      "mae_minus_constant": 149.4737552814783,
+      "ci95": [
+        -183.14395768779275,
+        501.3550544336719
+      ],
+      "ci95_seed1": [
+        -178.86990926957088,
+        500.386831747042
+      ],
+      "share_of_draws_worse": 0.8073,
+      "field_seasons_where_worse": 23,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S2,L8,S1]_convlstm_season",
+      "mae": 586.3958636028011,
+      "mae_minus_constant": 150.4995091400911,
+      "ci95": [
+        -183.6089239243916,
+        518.6088433263021
+      ],
+      "ci95_seed1": [
+        -179.73623972247756,
+        513.9888931251871
+      ],
+      "share_of_draws_worse": 0.801,
+      "field_seasons_where_worse": 25,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[L8]_convlstm",
+      "mae": 590.8804284072504,
+      "mae_minus_constant": 154.98407394454043,
+      "ci95": [
+        -170.44414945836513,
+        525.8154704739724
+      ],
+      "ci95_seed1": [
+        -169.99038780489988,
+        526.7843723425356
+      ],
+      "share_of_draws_worse": 0.8121,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_convlstm",
+      "mae": 596.5824629620807,
+      "mae_minus_constant": 160.68610849937082,
+      "ci95": [
+        -195.07120305011654,
+        560.1563548522007
+      ],
+      "ci95_seed1": [
+        -192.73286833964428,
+        557.5317324674741
+      ],
+      "share_of_draws_worse": 0.8022,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_utae_season",
+      "mae": 601.6246069931402,
+      "mae_minus_constant": 165.72825253043027,
+      "ci95": [
+        -73.23469626213941,
+        434.3932279204461
+      ],
+      "ci95_seed1": [
+        -71.25902755179608,
+        431.71271428719916
+      ],
+      "share_of_draws_worse": 0.9062,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_unet3d",
+      "mae": 604.8795977336605,
+      "mae_minus_constant": 168.98324327095048,
+      "ci95": [
+        -140.00660135270712,
+        520.9561138687919
+      ],
+      "ci95_seed1": [
+        -137.6251996564552,
+        521.9263979964435
+      ],
+      "share_of_draws_worse": 0.8462,
+      "field_seasons_where_worse": 22,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_unet3d_season",
+      "mae": 608.4530684308307,
+      "mae_minus_constant": 172.55671396812082,
+      "ci95": [
+        -140.10531915643486,
+        526.891865003269
+      ],
+      "ci95_seed1": [
+        -141.30130573178113,
+        529.6725712534583
+      ],
+      "share_of_draws_worse": 0.8476,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    },
+    {
+      "run": "[S1]_convlstm_season",
+      "mae": 615.6093094988568,
+      "mae_minus_constant": 179.71295503614675,
+      "ci95": [
+        -148.4049592512125,
+        540.0591784364954
+      ],
+      "ci95_seed1": [
+        -148.12898567037965,
+        542.0497326534942
+      ],
+      "share_of_draws_worse": 0.8511,
+      "field_seasons_where_worse": 21,
+      "ci_above_zero": false,
+      "ci_below_zero": false
+    }
+  ],
+  "best": {
+    "run": "[S2]_utae",
+    "mae": 497.04630781964556,
+    "mae_minus_constant": 61.14995335693562,
+    "ci95": [
+      -239.9024319479789,
+      404.7706733720574
+    ],
+    "ci95_seed1": [
+      -241.54548954532194,
+      408.0801481906958
+    ],
+    "share_of_draws_worse": 0.6358,
+    "field_seasons_where_worse": 20,
+    "ci_above_zero": false,
+    "ci_below_zero": false,
+    "pearson_r": 0.5592905431399169,
+    "pearson_r_ci95": [
+      0.13468554324750653,
+      0.866541841461911
+    ],
+    "decomposition": {
+      "pearson_r_overall": 0.5592905431399169,
+      "between_plots": {
+        "r": 0.6241670580662373,
+        "ci95": [
+          0.12817164397550654,
+          0.925203915756389
+        ],
+        "n": 14,
+        "p_naive": 0.01704247107621734,
+        "method": "Pearson r over plot means (equal weight per field-season within a plot); n = plots"
+      },
+      "within_plots": {
+        "r": -0.0555011533533791,
+        "ci95": [
+          -0.19757123306718435,
+          0.08280505532116182
+        ],
+        "n": 41,
+        "method": "Pearson r over field-seasons after subtracting each plot's own mean from prediction and reference"
+      },
+      "within_plot_sd_pred": 99.04711284364826,
+      "within_plot_sd_ref": 234.56584142568246,
+      "spearman_overall": {
+        "rho": 0.4973629708058551,
+        "ci95": [
+          0.05930750167420189,
+          0.7685523347929915
+        ]
+      },
+      "leave_one_plot_out_r": [
+        0.39701018926980575,
+        0.7516623391916277
+      ],
+      "bootstrap": "plot-clustered, B = 10,000, seed 0 (separate stream from the MAE-gap draws)",
+      "reading": "between-plot association with no evidence of within-plot season tracking; absence of evidence, not of skill"
+    }
+  },
+  "second_methods": {
+    "method": "t-interval on plot means of the paired difference; sign-flip test over plots, 20,000 draws, seed 0; no multiple-comparison correction (one could only reduce the counts below)",
+    "n_t_ci_above_zero": 0,
+    "n_sign_flip_p_below_0_05": 0,
+    "per_checkpoint": [
+      {
+        "run": "[L8]_convlstm",
+        "plot_weighted_gap": 171.2767886519504,
+        "t_ci95": [
+          -272.6260732499561,
+          615.1796505538568
+        ],
+        "sign_flip_p": 0.4315
+      },
+      {
+        "run": "[L8]_convlstm_season",
+        "plot_weighted_gap": 178.66891918580453,
+        "t_ci95": [
+          -258.45894794396486,
+          615.796786315574
+        ],
+        "sign_flip_p": 0.39545
+      },
+      {
+        "run": "[L8]_unet3d",
+        "plot_weighted_gap": 157.2726462540244,
+        "t_ci95": [
+          -305.5370643496925,
+          620.0823568577414
+        ],
+        "sign_flip_p": 0.4857
+      },
+      {
+        "run": "[L8]_unet3d_season",
+        "plot_weighted_gap": 151.86672395468477,
+        "t_ci95": [
+          -356.8272604334635,
+          660.5607083428331
+        ],
+        "sign_flip_p": 0.54255
+      },
+      {
+        "run": "[L8]_utae",
+        "plot_weighted_gap": 151.6821796184566,
+        "t_ci95": [
+          -253.54121331841196,
+          556.9055725553251
+        ],
+        "sign_flip_p": 0.44005
+      },
+      {
+        "run": "[L8]_utae_season",
+        "plot_weighted_gap": 131.72280850581478,
+        "t_ci95": [
+          -295.72005283191766,
+          559.1656698435472
+        ],
+        "sign_flip_p": 0.52575
+      },
+      {
+        "run": "[S1]_convlstm",
+        "plot_weighted_gap": 163.66497987509493,
+        "t_ci95": [
+          -320.17713846285653,
+          647.5070982130463
+        ],
+        "sign_flip_p": 0.49245
+      },
+      {
+        "run": "[S1]_convlstm_season",
+        "plot_weighted_gap": 211.8866826324308,
+        "t_ci95": [
+          -218.21527224889684,
+          641.9886375137585
+        ],
+        "sign_flip_p": 0.3068
+      },
+      {
+        "run": "[S1]_unet3d",
+        "plot_weighted_gap": 191.53718479191272,
+        "t_ci95": [
+          -228.65548738820482,
+          611.7298569720302
+        ],
+        "sign_flip_p": 0.35075
+      },
+      {
+        "run": "[S1]_unet3d_season",
+        "plot_weighted_gap": 204.84974292063293,
+        "t_ci95": [
+          -217.53174774500764,
+          627.2312335862734
+        ],
+        "sign_flip_p": 0.3164
+      },
+      {
+        "run": "[S1]_utae",
+        "plot_weighted_gap": 138.16572065297348,
+        "t_ci95": [
+          -211.3168265481925,
+          487.6482678541395
+        ],
+        "sign_flip_p": 0.4122
+      },
+      {
+        "run": "[S1]_utae_season",
+        "plot_weighted_gap": 188.54694660221546,
+        "t_ci95": [
+          -133.4037508182756,
+          510.4976440227065
+        ],
+        "sign_flip_p": 0.2393
+      },
+      {
+        "run": "[S2,L8,S1]_convlstm",
+        "plot_weighted_gap": 147.3201072641853,
+        "t_ci95": [
+          -249.74388689226254,
+          544.3841014206332
+        ],
+        "sign_flip_p": 0.4351
+      },
+      {
+        "run": "[S2,L8,S1]_convlstm_season",
+        "plot_weighted_gap": 163.95827251105803,
+        "t_ci95": [
+          -274.8453220416395,
+          602.7618670637556
+        ],
+        "sign_flip_p": 0.43525
+      },
+      {
+        "run": "[S2,L8,S1]_unet3d",
+        "plot_weighted_gap": 135.12624325923275,
+        "t_ci95": [
+          -262.20942648241856,
+          532.4619130008841
+        ],
+        "sign_flip_p": 0.47865
+      },
+      {
+        "run": "[S2,L8,S1]_unet3d_season",
+        "plot_weighted_gap": 105.22593728418163,
+        "t_ci95": [
+          -309.8679114004405,
+          520.3197859688038
+        ],
+        "sign_flip_p": 0.61865
+      },
+      {
+        "run": "[S2,L8,S1]_utae",
+        "plot_weighted_gap": 146.2843381194913,
+        "t_ci95": [
+          -182.2700452092062,
+          474.83872144818883
+        ],
+        "sign_flip_p": 0.35415
+      },
+      {
+        "run": "[S2,L8,S1]_utae_season",
+        "plot_weighted_gap": 91.33417514109192,
+        "t_ci95": [
+          -329.1681356267777,
+          511.83648590896155
+        ],
+        "sign_flip_p": 0.6514
+      },
+      {
+        "run": "[S2]_convlstm",
+        "plot_weighted_gap": 129.32713139341712,
+        "t_ci95": [
+          -302.7537915649271,
+          561.4080543517614
+        ],
+        "sign_flip_p": 0.53225
+      },
+      {
+        "run": "[S2]_convlstm_season",
+        "plot_weighted_gap": 123.83974732388349,
+        "t_ci95": [
+          -261.83485177784064,
+          509.51434642560764
+        ],
+        "sign_flip_p": 0.50415
+      },
+      {
+        "run": "[S2]_unet3d",
+        "plot_weighted_gap": 124.94292707387191,
+        "t_ci95": [
+          -246.6386192811788,
+          496.52447342892265
+        ],
+        "sign_flip_p": 0.48175
+      },
+      {
+        "run": "[S2]_unet3d_season",
+        "plot_weighted_gap": 126.40454231841942,
+        "t_ci95": [
+          -266.91387419996676,
+          519.7229588368056
+        ],
+        "sign_flip_p": 0.50195
+      },
+      {
+        "run": "[S2]_utae",
+        "plot_weighted_gap": 64.87353119112916,
+        "t_ci95": [
+          -359.4061878947066,
+          489.15325027696485
+        ],
+        "sign_flip_p": 0.7602
+      },
+      {
+        "run": "[S2]_utae_season",
+        "plot_weighted_gap": 100.87705796957734,
+        "t_ci95": [
+          -293.2870399761654,
+          495.04115591532
+        ],
+        "sign_flip_p": 0.59515
+      }
+    ]
+  }
+}

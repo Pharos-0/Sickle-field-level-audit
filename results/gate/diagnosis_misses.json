@@ -1,0 +1,57 @@
+{
+  "tolerance": 0.01,
+  "batch_sizes": [
+    1,
+    4,
+    8,
+    16,
+    64
+  ],
+  "cells": [
+    {
+      "run": "[S1]_unet3d",
+      "released": 0.8011020421981812,
+      "scores_by_batch_size": {
+        "32": 0.7888201475143433,
+        "1": 0.46160978078842163,
+        "4": 0.5411988496780396,
+        "8": 0.6278286576271057,
+        "16": 0.7888201475143433,
+        "64": 0.7888201475143433
+      },
+      "best_batch_size": 32,
+      "best_abs_delta": 0.01228189468383789,
+      "spread": 0.32721036672592163,
+      "verdict": "batch size moves the score but does NOT close the gap"
+    },
+    {
+      "run": "[S2]_convlstm",
+      "released": 0.45348450541496277,
+      "scores_by_batch_size": {
+        "32": 0.41899996995925903,
+        "1": 0.3492485582828522,
+        "8": 0.5136939287185669,
+        "16": 0.5275067090988159,
+        "64": 0.39502328634262085
+      },
+      "best_batch_size": 32,
+      "best_abs_delta": 0.034484535455703735,
+      "spread": 0.17825815081596375,
+      "verdict": "batch size moves the score but does NOT close the gap"
+    },
+    {
+      "run": "[S2]_unet3d",
+      "released": 0.7172985076904297,
+      "scores_by_batch_size": {
+        "32": 0.7058932185173035,
+        "8": 0.7086094617843628,
+        "16": 0.7191900610923767,
+        "64": 0.7082134485244751
+      },
+      "best_batch_size": 16,
+      "best_abs_delta": 0.0018915534019470215,
+      "spread": 0.013296842575073242,
+      "verdict": "batch composition explains this cell"
+    }
+  ]
+}

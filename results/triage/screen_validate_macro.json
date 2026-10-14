@@ -1,0 +1,638 @@
+{
+  "target": "macro",
+  "n_fields": 36,
+  "n_bad": 12,
+  "bad_threshold": 0.5,
+  "rung": "v5",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "n_boot": 10000,
+  "permutation_null": {
+    "auroc_mean": 0.501715625,
+    "auroc_p2_5": 0.3020833333333333,
+    "auroc_p97_5": 0.7013888888888888,
+    "n_permutations": 10000,
+    "recall": {
+      "0.25": {
+        "mean": 0.251575,
+        "p97_5": 0.4166666666666667
+      },
+      "0.33": {
+        "mean": 0.3347833333333333,
+        "p97_5": 0.5833333333333334
+      },
+      "0.5": {
+        "mean": 0.50105,
+        "p97_5": 0.75
+      },
+      "0.75": {
+        "mean": 0.7518916666666666,
+        "p97_5": 0.9166666666666666
+      }
+    }
+  },
+  "signals": {
+    "seed_disagreement": {
+      "auroc": 0.8055555555555556,
+      "auroc_ci": [
+        0.6387959866220736,
+        0.9458182813355226
+      ],
+      "informative": true,
+      "above_permutation_p97_5": true,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 5,
+          "n_missed": 7,
+          "recall": 0.4166666666666667,
+          "precision": 0.5555555555555556,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.16666666666666669,
+          "recall_excess_ci": [
+            0.0,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 7,
+          "n_missed": 5,
+          "recall": 0.5833333333333334,
+          "precision": 0.5833333333333334,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.25000000000000006,
+          "recall_excess_ci": [
+            0.03030303030303033,
+            0.5833333333333333
+          ],
+          "beats_random": true
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 11,
+          "n_missed": 1,
+          "recall": 0.9166666666666666,
+          "precision": 0.6111111111111112,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.41666666666666663,
+          "recall_excess_ci": [
+            0.16666666666666663,
+            0.5
+          ],
+          "beats_random": true
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 11,
+          "n_missed": 1,
+          "recall": 0.9166666666666666,
+          "precision": 0.4074074074074074,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.16666666666666663,
+          "recall_excess_ci": [
+            0.02777777777777779,
+            0.25
+          ],
+          "beats_random": true
+        }
+      ],
+      "vs_baseline": {
+        "smallest_first": {
+          "delta_auroc": 0.34375,
+          "ci": [
+            0.09816233766233776,
+            0.5843810096153846
+          ],
+          "wins": true
+        },
+        "largest_first": {
+          "delta_auroc": 0.26736111111111116,
+          "ci": [
+            -0.014785121175675986,
+            0.5500086805555555
+          ],
+          "wins": false
+        },
+        "fewest_seasons": {
+          "delta_auroc": 0.25520833333333337,
+          "ci": [
+            -0.04384115884115878,
+            0.5341066919191918
+          ],
+          "wins": false
+        }
+      }
+    },
+    "low_confidence": {
+      "auroc": 0.8229166666666666,
+      "auroc_ci": [
+        0.6748966125402908,
+        0.9442724458204335
+      ],
+      "informative": true,
+      "above_permutation_p97_5": true,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 5,
+          "n_missed": 7,
+          "recall": 0.4166666666666667,
+          "precision": 0.5555555555555556,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.16666666666666669,
+          "recall_excess_ci": [
+            0.0,
+            0.5
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 8,
+          "n_missed": 4,
+          "recall": 0.6666666666666666,
+          "precision": 0.6666666666666666,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.3333333333333333,
+          "recall_excess_ci": [
+            0.05128205128205132,
+            0.5666666666666667
+          ],
+          "beats_random": true
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 10,
+          "n_missed": 2,
+          "recall": 0.8333333333333334,
+          "precision": 0.5555555555555556,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.33333333333333337,
+          "recall_excess_ci": [
+            0.125,
+            0.5
+          ],
+          "beats_random": true
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 12,
+          "n_missed": 0,
+          "recall": 1.0,
+          "precision": 0.4444444444444444,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.25,
+          "recall_excess_ci": [
+            0.15909090909090906,
+            0.25
+          ],
+          "beats_random": true
+        }
+      ],
+      "vs_baseline": {
+        "smallest_first": {
+          "delta_auroc": 0.36111111111111105,
+          "ci": [
+            0.149349522005772,
+            0.5714285714285714
+          ],
+          "wins": true
+        },
+        "largest_first": {
+          "delta_auroc": 0.2847222222222222,
+          "ci": [
+            0.0,
+            0.5672727272727273
+          ],
+          "wins": false
+        },
+        "fewest_seasons": {
+          "delta_auroc": 0.2725694444444444,
+          "ci": [
+            0.02673128858024697,
+            0.516131650607457
+          ],
+          "wins": true
+        }
+      }
+    },
+    "smallest_first": {
+      "auroc": 0.4618055555555556,
+      "auroc_ci": [
+        0.2534665854978355,
+        0.676923076923077
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 2,
+          "n_missed": 10,
+          "recall": 0.16666666666666666,
+          "precision": 0.2222222222222222,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": -0.08333333333333334,
+          "recall_excess_ci": [
+            -0.25,
+            0.19444444444444442
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 4,
+          "n_missed": 8,
+          "recall": 0.3333333333333333,
+          "precision": 0.3333333333333333,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.0,
+          "recall_excess_ci": [
+            -0.25,
+            0.22222222222222227
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 5,
+          "n_missed": 7,
+          "recall": 0.4166666666666667,
+          "precision": 0.2777777777777778,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": -0.08333333333333331,
+          "recall_excess_ci": [
+            -0.3,
+            0.19999999999999996
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 8,
+          "n_missed": 4,
+          "recall": 0.6666666666666666,
+          "precision": 0.2962962962962963,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": -0.08333333333333337,
+          "recall_excess_ci": [
+            -0.25,
+            0.15909090909090906
+          ],
+          "beats_random": false
+        }
+      ]
+    },
+    "largest_first": {
+      "auroc": 0.5381944444444444,
+      "auroc_ci": [
+        0.3230769230769231,
+        0.7465334145021645
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 4,
+          "n_missed": 8,
+          "recall": 0.3333333333333333,
+          "precision": 0.4444444444444444,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.08333333333333331,
+          "recall_excess_ci": [
+            -0.1590909090909091,
+            0.25
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 5,
+          "n_missed": 7,
+          "recall": 0.4166666666666667,
+          "precision": 0.4166666666666667,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.08333333333333337,
+          "recall_excess_ci": [
+            -0.17948717948717946,
+            0.2916666666666667
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 7,
+          "n_missed": 5,
+          "recall": 0.5833333333333334,
+          "precision": 0.3888888888888889,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.08333333333333337,
+          "recall_excess_ci": [
+            -0.2,
+            0.30000000000000004
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 10,
+          "n_missed": 2,
+          "recall": 0.8333333333333334,
+          "precision": 0.37037037037037035,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.08333333333333337,
+          "recall_excess_ci": [
+            -0.19444444444444442,
+            0.25
+          ],
+          "beats_random": false
+        }
+      ]
+    },
+    "fewest_seasons": {
+      "auroc": 0.5503472222222222,
+      "auroc_ci": [
+        0.31733671707549416,
+        0.7759197324414716
+      ],
+      "informative": false,
+      "above_permutation_p97_5": false,
+      "workloads": [
+        {
+          "n_referred": 9,
+          "workload_realised": 0.25,
+          "n_caught": 5,
+          "n_missed": 7,
+          "recall": 0.4166666666666667,
+          "precision": 0.5555555555555556,
+          "target_workload": 0.25,
+          "random_expected_recall": 0.25,
+          "recall_excess": 0.16666666666666669,
+          "recall_excess_ci": [
+            -0.08333333333333334,
+            0.38636363636363635
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 12,
+          "workload_realised": 0.3333333333333333,
+          "n_caught": 6,
+          "n_missed": 6,
+          "recall": 0.5,
+          "precision": 0.5,
+          "target_workload": 0.33,
+          "random_expected_recall": 0.3333333333333333,
+          "recall_excess": 0.16666666666666669,
+          "recall_excess_ci": [
+            -0.1333333333333333,
+            0.393939393939394
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 18,
+          "workload_realised": 0.5,
+          "n_caught": 6,
+          "n_missed": 6,
+          "recall": 0.5,
+          "precision": 0.3333333333333333,
+          "target_workload": 0.5,
+          "random_expected_recall": 0.5,
+          "recall_excess": 0.0,
+          "recall_excess_ci": [
+            -0.2777777777777778,
+            0.2857142857142857
+          ],
+          "beats_random": false
+        },
+        {
+          "n_referred": 27,
+          "workload_realised": 0.75,
+          "n_caught": 9,
+          "n_missed": 3,
+          "recall": 0.75,
+          "precision": 0.3333333333333333,
+          "target_workload": 0.75,
+          "random_expected_recall": 0.75,
+          "recall_excess": 0.0,
+          "recall_excess_ci": [
+            -0.25,
+            0.1875
+          ],
+          "beats_random": false
+        }
+      ]
+    }
+  },
+  "geographic_holdout": {
+    "seed_disagreement": {
+      "per_region": [
+        {
+          "region": "Coastal Cauvery",
+          "n_fields": 3,
+          "n_bad": 3,
+          "n_flagged": 3,
+          "threshold": 0.0387596899,
+          "n_fields_setting_threshold": 33
+        },
+        {
+          "region": "Coastal Vennar",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.09761904760000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Lower Cauvery",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 1,
+          "threshold": 0.08668154759999999,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Middle Vennar",
+          "n_fields": 7,
+          "n_bad": 2,
+          "n_flagged": 4,
+          "threshold": 0.078125,
+          "n_fields_setting_threshold": 29
+        },
+        {
+          "region": "Upper Cauvery",
+          "n_fields": 8,
+          "n_bad": 4,
+          "n_flagged": 6,
+          "threshold": 0.0360465116,
+          "n_fields_setting_threshold": 28
+        },
+        {
+          "region": "nan",
+          "n_fields": 14,
+          "n_bad": 3,
+          "n_flagged": 4,
+          "threshold": 0.11238331925,
+          "n_fields_setting_threshold": 22
+        }
+      ],
+      "pooled": {
+        "n_fields": 36,
+        "n_bad": 12,
+        "n_flagged": 18,
+        "workload_realised": 0.5,
+        "n_caught": 10,
+        "recall": 0.8333333333333334,
+        "precision": 0.5555555555555556,
+        "recall_ci": [
+          0.6,
+          1.0
+        ],
+        "random_expected_recall": 0.5,
+        "beats_random": true
+      },
+      "note": "no field contributes to the threshold that judges it. Regions are small, so only the pooled line is interpretable; per-region recalls on 2-8 fields are not."
+    },
+    "low_confidence": {
+      "per_region": [
+        {
+          "region": "Coastal Cauvery",
+          "n_fields": 3,
+          "n_bad": 3,
+          "n_flagged": 3,
+          "threshold": 0.0909474194,
+          "n_fields_setting_threshold": 33
+        },
+        {
+          "region": "Coastal Vennar",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.10579283910000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Lower Cauvery",
+          "n_fields": 2,
+          "n_bad": 0,
+          "n_flagged": 0,
+          "threshold": 0.10579283910000001,
+          "n_fields_setting_threshold": 34
+        },
+        {
+          "region": "Middle Vennar",
+          "n_fields": 7,
+          "n_bad": 2,
+          "n_flagged": 4,
+          "threshold": 0.0998216569,
+          "n_fields_setting_threshold": 29
+        },
+        {
+          "region": "Upper Cauvery",
+          "n_fields": 8,
+          "n_bad": 4,
+          "n_flagged": 4,
+          "threshold": 0.1005322486,
+          "n_fields_setting_threshold": 28
+        },
+        {
+          "region": "nan",
+          "n_fields": 14,
+          "n_bad": 3,
+          "n_flagged": 7,
+          "threshold": 0.10064512865,
+          "n_fields_setting_threshold": 22
+        }
+      ],
+      "pooled": {
+        "n_fields": 36,
+        "n_bad": 12,
+        "n_flagged": 18,
+        "workload_realised": 0.5,
+        "n_caught": 10,
+        "recall": 0.8333333333333334,
+        "precision": 0.5555555555555556,
+        "recall_ci": [
+          0.5997058823529414,
+          1.0
+        ],
+        "random_expected_recall": 0.5,
+        "beats_random": true
+      },
+      "note": "no field contributes to the threshold that judges it. Regions are small, so only the pooled line is interpretable; per-region recalls on 2-8 fields are not."
+    }
+  },
+  "verdict": {
+    "seed_disagreement": {
+      "auroc_interval_excludes_chance": true,
+      "above_permutation_p97_5": true,
+      "recall_beats_random_at_some_workload": true,
+      "beats_every_label_free_baseline": false,
+      "per_baseline": {
+        "smallest_first": true,
+        "largest_first": false,
+        "fewest_seasons": false
+      },
+      "held_out_by_region_beats_random": true,
+      "verdict": "not demonstrated",
+      "claim_supported": "ranks bad fields better than chance, and better than random referral at a 33%, 50% and 75% workload; NOT separable at this sample size from the weaker label-free baselines largest_first, fewest_seasons, whose own AUROC intervals also include chance -- the comparison is inconclusive for want of fields, not because those baselines were shown to be as good"
+    },
+    "low_confidence": {
+      "auroc_interval_excludes_chance": true,
+      "above_permutation_p97_5": true,
+      "recall_beats_random_at_some_workload": true,
+      "beats_every_label_free_baseline": false,
+      "per_baseline": {
+        "smallest_first": true,
+        "largest_first": false,
+        "fewest_seasons": true
+      },
+      "held_out_by_region_beats_random": true,
+      "verdict": "not demonstrated",
+      "claim_supported": "ranks bad fields better than chance, and better than random referral at a 33%, 50% and 75% workload; NOT separable at this sample size from the weaker label-free baselines largest_first, whose own AUROC intervals also include chance -- the comparison is inconclusive for want of fields, not because those baselines were shown to be as good"
+    }
+  },
+  "decision_rule": "demonstrated requires all three of: the AUROC bootstrap interval excludes 0.5; the paired recall excess over random excludes 0 at some workload; and the paired AUROC difference against EVERY label-free baseline excludes 0. The region holdout is reported but secondary, because regions hold 2 to 8 fields.",
+  "scope_note": "CROP-TYPE screening only. The yield screen is a different experiment with a different target, reported separately in results/triage/yield_screen.json. The two must not be combined into one reliability claim.",
+  "cost_note": "seed_disagreement requires several independently seeded models of the same configuration and cannot be computed by a deployment that trains once. low_confidence requires one model.",
+  "power_note": "36 fields, 12 bad. One field is 2.8% of workload and 8.3% of recall. Intervals are wide and this cannot establish an operating threshold."
+}

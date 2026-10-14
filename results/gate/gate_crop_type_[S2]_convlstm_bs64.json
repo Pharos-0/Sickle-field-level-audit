@@ -1,0 +1,27 @@
+{
+  "task": "crop_type",
+  "run": "[S2]_convlstm",
+  "device": "cpu",
+  "batch_size": 64,
+  "batch_size_note": "Evaluation on this benchmark is batch-size dependent: pad_collate pads the temporal axis to the per-batch maximum. A result without its batch size is not reproducible. See docs/REPRODUCTION_GATE.md",
+  "released_best_val_iou": 0.45348450541496277,
+  "released_best_epoch": 41,
+  "reproduced": 0.39502328634262085,
+  "abs_delta": 0.05846121907234192,
+  "tolerance": 0.01,
+  "verdict": "FAIL",
+  "val_samples": 227,
+  "val_plots": 36,
+  "trainable_params": 2029122,
+  "all_metrics": {
+    "f1_macro": 0.5584521889686584,
+    "acc": 0.5841785073280334,
+    "iou": 0.39502328634262085,
+    "paddy_f1": 0.4518716633319855,
+    "non_paddy_f1": 0.665032684803009,
+    "paddy_acc": 0.7216054797172546,
+    "non_paddy_acc": 0.5413674116134644,
+    "paddy_iou": 0.29188254475593567,
+    "non_paddy_iou": 0.49816402792930603
+  }
+}

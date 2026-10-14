@@ -1,0 +1,237 @@
+{
+  "split": "val",
+  "mask_res_m": 10,
+  "img_size": 32,
+  "n_plots": 36,
+  "n_pixels_in_pooled_metric": 9860,
+  "n_pixels_assigned_to_a_plot": 9860,
+  "n_pixels_scored_but_unassigned": 0,
+  "missing_masks": [],
+  "share_largest": 0.4728194726166329,
+  "share_top_decile": 0.6827586206896552,
+  "share_top_quartile": 0.8294117647058824,
+  "equal_weight_share": 0.027777777777777776,
+  "cross_check_released_n_pixels": [
+    9860
+  ],
+  "cross_check_exact": true,
+  "plots": [
+    {
+      "plot": 3.0,
+      "n_pixels_pooled": 1584,
+      "n_samples": 18,
+      "area_acres": 0.9099999999999999
+    },
+    {
+      "plot": 20.0,
+      "n_pixels_pooled": 4,
+      "n_samples": 2,
+      "area_acres": 0.03
+    },
+    {
+      "plot": 21.0,
+      "n_pixels_pooled": 144,
+      "n_samples": 6,
+      "area_acres": 0.23
+    },
+    {
+      "plot": 29.0,
+      "n_pixels_pooled": 60,
+      "n_samples": 15,
+      "area_acres": 0.04
+    },
+    {
+      "plot": 32.0,
+      "n_pixels_pooled": 75,
+      "n_samples": 15,
+      "area_acres": 0.05000000000000002
+    },
+    {
+      "plot": 57.0,
+      "n_pixels_pooled": 225,
+      "n_samples": 15,
+      "area_acres": 0.11000000000000004
+    },
+    {
+      "plot": 60.0,
+      "n_pixels_pooled": 42,
+      "n_samples": 3,
+      "area_acres": 0.15
+    },
+    {
+      "plot": 80.0,
+      "n_pixels_pooled": 168,
+      "n_samples": 3,
+      "area_acres": 0.55
+    },
+    {
+      "plot": 100.0,
+      "n_pixels_pooled": 64,
+      "n_samples": 4,
+      "area_acres": 0.16
+    },
+    {
+      "plot": 112.0,
+      "n_pixels_pooled": 30,
+      "n_samples": 5,
+      "area_acres": 0.07
+    },
+    {
+      "plot": 124.0,
+      "n_pixels_pooled": 57,
+      "n_samples": 1,
+      "area_acres": 0.55
+    },
+    {
+      "plot": 129.0,
+      "n_pixels_pooled": 28,
+      "n_samples": 4,
+      "area_acres": 0.07
+    },
+    {
+      "plot": 143.0,
+      "n_pixels_pooled": 18,
+      "n_samples": 3,
+      "area_acres": 0.07
+    },
+    {
+      "plot": 149.0,
+      "n_pixels_pooled": 486,
+      "n_samples": 18,
+      "area_acres": 0.30999999999999994
+    },
+    {
+      "plot": 152.0,
+      "n_pixels_pooled": 222,
+      "n_samples": 6,
+      "area_acres": 0.34
+    },
+    {
+      "plot": 169.0,
+      "n_pixels_pooled": 414,
+      "n_samples": 18,
+      "area_acres": 0.22000000000000003
+    },
+    {
+      "plot": 172.0,
+      "n_pixels_pooled": 138,
+      "n_samples": 6,
+      "area_acres": 0.21
+    },
+    {
+      "plot": 181.0,
+      "n_pixels_pooled": 240,
+      "n_samples": 12,
+      "area_acres": 0.31
+    },
+    {
+      "plot": 202.0,
+      "n_pixels_pooled": 174,
+      "n_samples": 6,
+      "area_acres": 0.31
+    },
+    {
+      "plot": 211.0,
+      "n_pixels_pooled": 4662,
+      "n_samples": 18,
+      "area_acres": 4.11
+    },
+    {
+      "plot": 219.0,
+      "n_pixels_pooled": 81,
+      "n_samples": 9,
+      "area_acres": 0.09
+    },
+    {
+      "plot": 248.0,
+      "n_pixels_pooled": 171,
+      "n_samples": 9,
+      "area_acres": 0.2
+    },
+    {
+      "plot": 303.0,
+      "n_pixels_pooled": 20,
+      "n_samples": 2,
+      "area_acres": 0.5
+    },
+    {
+      "plot": 312.0,
+      "n_pixels_pooled": 32,
+      "n_samples": 2,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 321.0,
+      "n_pixels_pooled": 22,
+      "n_samples": 2,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 324.0,
+      "n_pixels_pooled": 60,
+      "n_samples": 4,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 325.0,
+      "n_pixels_pooled": 24,
+      "n_samples": 4,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 341.0,
+      "n_pixels_pooled": 38,
+      "n_samples": 2,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 345.0,
+      "n_pixels_pooled": 129,
+      "n_samples": 3,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 358.0,
+      "n_pixels_pooled": 12,
+      "n_samples": 2,
+      "area_acres": 0.5
+    },
+    {
+      "plot": 383.0,
+      "n_pixels_pooled": 80,
+      "n_samples": 2,
+      "area_acres": 0.5
+    },
+    {
+      "plot": 386.0,
+      "n_pixels_pooled": 92,
+      "n_samples": 4,
+      "area_acres": 0.5
+    },
+    {
+      "plot": 418.0,
+      "n_pixels_pooled": 68,
+      "n_samples": 4,
+      "area_acres": 1.0
+    },
+    {
+      "plot": 423.0,
+      "n_pixels_pooled": 104,
+      "n_samples": 4,
+      "area_acres": 0.5
+    },
+    {
+      "plot": 426.0,
+      "n_pixels_pooled": 48,
+      "n_samples": 4,
+      "area_acres": 0.75
+    },
+    {
+      "plot": 445.0,
+      "n_pixels_pooled": 44,
+      "n_samples": 2,
+      "area_acres": 0.5
+    }
+  ],
+  "note": "n_pixels_pooled is the plot's weight in the pixel-pooled metric: its pixels surviving the reference loader's bilinear mask resize and unmatched-plot removal, summed over all of its validation samples."
+}

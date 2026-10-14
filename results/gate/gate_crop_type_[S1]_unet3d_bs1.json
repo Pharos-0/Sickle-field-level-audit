@@ -1,0 +1,27 @@
+{
+  "task": "crop_type",
+  "run": "[S1]_unet3d",
+  "device": "cpu",
+  "batch_size": 1,
+  "batch_size_note": "Evaluation on this benchmark is batch-size dependent: pad_collate pads the temporal axis to the per-batch maximum. A result without its batch size is not reproducible. See docs/REPRODUCTION_GATE.md",
+  "released_best_val_iou": 0.8011020421981812,
+  "released_best_epoch": 48,
+  "reproduced": 0.46160978078842163,
+  "abs_delta": 0.3394922614097595,
+  "tolerance": 0.01,
+  "verdict": "FAIL",
+  "val_samples": 227,
+  "val_plots": 36,
+  "trainable_params": 3090594,
+  "all_metrics": {
+    "f1_macro": 0.6281393766403198,
+    "acc": 0.641075074672699,
+    "iou": 0.46160978078842163,
+    "paddy_f1": 0.5587831735610962,
+    "non_paddy_f1": 0.6974955201148987,
+    "paddy_acc": 0.9568744897842407,
+    "non_paddy_acc": 0.542697548866272,
+    "paddy_iou": 0.38771626353263855,
+    "non_paddy_iou": 0.5355033278465271
+  }
+}

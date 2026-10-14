@@ -1,0 +1,138 @@
+{
+  "fields": [
+    {
+      "plot": 211.0,
+      "sample_index": 154,
+      "share_of_labelled_pixels": 0.4728194726166329
+    },
+    {
+      "plot": 248.0,
+      "sample_index": 181,
+      "share_of_labelled_pixels": 0.017342799188640973
+    },
+    {
+      "plot": 383.0,
+      "sample_index": 207,
+      "share_of_labelled_pixels": 0.008113590263691683
+    },
+    {
+      "plot": 341.0,
+      "sample_index": 200,
+      "share_of_labelled_pixels": 0.0038539553752535496
+    }
+  ],
+  "selection_rule": "largest field, then 75th/50th/25th percentile fields by labelled pixels; independent of results",
+  "per_field_score_shown": "IoU of the field's own crop; macro IoU steps to <= 0.5 on any error in a single-crop field",
+  "rungs": {
+    "v1": {
+      "pooled_macro_iou": 0.6329827031550181,
+      "pooled_macro_iou_saved": 0.6329827031550181,
+      "plot_macro_iou": 0.40340715489197104,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.666213768115942,
+      "median_field_macro_iou": 0.34791666666666665
+    },
+    "v2": {
+      "pooled_macro_iou": 0.7640275722132988,
+      "pooled_macro_iou_saved": 0.7640275722132988,
+      "plot_macro_iou": 0.5748722466404051,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9339409898620425,
+      "median_field_macro_iou": 0.4704002174932408
+    },
+    "v3": {
+      "pooled_macro_iou": 0.7144490104540312,
+      "pooled_macro_iou_saved": 0.7144490104540312,
+      "plot_macro_iou": 0.3954870509656223,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.6666666666666666,
+      "median_field_macro_iou": 0.33771929824561403
+    },
+    "v4": {
+      "pooled_macro_iou": 0.7200358409859948,
+      "pooled_macro_iou_saved": 0.7200358409859948,
+      "plot_macro_iou": 0.6371870848339989,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9498135288065843,
+      "median_field_macro_iou": 0.48440528100775193
+    },
+    "v5": {
+      "pooled_macro_iou": 0.8852750925188204,
+      "pooled_macro_iou_saved": 0.8852750925188204,
+      "plot_macro_iou": 0.6862615114506138,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9970760233918128,
+      "median_field_macro_iou": 0.7485380116959064
+    },
+    "v6": {
+      "pooled_macro_iou": 0.8865768221987607,
+      "pooled_macro_iou_saved": 0.8865768221987607,
+      "plot_macro_iou": 0.6411873345657724,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9812269412269412,
+      "median_field_macro_iou": 0.49684803851470516
+    },
+    "v7": {
+      "pooled_macro_iou": 0.7998091749433172,
+      "pooled_macro_iou_saved": 0.7998091749433172,
+      "plot_macro_iou": 0.5931751769532849,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9579905992949471,
+      "median_field_macro_iou": 0.47986486486486485
+    },
+    "v8": {
+      "pooled_macro_iou": 0.7899966616343719,
+      "pooled_macro_iou_saved": 0.7899966616343719,
+      "plot_macro_iou": 0.5885884157655406,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9407810065704802,
+      "median_field_macro_iou": 0.4703905032852401
+    },
+    "v9": {
+      "pooled_macro_iou": 0.7818189995219784,
+      "pooled_macro_iou_saved": 0.7820023244453091,
+      "plot_macro_iou": 0.5143167474905663,
+      "max_abs_diff_vs_saved_per_plot": 0.00031565656565657463,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9319108069108069,
+      "median_field_macro_iou": 0.4659554034554034
+    },
+    "v10": {
+      "pooled_macro_iou": 0.7642974445164175,
+      "pooled_macro_iou_saved": 0.7642974445164175,
+      "plot_macro_iou": 0.62016948241714,
+      "max_abs_diff_vs_saved_per_plot": 0.0,
+      "n_plots_compared": 36,
+      "batch_size": 32,
+      "device": "cpu",
+      "median_field_own_crop_iou": 0.9805555555555555,
+      "median_field_macro_iou": 0.49027777777777776
+    }
+  }
+}
