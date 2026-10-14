@@ -1,0 +1,133 @@
+{
+  "project": {
+    "name": "sickle-temporal-complexity",
+    "version": "v2_radar",
+    "description": "V2 + Sentinel-1 radar ONLY (clean multi-sensor point for the data-regime sweep)"
+  },
+  "data": {
+    "root": "D:/FPD/sickledataset extracted",
+    "tabular": "sickle_dataset_tabular.csv",
+    "task": "crop_type",
+    "num_classes": 2,
+    "ignore_index": -999,
+    "pad_value": 0,
+    "img_size": [
+      32,
+      32
+    ],
+    "train_split": "train",
+    "eval_split": "val",
+    "subset": "plots_315_seed005"
+  },
+  "satellites": {
+    "S2": {
+      "bands": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B7",
+        "B8",
+        "B8A",
+        "B9",
+        "B11",
+        "B12"
+      ],
+      "rgb_bands": [
+        3,
+        2,
+        1
+      ],
+      "mask_res": 10,
+      "img_size": [
+        32,
+        32
+      ]
+    },
+    "S1": {
+      "bands": [
+        "VV",
+        "VH"
+      ],
+      "rgb_bands": [
+        0,
+        1,
+        0
+      ],
+      "mask_res": 10,
+      "img_size": [
+        32,
+        32
+      ]
+    }
+  },
+  "model": {
+    "name": "unet3d",
+    "encoder_widths": [
+      64,
+      128
+    ],
+    "decoder_widths": [
+      32,
+      128
+    ],
+    "out_conv": [
+      32,
+      16
+    ],
+    "str_conv_k": 4,
+    "str_conv_s": 2,
+    "str_conv_p": 1,
+    "agg_mode": "att_group",
+    "encoder_norm": "group",
+    "n_head": 16,
+    "d_model": 256,
+    "d_k": 4,
+    "padding_mode": "reflect"
+  },
+  "temporal": {
+    "mode": "full",
+    "single_date_strategy": "median_index",
+    "repeat_to": 4
+  },
+  "loss": {
+    "type": "cross_entropy",
+    "class_weights": null
+  },
+  "training": {
+    "epochs": 100,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "optimizer": "adam",
+    "scheduler": "none",
+    "warmup_epochs": 0,
+    "micro_batch_size": 8,
+    "amp": true,
+    "num_workers": 8
+  },
+  "augmentation": {
+    "enabled": false
+  },
+  "sampling": {
+    "plot_balanced": false
+  },
+  "evaluation": {
+    "pixel_pooled": true,
+    "plot_macro": true,
+    "bootstrap_n": 2000,
+    "report_per_class": true
+  },
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "runtime": {
+    "device": "auto",
+    "out_dir": "outputs"
+  },
+  "_resolved_from": "v2_radar"
+}

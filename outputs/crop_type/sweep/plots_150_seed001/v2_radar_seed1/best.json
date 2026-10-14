@@ -1,9 +1,9 @@
 {
   "selection_metric": "macro_iou",
   "best_epoch": 16,
-  "epochs_run_so_far": 16,
+  "epochs_run": 100,
   "epochs_planned": 100,
-  "complete": false,
+  "complete": true,
   "macro_iou": 0.8884497506812208,
   "paddy_iou": 0.8337147215865751,
   "non_paddy_iou": 0.9431847797758666,

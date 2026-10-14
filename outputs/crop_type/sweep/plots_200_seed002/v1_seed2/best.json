@@ -1,0 +1,21 @@
+{
+  "selection_metric": "macro_iou",
+  "best_epoch": 29,
+  "epochs_run": 100,
+  "epochs_planned": 100,
+  "complete": true,
+  "macro_iou": 0.523929054941808,
+  "paddy_iou": 0.3456280629352592,
+  "non_paddy_iou": 0.7022300469483568,
+  "macro_f1": 0.6693879347945051,
+  "paddy_precision": 0.46608695652173915,
+  "paddy_recall": 0.5721605465414176,
+  "non_paddy_precision": 0.8565497494631353,
+  "non_paddy_recall": 0.7958233572758713,
+  "n_pixels": 9860,
+  "plot_macro_iou": 0.3340350884820322,
+  "plot_iou_sd": 0.1603388380928647,
+  "plot_n_plots": 36,
+  "plot_n_plots_skipped": 0,
+  "plot_n_undefined_class_instances": 1
+}
