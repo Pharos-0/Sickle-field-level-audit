@@ -95,3 +95,6 @@ desktop.ini
 /docs/*.docx
 /docs/*.pdf
 /docs/*.xlsx
+
+# Per-field confusion matrices for the sweep are label-derived (see above).
+/results/sweep/field_confusions/

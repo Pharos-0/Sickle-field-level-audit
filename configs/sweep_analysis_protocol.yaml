@@ -1,0 +1,102 @@
+# Data-regime sweep: analysis protocol.
+#
+# FROZEN 2026-10-14, before any cross-run sweep result was computed. Committed
+# to git on its own, ahead of the analysis, so the commit time records that.
+# The hypothesis and the design come from docs/SICKLE_MASTER_PROMPT.md
+# (sections 7, 8 and 10), written before the sweep ran. That document fixed
+# the hypothesis, the metrics and paired seed-wise comparisons, but not a test
+# of whether an advantage GROWS with plot count; this file fixes that test.
+#
+# DISCLOSURE: what had been seen before this file was written.
+#   - Per-epoch training log lines (val_macro_iou, plot_macro) of individual
+#     runs, glimpsed while monitoring the sweep. No values were tabulated.
+#   - No aggregation across runs, no paired deltas, no curves, no slopes. No
+#     results/deltas.csv existed.
+#   - 89 of 90 runs had finished; the 90th was re-training after a Windows
+#     Update restart killed it at epoch 91 (2026-10-14, ~05:30).
+
+protocol_version: 1
+frozen: "2026-10-14"
+
+hypothesis: >
+  If temporal complexity requires independent spatial diversity to
+  generalise, its advantage over single-date modelling should increase with
+  plot count. If it does not, the data-quantity explanation is weakened.
+  (Verbatim, docs/SICKLE_MASTER_PROMPT.md section 7.)
+
+design:
+  plot_counts: [50, 100, 150, 200, 250, 315]   # train split has 315 plots
+  configs:
+    v1: single acquisition                       # master prompt "V2"
+    v2: full temporal sequence                   # master prompt "V6"
+    v2_radar: v2 plus Sentinel-1, nothing else   # master prompt "V7"
+  seeds: [1, 2, 3, 4, 5]
+  subsets: >
+    Nested within a seed (the 50-plot set is inside the 100-plot set, and so
+    on), drawn at plot level; subsetting touches the training split only.
+  evaluation: the same full validation split (36 plots) for every run
+
+validity_checks:          # all must pass before any result is reported
+  - all 90 runs have best.json with complete == true
+  - each run's config_resolved.json names the expected subset, version and seed
+  - within each seed the subset manifests are nested, and none shares a plot
+    with the validation split
+  - every run's checkpoint is present (checksummed in docs/CHECKPOINT_INVENTORY.csv)
+  - recomputed pixel-pooled macro IoU is within 2e-3 of best.json for every
+    run (fp32 re-inference against training-time reduced-precision evaluation)
+  - every run scores the same set of validation fields
+
+metrics:
+  primary: >
+    Pixel-pooled macro IoU at the selected epoch (best.json macro_iou), the
+    master prompt's primary metric. The epoch is selected on the same
+    validation set, as in the benchmark (its test split is unlabelled); this
+    applies equally to every run and is stated as a limitation.
+  secondary: >
+    Field IoU: per validation field, IoU averaged over the classes present in
+    that field's truth, then the unweighted mean over fields. This is the
+    master prompt's section 10.2 rule ("if a plot contains no ground-truth
+    pixels of a class ... exclude it"), the definition implemented on
+    2026-10-12 (own_class_iou_from_confusion). The trainer's plot_macro (which
+    scores an absent class as 0) is NOT used.
+  also_reported: [median field IoU, number of fields below 0.5]
+
+comparisons:            # paired by seed, at each plot count
+  temporal_advantage: v2 - v1          # the hypothesis
+  radar_increment: v2_radar - v2       # secondary, exploratory
+  per_count_summary: >
+    mean, sd and 95 % t-interval (n = 5 seeds). Where |mean| < sd the effect
+    is reported as small relative to seed-to-seed variability and
+    inconclusive (master prompt 10.3), never as "no effect".
+
+trend_test:             # decides the hypothesis
+  statistic: >
+    For each seed, the ordinary least-squares slope of the temporal advantage
+    on log2(plot count) across the six counts. The five slopes are summarised
+    by their mean and a 95 % t-interval (df = 4). log2 because returns to data
+    are expected to diminish; one unit is a doubling of plots.
+  sensitivity:
+    - the same slope on plot count in units of 100 plots
+    - the paired difference: advantage at 315 minus advantage at 50, per seed
+  decision:
+    SUPPORTED: mean slope > 0 and its 95 % interval excludes 0
+    CONTRADICTED: mean slope < 0 and its 95 % interval excludes 0
+    NOT SUPPORTED: the interval includes 0; additionally labelled
+      inconclusive when |mean slope| < sd of the slopes
+  metric_precedence: >
+    The primary metric decides. The secondary metric is reported beside it;
+    if they disagree the disagreement is reported, and neither is chosen
+    after the fact.
+
+not_claimed:
+  - a "law"; the term is "data-regime relationship"
+  - causality; the term is "controlled component attribution"
+  - anything beyond SICKLE's Cauvery Delta paddy, 2018-2021
+  - significance from a larger mean alone (n = 5 seeds)
+
+outputs:
+  committed:
+    - results/sweep/rescore.csv          # one row per run, aggregates only
+    - results/deltas.csv                 # master prompt format
+    - results/sweep/sweep_analysis.json  # checks, per-count summaries, trend, verdict
+  ignored_labels: results/sweep/field_confusions/   # per-field matrices
