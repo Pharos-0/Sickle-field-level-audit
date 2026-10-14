@@ -89,7 +89,30 @@ def main() -> int:
         print(f"EXCLUDED {len(SKIPPED_SMOKE)} smoke run(s) -- two-batch "
               f"pipeline checks, not results: {names}\n")
 
-    print(f"LADDER -- task {args.task}\n")
+    # THE BALANCED SEED SET
+    # Every rung is averaged over the same seeds: those that finished on
+    # EVERY rung. The ladder was designed at three seeds per rung, and a
+    # targeted follow-up later trained more seeds for v3 and v4 only,
+    # because a power analysis singled out the v3-to-v4 step. Folding those
+    # extra seeds into the v3 and v4 means would compare an eight-seed mean
+    # against three-seed neighbours: the v4-to-v5 radar step then read
+    # +0.157 here and +0.186 in the paired analysis of the same seeds, and
+    # sigma_max moved for a reason that has nothing to do with any step.
+    # So the table stays balanced, the follow-up seeds go only into the
+    # paired analysis they were trained for, and n_seeds_finished records
+    # every finished run so nothing is hidden.
+    finished_by = {v: {s_ for s_, r in data[v].items()
+                       if r.get("complete") is True} for v in LADDER}
+    present = [finished_by[v] for v in LADDER if finished_by[v]]
+    common = set.intersection(*present) if present else set()
+    print(f"LADDER -- task {args.task}")
+    print(f"balanced seed set, finished on every rung: {sorted(common)}")
+    extra_any = {v: sorted(finished_by[v] - common) for v in LADDER
+                 if finished_by[v] - common}
+    if extra_any:
+        print("follow-up seeds outside the balanced table (paired analysis "
+              "only): " + "; ".join(f"{v} {s_}" for v, s_ in extra_any.items()))
+    print()
     print(f"{'rung':6s}{'seeds':>6s}{'pixel macro IoU':>20s}"
           f"{'plot macro IoU':>20s}{'paddy IoU':>13s}  status")
     print("-" * 80)
@@ -101,19 +124,37 @@ def main() -> int:
             rows.append({"rung": v, "status": "NOT RUN"})
             continue
 
-        pm, psd, n = agg(runs, "macro_iou")
-        gm, gsd, _ = agg(runs, "plot_macro_iou")
-        dm, _, _ = agg(runs, "paddy_iou")
+        # best.json is rewritten whenever the best improves, so a killed or
+        # still-running run leaves a usable-looking record. It is NOT a
+        # finished result. This function used to FLAG such runs in the
+        # status column while still averaging them into the mean, SD and
+        # seed count -- so a v3 run at 19 of 100 epochs sat inside the v3
+        # mean, and the manuscript rendered "seven seeds at v3" when six had
+        # finished. Only runs whose `complete` flag is True are averaged
+        # now; the rest are named in the status and nowhere else. A run
+        # with no flag predates it and is treated as not complete, the same
+        # rule as src.utils.completed_seed_runs.
+        done_all = {s_: r for s_, r in runs.items() if r.get("complete") is True}
+        done_runs = {s_: r for s_, r in done_all.items() if s_ in common}
+        follow = sorted(set(done_all) - common)
+        partial = sorted(s_ for s_, r in runs.items()
+                         if r.get("complete") is not True)
+
+        pm, psd, n = agg(done_runs, "macro_iou")
+        gm, gsd, _ = agg(done_runs, "plot_macro_iou")
+        dm, _, _ = agg(done_runs, "paddy_iou")
 
         status = "ok"
-        # best.json is rewritten whenever the best improves, so a killed run
-        # still leaves a usable record -- but it is NOT a finished result and
-        # must not be compared against completed rungs without saying so.
-        partial = [s for s, r in runs.items() if r.get("complete") is False]
+        if follow:
+            status = (f"ok; follow-up seeds {follow} finished, kept out of "
+                      f"the balanced table")
         if partial:
-            got = max((r.get("epochs_run_so_far") or 0) for r in runs.values())
-            plan = max((r.get("epochs_planned") or 0) for r in runs.values())
-            status = f"INCOMPLETE ({got}/{plan} epochs, seeds {sorted(partial)})"
+            got = max((runs[s_].get("epochs_run_so_far") or 0)
+                      for s_ in partial)
+            plan = max((runs[s_].get("epochs_planned") or 0)
+                       for s_ in partial)
+            status = (status + f"; EXCLUDED unfinished seeds {partial} "
+                      f"(best at {got}/{plan} epochs)")
         if dm is not None and dm < 1e-6:
             status = "DEGENERATE (predicts one class)"
         # "best epoch 1" means a run never improved past its first epoch --
@@ -132,6 +173,8 @@ def main() -> int:
               + (f"{dm:13.4f}" if dm is not None else f"{'--':>13s}")
               + f"  {status}")
         rows.append({"rung": v, "status": status, "n_seeds": n,
+                     "n_seeds_finished": len(done_all),
+                     "balanced_seeds": " ".join(map(str, sorted(common))),
                      "pixel_macro_iou": pm, "pixel_sd": psd,
                      "plot_macro_iou": gm, "plot_sd": gsd, "paddy_iou": dm})
 

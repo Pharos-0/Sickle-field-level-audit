@@ -198,3 +198,58 @@ def test_single_class_predictor_is_exposed_by_iou_not_accuracy():
     assert m.non_paddy_iou == pytest.approx(0.8)
     assert m.macro_iou == pytest.approx(0.4)
     assert m.paddy_recall == pytest.approx(0.0)
+
+
+# ------------------------------------------------- field IoU vs macro IoU
+def test_single_crop_field_with_one_wrong_pixel():
+    """The defect that prompted the correction, pinned.
+
+    A paddy field of 100 pixels with ONE predicted non-paddy: macro IoU is
+    (99/100 + 0/1) / 2 = 0.495, below 0.5 although 99 % of the field is
+    right. The field score is 0.99.
+    """
+    import numpy as np
+    from src.evaluation.metrics import (plot_macro_iou, plot_own_class_iou,
+                                        PADDY, NON_PADDY)
+    t = np.full(100, PADDY)
+    p = t.copy()
+    p[0] = NON_PADDY
+    g = np.full(100, 7.0)
+    _, macro = plot_macro_iou(t, p, g, return_per_plot=True)
+    _, field = plot_own_class_iou(t, p, g, return_per_plot=True)
+    assert abs(macro[7.0] - 0.495) < 1e-12
+    assert abs(field[7.0] - 0.99) < 1e-12
+
+
+def test_perfect_field_scores_one_under_both():
+    import numpy as np
+    from src.evaluation.metrics import plot_macro_iou, plot_own_class_iou
+    t = np.zeros(50, dtype=int)
+    g = np.full(50, 3.0)
+    _, macro = plot_macro_iou(t, t, g, return_per_plot=True)
+    _, field = plot_own_class_iou(t, t, g, return_per_plot=True)
+    assert macro[3.0] == field[3.0] == 1.0
+
+
+def test_mixed_field_averages_both_classes_like_macro():
+    """A field holding both crops is scored on both, exactly as macro is."""
+    import numpy as np
+    from src.evaluation.metrics import plot_macro_iou, plot_own_class_iou
+    t = np.array([0] * 60 + [1] * 40)
+    p = np.array([0] * 50 + [1] * 10 + [1] * 35 + [0] * 5)
+    g = np.full(100, 9.0)
+    _, macro = plot_macro_iou(t, p, g, return_per_plot=True)
+    _, field = plot_own_class_iou(t, p, g, return_per_plot=True)
+    assert abs(macro[9.0] - field[9.0]) < 1e-12
+
+
+def test_wholly_wrong_field_scores_zero_under_both():
+    import numpy as np
+    from src.evaluation.metrics import plot_macro_iou, plot_own_class_iou
+    t = np.zeros(20, dtype=int)
+    p = np.ones(20, dtype=int)
+    g = np.full(20, 1.0)
+    _, macro = plot_macro_iou(t, p, g, return_per_plot=True)
+    _, field = plot_own_class_iou(t, p, g, return_per_plot=True)
+    assert macro[1.0] == field[1.0] == 0.0
+

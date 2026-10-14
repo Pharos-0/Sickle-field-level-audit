@@ -19,6 +19,21 @@ Two levels of metric, and they answer different questions:
     the metric that matches the study's statistical claim, since the plot is
     the independent spatial unit. It is SECONDARY and does not replace the
     benchmark metric.
+  * **Field IoU** (`plot_own_class_iou`) — each plot counts equally, and a
+    plot is scored only on the class or classes it actually holds. This is
+    the per-field score the study reports.
+
+WHY THE PER-FIELD SCORE IS NOT THE MACRO ONE (corrected 2026-10-12)
+------------------------------------------------------------------
+35 of the 36 validation fields hold one crop in every season. For such a
+field, macro IoU over {paddy, non-paddy} is 1.0 when every pixel is right and
+at most 0.5 as soon as one pixel is predicted as the absent class: that class
+then has IoU 0 (no true pixels, at least one predicted) and halves the
+average. A field 99 % correct therefore scores below 0.5. The macro value is
+a property of the averaging, not of the field, and an earlier version of
+this study reported it as per-field accuracy. `plot_own_class_iou` averages
+only over the classes present in the field's truth; for a single-crop field
+it equals the share of the field's pixels labelled correctly.
 
 Pixel accuracy is deliberately not offered as a headline metric: with this
 class balance a model that predicts one class everywhere scores well on it.
@@ -177,6 +192,86 @@ def plot_macro_iou(y_true, y_pred, plot_ids, ignore_index: int = -999,
         "n_plots": int(vals.size),
         "n_plots_skipped": int(skipped),
         "n_undefined_class_instances": int(excluded_classes),
+    }
+    return (summary, per_plot) if return_per_plot else summary
+
+
+def per_plot_confusions(y_true, y_pred, plot_ids, n_classes: int = 2,
+                        ignore_index: int = -999, min_pixels: int = 1):
+    """Per-plot confusion matrices, plus each plot's weight in the pooled metric.
+
+    `plot_macro_iou` returns a plot's IoU, which is a ratio and therefore
+    cannot be re-aggregated. The confusion matrix can. Having it per plot is
+    what makes two questions answerable exactly rather than by approximation:
+
+      * how much of the pixel-pooled figure is contributed by one field --
+        the pooled matrix is the plain sum of these, so dropping a field and
+        recomputing is exact, not a reweighting argument;
+      * whether per-field IoU depends on field size, where size means the
+        number of pixels the field actually contributes.
+
+    Returns {plot_id: {"cm": (n_classes, n_classes) int array,
+                       "n_pixels": int}}. The selection rules match
+    `plot_macro_iou` exactly so the two cannot drift: same ignore handling,
+    same `min_pixels` skip, same pooling of all of a plot's samples.
+    """
+    t = np.asarray(y_true).ravel()
+    p = np.asarray(y_pred).ravel()
+    g = np.asarray(plot_ids).ravel()
+    if not (t.shape == p.shape == g.shape):
+        raise ValueError(f"shape mismatch: true {t.shape}, pred {p.shape}, "
+                         f"plot_ids {g.shape}")
+    keep = t != ignore_index
+    t, p, g = t[keep], p[keep], g[keep]
+
+    out: dict[float, dict] = {}
+    for pid in np.unique(g):
+        if pid == ignore_index or pid < 0:
+            continue
+        m = g == pid
+        if m.sum() < min_pixels:
+            continue
+        cm = confusion(t[m], p[m], n_classes, ignore_index)
+        out[float(pid)] = {"cm": cm, "n_pixels": int(cm.sum())}
+    return out
+
+
+def own_class_iou_from_confusion(cm: np.ndarray) -> float:
+    """IoU averaged over the classes PRESENT IN THE TRUTH of this confusion.
+
+    Rows are true, columns predicted. A class with no true pixels is not
+    averaged in, whatever was predicted; that is the whole difference from
+    the macro score (see the module docstring). Returns nan for an empty
+    matrix.
+    """
+    cm = np.asarray(cm, dtype=np.float64)
+    vals = []
+    for c in range(cm.shape[0]):
+        if cm[c].sum() == 0:
+            continue
+        union = cm[c].sum() + cm[:, c].sum() - cm[c, c]
+        vals.append(cm[c, c] / union)
+    return float(np.mean(vals)) if vals else float("nan")
+
+
+def plot_own_class_iou(y_true, y_pred, plot_ids, ignore_index: int = -999,
+                       min_pixels: int = 1, return_per_plot: bool = False):
+    """Mean per-field IoU, each field scored on the crop(s) it holds.
+
+    Same pooling and skipping rules as `plot_macro_iou`, so the two differ
+    only in which classes enter a field's average.
+    """
+    cms = per_plot_confusions(y_true, y_pred, plot_ids,
+                              ignore_index=ignore_index,
+                              min_pixels=min_pixels)
+    per_plot = {k: own_class_iou_from_confusion(v["cm"])
+                for k, v in cms.items()}
+    per_plot = {k: v for k, v in per_plot.items() if np.isfinite(v)}
+    vals = np.array(list(per_plot.values()), dtype=np.float64)
+    summary = {
+        "field_iou_mean": float(vals.mean()) if vals.size else float("nan"),
+        "field_iou_sd": float(vals.std(ddof=1)) if vals.size > 1 else float("nan"),
+        "n_plots": int(vals.size),
     }
     return (summary, per_plot) if return_per_plot else summary
 

@@ -50,7 +50,9 @@ from src.evaluation.regression_metrics import (           # noqa: E402
     aggregate_to_field_seasons, bootstrap_field_ci, error_distribution,
     field_errors, regression_metrics)
 
-RUNS = Path("D:/FPD/runs/wacv_2024")
+# released checkpoints; SICKLE_RUNS as in .env.example
+RUNS = Path(__import__("os").environ.get(
+    "SICKLE_RUNS", "D:/FPD/runs/wacv_2024"))
 OUT = PROJ / "results" / "regression_gate"
 
 # Declared BEFORE any run. Relative, because the tasks differ in scale:
@@ -215,6 +217,12 @@ def main() -> int:
         "tolerance_rel": TOLERANCE_REL, "verdict": verdict,
         "per_field_error": dist, "mape_ci_fields": ci,
         "per_field_abs_error": {str(k): v for k, v in sorted(errs.items())},
+        # Predictions and truth per field-season, not just the error.
+        # The error alone cannot yield a label-free signal: measuring
+        # disagreement between models needs their predictions, and
+        # |pred - true| has already thrown the prediction away.
+        "per_field_pred": {str(k): float(v) for k, v in sorted(p_f.items())},
+        "per_field_true": {str(k): float(v) for k, v in sorted(t_f.items())},
     })
     print(f"\nwrote {OUT / f'{args.task}_{args.run}_bs{args.batch_size}.json'}")
     return 0 if verdict == "PASS" else 1

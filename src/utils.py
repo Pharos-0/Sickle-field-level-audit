@@ -227,3 +227,88 @@ def run_dir(cfg: dict, seed: int) -> Path:
 def write_json(path: Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=2, default=str), encoding="utf8")
+
+
+def completed_seed_runs(task: str, rung: str, proj: Path | None = None):
+    """Seed directories for one rung whose training actually finished.
+
+    An interrupted run still leaves `best.json` and `best_per_plot_iou.json`
+    on disk, because both are rewritten every time the validation score
+    improves. Those artefacts are real but they describe a model that was
+    stopped early, and averaging one into a rung alongside completed seeds
+    moves the rung without anything in the output saying so. This happened
+    in practice: an out-of-memory kill left a 2-epoch v1 seed scoring 0.415
+    macro IoU beside three 100-epoch seeds scoring about 0.63.
+
+    `scripts/aggregate_ladder.py` was believed to guard against this and did
+    not: it labelled an unfinished run in its status column while still
+    averaging it in, until 2026-10-12. It now uses the same rule. Every
+    consumer of these directories must apply it, which is why it lives
+    here rather than being repeated.
+
+    Returns (kept, dropped) as lists of (seed_dir, best_json_dict). A run
+    with no `complete` key predates the flag and is treated as NOT complete,
+    because the safe reading of a missing guarantee is that it is absent.
+    """
+    proj = proj or PROJ
+    kept, dropped = [], []
+    for d in sorted((proj / "outputs" / task).glob(f"{rung}_seed*")):
+        f = d / "best.json"
+        if not f.exists():
+            dropped.append((d, None))
+            continue
+        try:
+            b = json.loads(f.read_text(encoding="utf8"))
+        except (OSError, ValueError):
+            dropped.append((d, None))
+            continue
+        (kept if b.get("complete") is True else dropped).append((d, b))
+    return kept, dropped
+
+
+def completed_per_plot_iou(task: str, rung: str, proj: Path | None = None):
+    """Paths to `best_per_plot_iou.json` for seeds that finished training.
+
+    Thin wrapper over `completed_seed_runs` so that every figure, table and
+    statistic in the paper selects seeds by the same rule. Returns
+    (paths, dropped_names).
+    """
+    kept, dropped = completed_seed_runs(task, rung, proj)
+    paths = [d / "best_per_plot_iou.json" for d, _ in kept]
+    return [p for p in paths if p.exists()], [d.name for d, _ in dropped]
+
+
+def completed_field_iou(rung: str, proj: Path | None = None,
+                        task: str = "crop_type"):
+    """Per-seed field IoU for a rung's completed seeds.
+
+    Field IoU is the IoU of the crop(s) a field holds
+    (src/evaluation/metrics.py, own_class_iou_from_confusion), read from the
+    per-field confusion matrices written by scripts/field_confusions.py. It
+    replaces the trainer's best_per_plot_iou.json (macro IoU) for every
+    per-field statistic in the papers; see the metrics module docstring for
+    why. Raises if the confusion file is missing or covers different seeds
+    from the ones that finished training, so a figure cannot silently mix
+    seed sets. Returns (list of {plot_id: field_iou} per seed, seeds).
+    """
+    import json as _json
+    import numpy as _np
+    from src.evaluation.metrics import own_class_iou_from_confusion
+    proj = proj or Path(__file__).resolve().parents[1]
+    f = proj / "results" / "field_confusions" / f"{rung}.json"
+    if not f.exists():
+        raise FileNotFoundError(f"{f} missing; run scripts/field_confusions.py "
+                                f"--rung {rung}")
+    fc = _json.loads(f.read_text(encoding="utf8"))
+    kept, _ = completed_seed_runs(task, rung, proj)
+    want = sorted(int(d.name.rsplit("seed", 1)[1]) for d, _ in kept)
+    have = sorted(int(s) for s in fc["per_seed"])
+    if have != want:
+        raise RuntimeError(f"{f.name} covers seeds {have}; completed seeds "
+                           f"are {want}. Re-run scripts/field_confusions.py.")
+    out = []
+    for s in have:
+        rows = fc["per_seed"][str(s)]
+        out.append({float(k): own_class_iou_from_confusion(_np.asarray(r["cm"]))
+                    for k, r in rows.items()})
+    return out, have

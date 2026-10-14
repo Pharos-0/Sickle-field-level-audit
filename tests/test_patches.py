@@ -20,7 +20,13 @@ from pathlib import Path
 
 import pytest
 
-torch = pytest.importorskip("torch")
+# importorskip only catches ImportError. On a machine where Windows Smart
+# App Control blocks torch'''s freshly installed DLLs, the import raises OSError
+# and aborts collection for the whole suite instead of skipping this file.
+try:
+    import torch
+except (ImportError, OSError) as exc:  # pragma: no cover - environment gate
+    pytest.skip(f"torch unavailable: {exc}", allow_module_level=True)
 
 PROJ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJ))

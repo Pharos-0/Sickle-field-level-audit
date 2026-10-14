@@ -27,14 +27,27 @@ far fewer than all of them. The baseline to beat is "check everything"
 (workload 1.0, recall 1.0) and "check nothing" (workload 0, recall 0).
 
 CAUTION, and it bounds everything here: there are 36 validation fields. Each
-one is 2.8 percentage points of WORKLOAD, and 8.3 points of RECALL, which is
-measured over the 12 unreliable fields only. These numbers indicate whether
-the idea is worth pursuing; they do not establish an operating threshold.
+one is 2.8 percentage points of WORKLOAD, and recall is measured over the
+unreliable fields only, of which there are few. These numbers indicate
+whether the idea is worth pursuing; they do not establish an operating
+threshold.
+
+WHICH FIELDS ARE "UNRELIABLE" (corrected 2026-10-12)
+----------------------------------------------------
+A field is unreliable when its field IoU -- the IoU of the crop(s) it holds,
+src/evaluation/metrics.py -- averaged over the seeds is below the threshold.
+Before the correction the macro IoU over both classes was used. 35 of 36
+fields hold one crop, and for those the macro value falls to 0.5 or less on
+a single wrong pixel, so the old set (12 fields) mostly held fields with a
+few wrong pixels. Both sets are written: `is_bad` (field IoU, primary) and
+`is_bad_macro` (the superseded definition), so every downstream script can
+report the original analysis beside the corrected one.
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -49,7 +62,8 @@ sys.path.insert(0, str(PROJ))
 from src import patches, utils                       # noqa: E402
 from src.dataset import build_loader                 # noqa: E402
 from src.model import build_model                    # noqa: E402
-from src.evaluation.metrics import plot_macro_iou    # noqa: E402
+from src.evaluation.metrics import (plot_macro_iou,  # noqa: E402
+                                    plot_own_class_iou)
 from src.evaluation.regression_metrics import (      # noqa: E402
     geographic_holdout)
 
@@ -153,6 +167,10 @@ def main() -> int:
     ap.add_argument("--config", default="v5")
     ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
     ap.add_argument("--bad-threshold", type=float, default=0.5)
+    ap.add_argument("--field-score", choices=("field", "macro"),
+                    default="field",
+                    help="which per-field IoU defines an unreliable field; "
+                         "'macro' reproduces the superseded analysis")
     ap.add_argument("--device", default=None)
     ap.add_argument("--num-workers", type=int, default=None,
                     help="override; use 0 when another job is running")
@@ -198,24 +216,39 @@ def main() -> int:
         sig_conf[float(f)] = float(unconf_px[m].mean())
 
     # ---- truth, used ONLY to score the signals -------------------------
-    ious = []
+    ious, ious_macro = [], []
     for i in range(len(runs)):
-        _, pf = plot_macro_iou(y_true, P[i], pid, ignore_index=ig,
+        _, pf = plot_own_class_iou(y_true, P[i], pid, ignore_index=ig,
+                                   return_per_plot=True)
+        _, pm = plot_macro_iou(y_true, P[i], pid, ignore_index=ig,
                                return_per_plot=True)
         ious.append(pf)
+        ious_macro.append(pm)
+    per_field_macro = {}
     for f in sig_dis:
         v = [d[f] for d in ious if f in d]
+        vm = [d[f] for d in ious_macro if f in d]
         if v:
             per_field_iou[f] = float(np.mean(v))
+        if vm:
+            per_field_macro[f] = float(np.mean(vm))
+    if args.field_score == "macro":
+        per_field_iou = per_field_macro
 
     common = sorted(set(sig_dis) & set(per_field_iou))
     bad = {f for f in common if per_field_iou[f] < args.bad_threshold}
+    bad_macro = {f for f in common
+                 if per_field_macro.get(f, 1.0) < args.bad_threshold}
     print(f"\n  {len(common)} fields, {len(bad)} with mean IoU < "
           f"{args.bad_threshold} ({100*len(bad)/len(common):.0f}%)")
 
     results = {"config": args.config, "seeds": [s for s, _ in runs],
                "n_fields": len(common), "n_bad": len(bad),
-               "bad_threshold": args.bad_threshold}
+               "bad_threshold": args.bad_threshold,
+               "field_score": args.field_score,
+               "n_bad_macro": len(bad_macro),
+               "bad_fields": sorted(bad),
+               "bad_fields_macro": sorted(bad_macro)}
 
     for name, sig in (("seed_disagreement", sig_dis),
                       ("low_confidence", sig_conf)):
@@ -284,6 +317,25 @@ def main() -> int:
     print(f"\n    Only {len(big)} of {len(geo['regions'])} region-signal "
           f"combinations have 6 or more fields. The remainder cannot support "
           f"a rate at all.")
+
+    # ---- export the per-field signals ---------------------------------
+    # Without this, every screening number in the paper can only be rechecked
+    # by re-running inference from the checkpoints. Writing the four per-field
+    # quantities to a plain CSV makes the whole screening calculation
+    # independently reproducible with numpy alone.
+    sig_csv = OUT / f"per_field_signals_{args.config}.csv"
+    with sig_csv.open("w", newline="", encoding="utf8") as fh:
+        w_ = csv.writer(fh)
+        w_.writerow(["plot_id", "seed_disagreement", "low_confidence",
+                     "mean_iou", "is_bad", "river_part", "mean_macro_iou",
+                     "is_bad_macro"])
+        for f in common:
+            w_.writerow([f"{f:.0f}", f"{sig_dis[f]:.10f}",
+                         f"{sig_conf[f]:.10f}", f"{per_field_iou[f]:.10f}",
+                         int(f in bad), region.get(f, ""),
+                         f"{per_field_macro.get(f, float('nan')):.10f}",
+                         int(f in bad_macro)])
+    print(f"wrote {sig_csv}  ({len(common)} fields)")
 
     utils.write_json(OUT / f"triage_{args.config}.json", results)
     print(f"\nwrote {OUT / f'triage_{args.config}.json'}")
