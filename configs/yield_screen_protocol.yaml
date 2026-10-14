@@ -1,0 +1,122 @@
+# Frozen protocol for the yield-reliability screening experiment.
+#
+# WRITTEN BEFORE ANY SCREENING RESULT WAS COMPUTED. 2026-10-11.
+#
+# The point of freezing it is that a threshold chosen after seeing the
+# outcome is not a prediction. scripts/yield_screen.py reads this file and
+# refuses to run if its own defaults disagree with it, so the analysis that
+# executes is the analysis specified here. Any later change must be recorded
+# in `amendments` below, with a reason, and reported as a revised
+# exploratory analysis rather than as the pre-specified experiment.
+
+version: 1
+frozen_on: "2026-10-11"
+frozen_before_results: true
+
+question: >
+  Can disagreement among the released SICKLE yield checkpoints identify
+  field-seasons whose ensemble yield estimate is unreliable, using only
+  information available at inference time?
+
+hypothesis: >
+  H1: inter-model disagreement ranks field-seasons by yield error better
+  than chance.
+  H0: it does not.
+
+# ---------------------------------------------------------------- signal
+signal:
+  name: inter_model_disagreement
+  definition: "coefficient of variation = SD(predictions) / |mean(predictions)|"
+  sd_convention: "sample standard deviation, ddof=1"
+  label_free: true          # uses predictions only, never ground truth
+  # No epsilon. The guard below is checked and the run aborts if violated,
+  # rather than a small constant being added to hide a near-zero denominator.
+  denominator_guard:
+    min_abs_ensemble_mean: 1.0
+    action_if_violated: "abort and report; do not substitute an epsilon"
+  terminology_note: >
+    This is a dispersion score, not calibrated predictive uncertainty.
+    Calibration has not been evaluated, so the paper must not call it
+    uncertainty.
+
+# ---------------------------------------------------------------- target
+target:
+  name: unreliable_field_season
+  reference_prediction: "ensemble mean across the included checkpoints"
+  error_metric: "absolute percentage error, APE = |ens_mean - truth| / |truth| * 100"
+  denominator: "ground-truth yield for that field-season"
+  denominator_guard:
+    min_abs_truth: 1.0
+    action_if_violated: "exclude the field-season and report the count"
+  primary_threshold_ape_pct: 50.0
+  threshold_provenance: >
+    An operational research choice for this study. It is NOT a YES-TECH or
+    PMFBY criterion, and no official document consulted defines one. The
+    manuscript must say so wherever the number appears.
+  sensitivity_thresholds_ape_pct: [30.0, 40.0, 75.0, 100.0]
+
+# ------------------------------------------------------------ evaluation
+independent_unit: plot
+units_note: >
+  41 field-seasons come from 14 plots, up to 4 seasons per plot. Seasons of
+  one plot share soil, geometry and management and are NOT independent. The
+  independent unit is therefore the plot, n = 14.
+
+leakage_controls:
+  threshold_selection: leave_one_plot_out
+  fold_rule: "all seasons of the held-out plot are removed before the threshold is computed"
+  bootstrap_unit: plot
+  forbidden:
+    - "using the field-season's own error as a screening input"
+    - "leave-one-field-out thresholds (a plot's other seasons would set its threshold)"
+    - "random field-season splits"
+    - "tuning any threshold on the evaluation labels"
+
+workloads: [0.25, 0.33, 0.50, 0.75]
+
+metrics:
+  threshold_free: ["spearman_signal_vs_ape", "auroc_signal_vs_bad"]
+  at_each_workload: ["n_referred", "n_caught", "recall", "precision",
+                     "n_missed", "workload_realised"]
+  uncertainty: "percentile bootstrap over plots, 2000 replicates, seed 0"
+  selective_prediction: "median and mean APE among the automatically accepted set"
+
+baselines:
+  - name: random_referral
+    definition: "expected recall equals the realised workload; AUROC 0.5"
+  - name: field_area
+    definition: "refer the smallest fields first; tests whether size alone suffices"
+  - name: predicted_magnitude
+    definition: "refer the lowest ensemble-mean yields first"
+
+# ------------------------------------------------------------- decision
+rejection_criteria:
+  - "H1 is NOT supported if the plot-bootstrap CI on AUROC includes 0.5."
+  - "H1 is NOT supported if, at every workload, the CI on recall includes the realised workload (the random-referral expectation)."
+  - "A point estimate above random with a CI spanning random is reported as not demonstrated, not as a positive result."
+  - "If a baseline matches or beats the proposed signal, that is reported."
+reporting_rule: >
+  A negative or inconclusive outcome is reported in the manuscript with the
+  same prominence a positive one would receive. The experiment is not
+  removed, and the threshold is not relaxed, because the result is weak.
+
+power_statement: >
+  With 14 independent plots this experiment can indicate whether the signal
+  carries information. It cannot establish an operating threshold, and no
+  threshold from it should be described as deployable.
+
+# ------------------------------------------------------------ provenance
+checkpoints:
+  source: "results/regression_gate/crop_yield_*_bs32.json"
+  exclude: ["*_debug"]           # 2-epoch smoke tests, not released baselines
+  expected_n: 24
+  independence_note: >
+    The 24 are 4 sensor sets x 3 architectures x 2 season variants. They are
+    NOT 24 independent models. A correlation audit of the ensemble members
+    is required and must be reported with the result.
+
+evaluation_split: "SICKLE validation split (the test split is unlabelled)"
+batch_size: 32
+device_note: "CPU, to leave the GPU to a separate long-running job"
+
+amendments: []

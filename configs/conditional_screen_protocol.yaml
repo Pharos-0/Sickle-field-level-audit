@@ -1,0 +1,213 @@
+# Frozen protocol: does the crop-type screen add anything beyond field size?
+#
+# WRITTEN BEFORE ANY RESULT WAS COMPUTED. 2026-10-11.
+#
+# scripts/screen_validate.py established that the crop-type screen beats
+# chance and beats random referral, but could not separate it from
+# label-free baselines as crude as ranking by field size: the paired AUROC
+# difference against largest-first and fewest-seasons had intervals
+# including zero. That is a failure to distinguish, not a demonstration
+# that size explains the screen.
+#
+# This asks the sharper question directly, in two ways that fail
+# differently, so that agreement between them means something:
+#
+#   CONDITIONAL PERMUTATION   does the screen carry information that
+#                             survives holding size constant?
+#   OUT-OF-SAMPLE COMPARISON  does adding the screen to size improve
+#                             prediction on fields it was not fitted on?
+#
+# A permutation test answers only the first. On its own it can show the
+# screen is not a restatement of size while saying nothing about whether
+# combining them is worth doing. Both are therefore pre-specified, and the
+# verdict requires both.
+
+version: 1
+frozen_on: "2026-10-11"
+frozen_before_results: true
+
+question: >
+  On the 36 labelled validation fields, does a label-free screening signal
+  identify fields with per-field IoU below 0.50 in a way that field size
+  alone does not?
+
+hypothesis: >
+  H1: the screen carries information about per-field failure beyond field
+  size, and adding it to size improves out-of-sample ranking.
+  H0: the screen's apparent usefulness is explained by field size.
+
+# ---------------------------------------------------------------- signal
+primary_signal:
+  name: low_confidence
+  definition: "1 - mean softmax probability of the predicted class, averaged over the field"
+  why_primary: >
+    It needs ONE trained model. seed_disagreement needs several
+    independently seeded models of the same configuration, so a deployment
+    that trains once cannot compute it at all. The deployable signal is
+    the one the primary test is about.
+secondary_signal:
+  name: seed_disagreement
+  multiplicity: >
+    Two signals are examined. The verdict rests on the primary. The
+    secondary is reported with its own interval and is NOT used to claim
+    success if the primary fails.
+
+# ------------------------------------------------------------------ size
+size_variable:
+  name: n_pixels_pooled
+  source: results/field_size_val.json
+  definition: >
+    Pixels the field contributes to the pooled confusion matrix, i.e. its
+    weight in the benchmark metric. Reconstructed from the masks and
+    cross-checked against the released evaluations (9,860 total, exact
+    match).
+strata:
+  method: equal_count_terciles_on_rank
+  k: 3
+  why_rank: >
+    Pixel counts are extremely skewed -- one field holds 47 % of all
+    scored pixels -- so value-based cuts would not give equal groups.
+    Ranking gives 12 fields per stratum, which is the most that 36 fields
+    allow while leaving any within-stratum variation to permute.
+  k_sensitivity: [2, 4]
+  note: "reported as robustness only; the verdict rests on k = 3"
+
+# ------------------------------------------------------------ evaluation
+target:
+  name: bad_field
+  definition: "per-field IoU < 0.50, averaged over the completed seeds of rung v5"
+  provenance: "this study's stated convention, not an official criterion"
+
+independent_unit: field
+unit_note: >
+  For crop type the field IS the unit: one IoU per field, pooled over all
+  of that field's samples by construction. There are no repeated
+  observations to cluster, unlike the yield experiments where 41
+  field-seasons come from 14 plots.
+
+test_1_conditional_permutation:
+  statistic: "AUROC of the signal against bad_field, over all 36 fields"
+  null: >
+    Permute the signal WITHIN each size stratum, 10000 times, seed 0. This
+    destroys any association between signal and outcome while preserving
+    the relationship between size and outcome exactly.
+  p_value: "share of permuted statistics at or above the observed one, one-sided"
+  decision: "informative beyond size if p < 0.05"
+
+test_2_out_of_sample:
+  primary_metric: auroc
+  scheme: leave_one_field_out
+  why: >
+    36 fields. A held-out split would leave too few to score; leave-one-out
+    uses every field for evaluation exactly once and never fits on the
+    field being scored.
+  models:
+    - name: size_only
+      features: [n_pixels_pooled]
+    - name: screen_only
+      features: [primary_signal]
+    - name: size_plus_screen
+      features: [n_pixels_pooled, primary_signal]
+  estimator: "logistic regression, standardised features, no penalty tuning"
+  estimator_note: >
+    Deliberately the simplest model that can combine two features. Tuning
+    anything on 36 fields would fit the evaluation set.
+  comparison: "paired bootstrap over fields of AUROC(size_plus_screen) - AUROC(size_only)"
+  decision: "adds value if the paired interval excludes 0"
+
+# -------------------------------------------------------------- decision
+verdict_rule: >
+  H1 is supported only if BOTH the conditional permutation p < 0.05 on the
+  primary signal AND the paired out-of-sample interval excludes zero. One
+  without the other is reported as partial and explicitly not as the
+  screen adding practical value.
+
+rejection_criteria:
+  - "A permutation p < 0.05 with an out-of-sample interval spanning zero means the screen holds information that does not translate into better ranking at this sample size."
+  - "An out-of-sample gain with permutation p >= 0.05 is not evidence of independent information and is reported as such."
+  - "If size_only already matches size_plus_screen, the screen is reported as not adding value beyond size."
+
+reporting_rule: >
+  The outcome is written into docs/ and into the manuscript at the same
+  prominence either way, and scripts/screen_validate.py's wording is
+  updated to match. A negative result removes the screen from the
+  manuscript's list of things that work.
+
+power_statement: >
+  36 fields and 12 below threshold. One field is 2.8 percentage points of
+  workload and 8.3 of recall. This can indicate whether the screen is a
+  restatement of size. It cannot establish an operating threshold.
+
+amendments:
+  - date: "2026-10-11"
+    section: test_2_out_of_sample
+    change: >
+      The pre-specified leave-one-field-out logistic comparison is
+      reported as a DIAGNOSTIC and no longer carries the verdict. A
+      fit-free comparison is added and becomes the primary form of test 2:
+      size alone and the screen alone need no estimator, and the
+      combination is a rank average, so all three are on identical
+      footing.
+    reason: >
+      The pre-specified test is invalid at this sample size and the run
+      exposed it. Leave-one-out logistic regression on 36 fields with 12
+      positives is systematically ANTI-correlated for an uninformative
+      feature: removing a point weakens the association that point itself
+      creates, so each held-out field is scored by a model biased against
+      it. Measured on 40 draws of a pure-noise feature, the mean LOO AUROC
+      is 0.297 and 78 % of draws fall below 0.5. The size-only baseline
+      scored 0.062 against a raw ranking AUROC of 0.538, which is that
+      pathology and not a property of field size. Reporting the resulting
+      "+0.740 improvement" would have been a serious error, and it is
+      recorded here rather than quietly replaced.
+    what_did_not_change: >
+      Test 1, the conditional permutation, involves no model fitting and
+      is unaffected. It remains exactly as frozen, and it is the test the
+      main conclusion rests on.
+    verdict_rule_after_amendment: >
+      H1 is supported only if the conditional permutation p < 0.05 AND the
+      fit-free paired interval for screen-versus-size excludes zero.
+  - date: "2026-10-12"
+    section: target
+    post_hoc: true
+    change: >
+      bad_field is computed from the field IoU -- the IoU of the crop or
+      crops the field actually holds (src/evaluation/metrics.py,
+      own_class_iou_from_confusion) -- averaged over the completed seeds,
+      instead of macro IoU over both classes.
+    reason: >
+      The protocol says "per-field IoU < 0.50" and the implementation used
+      macro IoU over {paddy, non-paddy}. 35 of the 36 validation fields
+      hold one crop in every season. For such a field macro IoU is 1.0 when
+      every pixel is right and at most 0.5 once a single pixel is predicted
+      as the absent class, whose IoU is then 0. The original target
+      therefore marked fields with a few wrong pixels as "below 0.50": of
+      its 12 bad fields, only 4 have field IoU below 0.50. Found on
+      2026-10-12 while rendering prediction maps, after all results were
+      known, so this is recorded as a post-hoc correction of the target's
+      implementation, not a redefinition of the question.
+    what_is_kept: >
+      The original analysis is still run (--target macro) and written to
+      results/triage/conditional_screen_macro.json and
+      screen_validate_macro.json, and the manuscript reports it beside the
+      corrected one.
+    consequence_for_power: >
+      With the corrected target there are far fewer bad fields, so every
+      interval is wider and the power statement above, written for 12, now
+      overstates what 36 fields can show.
+    size_direction: >
+      The fit-free size baseline ranked LARGER fields first. Under the
+      original target size was near chance in either direction (0.538 or
+      0.462), so the direction did not matter. Under the corrected target
+      all four bad fields are small, and largest-first scores 0.227 while
+      smallest-first scores 0.773. Comparing the screen only with
+      largest-first would credit it with beating a baseline pointed the
+      wrong way. From this amendment the screen must beat size in BOTH
+      directions; that is conservative for the screen, and it leaves the
+      original analysis's verdict unchanged (partial).
+    results_after_amendment: >
+      Corrected target: 4 bad fields; low_confidence conditional
+      permutation p = 0.030 (beyond size: yes); screen minus size
+      smallest-first +0.031, 95% CI -0.257 to +0.457 (gain: not
+      demonstrated); verdict PARTIAL, the same verdict as the original
+      analysis (p = 0.0003, 12 bad fields), now on much weaker evidence.
