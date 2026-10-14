@@ -1,0 +1,23 @@
+{
+  "_note": "References cited only by the thesis paper. Kept apart from references.json so the IEEE manuscript, which does not cite them, carries no uncited entry. Same verification standard; nothing written from memory.",
+  "references": [
+    {
+      "n": 23,
+      "doi": "https://tnagrisnet.tn.gov.in/dashboard/book",
+      "type": "Government statistical compendium (not peer-reviewed)",
+      "verification": "Tables V.5 (rice area, yield and production, season and district wise, 2019-20), VII.13 (Cauvery Delta districts and blocks), XXII.7, XXII.9, XXII.10, XXII.11 (SDRF crop relief: NE monsoon 2019, Nivar and Burevi 2020, January 2021 rain) and XXVI.9 (conversion factors: 'Rice (Cleaned) Production = 2/3 of Paddy Production') each retrieved as PDF on 2026-10-12, text extracted with pdftotext and parsed by script into sickle-guard/data/official/. Every rice row is re-checked by test for yield = production / area.",
+      "supports": "Official district-season rice yields, delta districts, relief, conversion",
+      "uncertainty": "Some district cells equal the state seasonal average, apparently filled where little of a season's crop was grown; the core delta Samba cells are district-specific. 2020-21 district yields not in this edition.",
+      "entry": "Department of Agriculture, Government of Tamil Nadu, “Salient Statistics on Agriculture, 2021,” TN AGRISNET, Chennai, 2021."
+    },
+    {
+      "n": 24,
+      "doi": "https://agritech.tnau.ac.in/pdf/2012/Season%20&%20Crop%20Report%202012.pdf",
+      "type": "Government statistical report (not peer-reviewed)",
+      "verification": "Retrieved from the TNAU Agritech mirror on 2026-10-12 and text extracted. Quoted: 'The estimates of the productivity and production of various crops were made based on the crop cutting experiment' and 'PRODUCTION IN TERMS OF: * Paddy : Rice'.",
+      "supports": "Official yields are crop-cutting estimates, expressed in terms of rice",
+      "uncertainty": "Mirror copy of an older edition. The same convention appears in the Statistical Handbook of Tamil Nadu 2022-23 ('Paddy - In terms of Rice'), read on des.tn.gov.in the same day.",
+      "entry": "Department of Economics and Statistics, Government of Tamil Nadu, “Season and Crop Report of Tamil Nadu 2009-10 (Fasli 1419),” Chennai."
+    }
+  ]
+}

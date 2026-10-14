@@ -1,0 +1,259 @@
+{
+ "_note": "Single source of truth for the manuscript's references. Every entry was checked against Crossref or the publisher's own page on 2026-10-11 (entries 1-20) or 2026-10-12 (entries 21-22) or 2026-10-14 (entries 27-30) or 2026-10-13 (entries 25-26; 23-24 are used by docs/references_thesis.json); the method and the exact identifier used are recorded per entry. Nothing here was written from memory. Numbering follows order of first appearance in the manuscript. REFERENCE_VERIFICATION.xlsx and the paper are both generated from this file, so they cannot disagree.",
+ "verified_on": "2026-10-11",
+ "references": [
+  {
+   "n": 1,
+   "entry": "D. Sani et al., “SICKLE: A Multi-Sensor Satellite Imagery Dataset Annotated With Multiple Key Cropping Parameters,” in Proc. IEEE/CVF Winter Conf. on Applications of Computer Vision (WACV), 2024, pp. 5995–6004.",
+   "doi": "10.1109/WACV57701.2024.00589",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Official CVF Open Access record read directly 2026-10-11 (openaccess.thecvf.com WACV2024 paper page). Its own BibTeX gives pages = {5995-6004}, 8 authors in the order cited, title with 'Annotated With Multiple Key Cropping Parameters'. >6 authors so IEEE 'et al.' applies.",
+   "supports": "The dataset and released baselines audited throughout",
+   "uncertainty": "PAGE-RANGE DISCREPANCY, documented not hidden. Crossref metadata for DOI 10.1109/WACV57701.2024.00589 returns page '5983-5992', which disagrees with the CVF proceedings record's 5995-6004. IEEE Xplore and CVF pagination for WACV differ. We cite the CVF record because it is the proceedings page the authors' own BibTeX points to. An earlier draft of this manuscript followed Crossref and printed 5983-5992; that was an error introduced by trusting indexer metadata over the publisher record, and it is corrected here."
+  },
+  {
+   "n": 2,
+   "entry": "Mahalanobis National Crop Forecast Centre, Dept. of Agriculture and Farmers Welfare, Government of India, “YES-TECH Manual 2023: Yield Estimation System based on Technology under PMFBY,” 2023.",
+   "doi": "https://www.ncfc.gov.in/downloads/YESTECH_Manual.pdf",
+   "type": "Government technical manual (not peer-reviewed)",
+   "verification": "Downloaded from the official MNCFC site; 116 pages; OCR'd in full and quoted passages located by page. Re-verified verbatim 2026-10-11: clause 3.3.10 (30% floor, states may go higher) and 'at the smallest administrative unit, i.e., Gram Panchayat (GP)'. Document Control Sheet: Document Type 'Implementation manual', Control Number DAFW/MNCFC/PMFBY/YES-TECH/Manual_V1.0, Issue no. 01, Date of Initiation 21 Oct 2022, Date of Publication 11 Jul 2023. ncfc.gov.in/manual.html lists this as the only YES-TECH manual.",
+   "supports": "30% minimum weightage, no upper cap, Gram Panchayat as smallest unit, court/RTI provisions, commission-error bound",
+   "uncertainty": "RESOLVED 2026-10-11. A separate 48-page 'Manual for Implementation' (MNCFC/DAFW, January 2023, no version number, retrieved from apsac.ap.gov.in) also circulates and carries a hard criterion absent here: clause 4.3.6, 'The error (nRMSE) between the observed and modeled yield should not be more than 30% in historical data. All IUs where the error is more than 30% should not use this methodology.' The 116-page document cited here postdates it by six months, is the versioned V1.0 Issue 01 release, and is the only YES-TECH manual published on MNCFC's own manual page, so it governs. Verified by search of the OCR that the 116-page manual contains NRMSE only in lists of accuracy metrics to report (7 occurrences) and does NOT contain the phrase 'not be more than 30' or any equivalent binding accuracy floor."
+  },
+  {
+   "n": 3,
+   "entry": "Dept. of Agriculture and Farmers Welfare, Government of India, “Pradhan Mantri Fasal Bima Yojana: Revised Operational Guidelines,” 2020.",
+   "doi": "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+   "type": "Government policy document (not peer-reviewed)",
+   "verification": "URL located via the official PMFBY portal",
+   "supports": "Insurance Unit as the unit of loss assessment under PMFBY",
+   "uncertainty": "Not read in full; cited only for the scheme's unit of assessment"
+  },
+  {
+   "n": 4,
+   "entry": "C. Mahaur, “Can technology make India’s crop insurance payouts more accurate?” Down To Earth, 27 May 2026.",
+   "doi": "https://www.downtoearth.org.in/agriculture/can-technology-make-indias-crop-insurance-payouts-more-accurate",
+   "type": "Press reporting (not peer-reviewed)",
+   "verification": "Article retrieved and read 2026-10-11. Headline, author (Chhavi Mahaur) and date (27 May 2026) read from the page. Supporting text located verbatim: ‘Madhya Pradesh took the lead by adopting YES-TECH for select crops’ / ‘allocated 100 per cent weightage to it as compared to CCEs’.",
+   "supports": "Madhya Pradesh assigning 100% weightage to modelled yield",
+   "uncertainty": "SECONDARY SOURCE, not independently verified against a government release. The page's title tag differs from the on-page headline; the on-page headline is cited. This article does NOT contain the '344 districts / 12 states' figure that an earlier draft attributed to it; that claim has been removed from the manuscript."
+  },
+  {
+   "n": 5,
+   "entry": "C. Mahaur and A. Khurana, “Beyond the Lens: Madhya Pradesh Farmers Struggle With Satellite-Based Crop Insurance Under PMFBY,” Down To Earth, 20 Aug. 2026.",
+   "doi": "https://www.downtoearth.org.in/agriculture/beyond-the-lens",
+   "type": "Press reporting (not peer-reviewed)",
+   "verification": "Article retrieved and read 2026-10-11. Headline, authors (Chhavi Mahaur, Amit Khurana) and date (20 Aug 2026) read from the page. Confirmed by direct read that it contains NO district/state count and NO 100% weightage figure, so neither claim is attributed to it.",
+   "supports": "That farmers in Madhya Pradesh contest satellite-based loss assessments under PMFBY",
+   "uncertainty": "SECONDARY SOURCE, not independently verified. Cited only for the existence of farmer-level contestation, not for any quantity."
+  },
+  {
+   "n": 6,
+   "entry": "P. Rao et al., “Using Sentinel-1, Sentinel-2, and Planet Imagery to Map Crop Type of Smallholder Farms,” Remote Sensing, vol. 13, no. 10, 1870, 2021.",
+   "doi": "10.3390/rs13101870",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "Crossref API: first author Rao, year 2021, Remote Sensing confirmed; >6 authors so IEEE 'et al.' applies",
+   "supports": "Smallholder field size relative to sensor resolution in India; multi-sensor crop typing",
+   "uncertainty": "None"
+  },
+  {
+   "n": 7,
+   "entry": "V. Sitokonstantinou, I. Papoutsis, C. Kontoes, A. Lafarga Arnal, A. P. Armesto Andrés, and J. A. Garraza Zurbano, “Scalable Parcel-Based Crop Identification Scheme Using Sentinel-2 Data Time-Series for the Monitoring of the Common Agricultural Policy,” Remote Sensing, vol. 10, no. 6, 911, 2018.",
+   "doi": "10.3390/rs10060911",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "Crossref API: first author Sitokonstantinou, year 2018, Remote Sensing confirmed",
+   "supports": "Parcel-level rather than pixel-level crop identification and accuracy reporting",
+   "uncertainty": "None"
+  },
+  {
+   "n": 8,
+   "entry": "Z. Wang et al., “Revisiting Evaluation Metrics for Semantic Segmentation: Optimization and Evaluation of Fine-grained Intersection over Union,” in Advances in Neural Information Processing Systems 36 (NeurIPS), 2023.",
+   "doi": "https://proceedings.neurips.cc/paper_files/paper/2023/file/bd3611971089d466ab4ca96a20f7ab13-Paper-Datasets_and_Benchmarks.pdf",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "NeurIPS proceedings PDF retrieved (HTTP 200); title and author list confirmed from the proceedings listing; >6 authors so IEEE 'et al.' applies",
+   "supports": "Per-dataset mIoU is biased toward large objects; fine-grained and worst-case metrics proposed. ESTABLISHES THAT THE METRIC PHENOMENON IS PRIOR WORK, NOT A CONTRIBUTION OF THIS PAPER.",
+   "uncertainty": "None"
+  },
+  {
+   "n": 9,
+   "entry": "J. Reuss, J. Macdonald, S. Becker, L. Richter, and M. Körner, “The EuroCropsML time series benchmark dataset for few-shot crop type classification in Europe,” Scientific Data, vol. 12, no. 1, 664, 2025.",
+   "doi": "10.1038/s41597-025-04952-7",
+   "type": "Journal article (peer-reviewed, data descriptor)",
+   "verification": "Crossref API: title, full five-author list, Scientific Data, vol. 12 no. 1, article 664, 2025-04-19 all confirmed",
+   "supports": "Parcel-level aggregation is standard practice in recent crop-type benchmarks",
+   "uncertainty": "None"
+  },
+  {
+   "n": 10,
+   "entry": "O. E. Gundersen and S. Kjensmo, “State of the Art: Reproducibility in Artificial Intelligence,” in Proc. AAAI Conf. on Artificial Intelligence, vol. 32, no. 1, 2018.",
+   "doi": "10.1609/AAAI.V32I1.11503",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Crossref API: first author Gundersen, year 2018, AAAI confirmed",
+   "supports": "Reproducibility reporting in AI research is frequently incomplete",
+   "uncertainty": "Secondary summaries quote '20-30% of criteria met'; that figure is NOT cited here because it was not confirmed against the paper itself"
+  },
+  {
+   "n": 11,
+   "entry": "B. Lakshminarayanan, A. Pritzel, and C. Blundell, “Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles,” in Advances in Neural Information Processing Systems 30 (NIPS), 2017.",
+   "doi": "https://proceedings.neurips.cc/paper/2017/hash/9ef2ed4b7fd2c810847ffa5fa85bce38-Abstract.html",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "NeurIPS proceedings page retrieved (HTTP 200); authors and venue confirmed",
+   "supports": "Disagreement among independently trained models as an uncertainty signal",
+   "uncertainty": "None"
+  },
+  {
+   "n": 12,
+   "entry": "Y. Geifman and R. El-Yaniv, “Selective Classification for Deep Neural Networks,” in Advances in Neural Information Processing Systems 30 (NIPS), 2017.",
+   "doi": "https://papers.neurips.cc/paper_files/paper/2017/file/4a8423d5e91fda00bb7e46540e2b0cf1-Paper.pdf",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "NeurIPS proceedings PDF retrieved (HTTP 200); authors and venue confirmed",
+   "supports": "The risk-coverage framing used for the screening evaluation: abstain on part of the input to bound error on the rest",
+   "uncertainty": "None"
+  },
+  {
+   "n": 13,
+   "entry": "P. Ploton et al., “Spatial validation reveals poor predictive performance of large-scale ecological mapping models,” Nature Communications, vol. 11, 4540, 2020.",
+   "doi": "10.1038/s41467-020-18321-y",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "Crossref API: title, first author Pierre Ploton, 13 authors, Nature Communications vol. 11 article 4540, 2020-09-11 confirmed. First-author initial corrected from N. to P.; 13 authors so IEEE 'et al.' applies",
+   "supports": "Spatially independent validation can give markedly different performance from random splits",
+   "uncertainty": "None"
+  },
+  {
+   "n": 14,
+   "entry": "A. M. J.-C. Wadoux, G. B. M. Heuvelink, S. de Bruin, and D. J. Brus, “Spatial cross-validation is not the right way to evaluate map accuracy,” Ecological Modelling, vol. 457, 109692, 2021.",
+   "doi": "10.1016/j.ecolmodel.2021.109692",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "Crossref API: first author Wadoux, year 2021, Ecological Modelling confirmed",
+   "supports": "Counterpoint to [12]: spatial cross-validation is itself contested. Cited so the manuscript does not present spatial holdout as settled methodology.",
+   "uncertainty": "None"
+  },
+  {
+   "n": 15,
+   "entry": "A. Koukos, H.-W. Jo, V. Sitokonstantinou, I. Tsoumas, C. Kontoes, and W.-K. Lee, “Towards Global Crop Maps with Transfer Learning,” in Proc. IEEE Int. Geoscience and Remote Sensing Symposium (IGARSS), 2024, pp. 1540–1545.",
+   "doi": "10.1109/IGARSS53475.2024.10641793",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Crossref API: title, full six-author list, IGARSS 2024, pp. 1540-1545 all confirmed. First-author initial corrected from H. to A. (Alkiviadis Koukos)",
+   "supports": "Geographic transfer is an open problem for crop mapping models",
+   "uncertainty": "None"
+  },
+  {
+   "n": 16,
+   "entry": "M. L. Hunt, G. A. Blackburn, L. Carrasco, J. W. Redhead, and C. S. Rowland, “High resolution wheat yield mapping using Sentinel-2,” Remote Sensing of Environment, vol. 233, 111410, 2019.",
+   "doi": "10.1016/j.rse.2019.111410",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "Crossref API: first author Hunt, year 2019, Remote Sensing of Environment confirmed",
+   "supports": "Field-scale yield estimation from satellite imagery as an established task",
+   "uncertainty": "Full author list taken from the publisher record; confirm ordering"
+  },
+  {
+   "n": 17,
+   "entry": "Ö. Çiçek, A. Abdulkadir, S. S. Lienkamp, T. Brox, and O. Ronneberger, “3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation,” in Proc. MICCAI, Lecture Notes in Computer Science, vol. 9901, 2016, pp. 424–432.",
+   "doi": "10.1007/978-3-319-46723-8_49",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Crossref API: first author Çiçek, year 2016, LNCS confirmed",
+   "supports": "The U-Net3D architecture underlying the released SICKLE baselines",
+   "uncertainty": "None"
+  },
+  {
+   "n": 18,
+   "entry": "V. Sainte Fare Garnot and L. Landrieu, “Panoptic Segmentation of Satellite Image Time Series with Convolutional Temporal Attention Networks,” in Proc. IEEE/CVF Int. Conf. on Computer Vision (ICCV), 2021.",
+   "doi": "10.1109/ICCV48922.2021.00483",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Crossref API: first author Fare Garnot, year 2021, ICCV confirmed",
+   "supports": "The UTAE temporal-attention architecture used by the released baselines",
+   "uncertainty": "None"
+  },
+  {
+   "n": 19,
+   "entry": "X. Shi, Z. Chen, H. Wang, D.-Y. Yeung, W.-K. Wong, and W.-C. Woo, “Convolutional LSTM Network: A Machine Learning Approach for Precipitation Nowcasting,” in Advances in Neural Information Processing Systems 28 (NIPS), 2015.",
+   "doi": "https://papers.nips.cc/paper_files/paper/2015/hash/07563a3fe3bbe7e3ba84431ad9d055af-Abstract.html",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "Proceedings page fetched and the exact title and six-author list read from it",
+   "supports": "The ConvLSTM architecture used by the released baselines",
+   "uncertainty": "None"
+  },
+  {
+   "n": 20,
+   "entry": "Mahalanobis National Crop Forecast Centre, Dept. of Agriculture and Farmers Welfare, Government of India, “Yield Estimation System based on Technology (YES-TECH) under PMFBY: Manual for Implementation,” Jan. 2023.",
+   "doi": "https://apsac.ap.gov.in/wp-content/uploads/2023/01/Document2.pdf",
+   "type": "Government technical manual, superseded (not peer-reviewed)",
+   "verification": "PDF retrieved and read 2026-10-11. Title page reads 'YIELD ESTIMATION SYSTEM BASED ON TECHNOLOGY (YES-TECH) UNDER PMFBY / Manual for Implementation / Mahalanobis National Crop Forecast Centre ... January 2023'. 48 pages, no version or issue number. Clause 4.3.6 quoted verbatim from the extracted text.",
+   "supports": "That an earlier circulated manual set a binding IU-level nRMSE <= 30% criterion that the governing V1.0 manual does not carry",
+   "uncertainty": "SUPERSEDED. Predates the cited V1.0 manual by six months and is retrieved from a state agency mirror, not from MNCFC. Cited only to state what it contains and that it does not govern."
+  },
+  {
+   "n": 21,
+   "doi": "https://sansad.in/getFile/lsapps/loksabhaquestions/annex/188/AS25_tpFUNy.pdf",
+   "type": "Parliamentary answer (primary government record, not peer-reviewed)",
+   "verification": "PDF retrieved from sansad.in on 2026-10-12; text extracted with pdftotext and read in full. Lok Sabha Starred Question No. 25, 'Pending Claims of PMFBY', to be answered on 21 July 2026; answer by the Minister for Agriculture and Farmers Welfare (Shri Shivraj Singh Chauhan), statement laid on the Table. Quoted verbatim: 'mandatory 30% weightage to yield estimation has been assigned to YES-TECH derived yield. However, State Government of Madhya Pradesh and Maharashtra has given 100% and 50% weightage respectively to YES-TECH based yield in 2025-26.' Also: 'Enrolled farmer has no need to file the claims. Claims of enrolled and eligible farmers are automatically worked out based on the shortfall in yield as reported by the State Government concerned.'",
+   "supports": "Madhya Pradesh 100 % and Maharashtra 50 % weightage to YES-TECH yield in 2025-26; 30 % mandatory minimum; claims computed automatically from the area yield under the area approach",
+   "uncertainty": "None on the quoted text. Primary record. It does not say whether any farmer missed a claim, and is not cited for that.",
+   "entry": "Ministry of Agriculture and Farmers Welfare, Government of India, “Pending claims of PMFBY,” Lok Sabha Starred Question No. 25, answered 21 Jul. 2026."
+  },
+  {
+   "n": 22,
+   "doi": "https://cdn.cseindia.org/attachments/0.70726700_1779095588_yestech.pdf",
+   "type": "Presentation of a qualitative field assessment (not peer-reviewed)",
+   "verification": "Presentation PDF retrieved from the CSE site on 2026-10-12 and its text extracted in full. Title slide: 'Learnings from select districts towards improved claim settlement against crop losses as part of Pradhan Mantri Fasal Bima Yojana (PMFBY)', Chhavi Mahaur, Sustainable food systems programme, Centre for Science and Environment. Field assessment of about 50 farmers in Sehore, Vidisha and Bhopal, plus officials and insurers. Recorded: large soybean farmers reporting a decline in claims; insurers' view that 'there was room for 20-30 per cent error'; officials describing the technology-based process as opaque. The CSE report page on the same study is dated 18 May 2026.",
+   "supports": "That the accuracy of technology-based yield in Madhya Pradesh is contested by farmers and conceded to carry error by insurers; the claim formula Claims = [(TY - AY)/TY] x Sum Insured as presented there",
+   "uncertainty": "SECONDARY and qualitative; small convenience sample. The full report sits behind a registration form and was not read. Cited for the existence and content of stakeholder positions, not for any rate.",
+   "entry": "C. Mahaur, “Implementation of Yield Estimation System based on Technology (YES-TECH) in Madhya Pradesh: Learnings from select districts towards improved claim settlement against crop losses as part of PMFBY,” presentation, Centre for Science and Environment, New Delhi, May 2026."
+  },
+  {
+   "n": 25,
+   "entry": "R. Burnell et al., “Rethink reporting of evaluation results in AI,” Science, vol. 380, no. 6641, pp. 136–138, 2023.",
+   "doi": "10.1126/science.adf6369",
+   "type": "Journal article, Science Policy Forum (peer-reviewed)",
+   "verification": "2026-10-13: bibliographic record read from the University of Leeds White Rose repository (eprints.whiterose.ac.uk/198211): 16 authors, Science 380(6641):136-138, DOI 10.1126/science.adf6369. Author-accepted PDF text extracted and read; it states that aggregate metrics make it hard to predict how a system will perform in a particular situation, and that the instance-by-instance results that could unpack them are rarely made available. Entry abbreviated to 'et al.' per IEEE style (more than six authors).",
+   "supports": "That aggregate evaluation metrics obscure performance on particular instances and that instance-level results should be reported. Cited in Related Work as the general argument this paper measures on agricultural parcels.",
+   "uncertainty": "None on the record. Policy Forum argument, not an empirical study; cited for the argument only."
+  },
+  {
+   "n": 26,
+   "entry": "X. Bouthillier et al., “Accounting for Variance in Machine Learning Benchmarks,” in Proc. Machine Learning and Systems (MLSys), vol. 3, 2021.",
+   "doi": "https://proceedings.mlsys.org/paper_files/paper/2021/hash/0184b0cd3cfb185989f858a1d9f5c1eb-Abstract.html",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "2026-10-13: proceedings page read on proceedings.mlsys.org: 16 authors in the order given, Proceedings of Machine Learning and Systems vol. 3 (MLSys 2021); no page numbers listed there, so none are given. Also arXiv:2103.03098. The abstract states that variance from data sampling, parameter initialisation and hyperparameter choice markedly affects benchmark results. Entry abbreviated to 'et al.' per IEEE style (more than six authors).",
+   "supports": "That run-to-run variance can exceed the differences a benchmark comparison reports, so single runs cannot attribute an effect. Cited for the ablation's use of multiple seeds and the inconclusive category.",
+   "uncertainty": "Author spelling differs between arXiv ('Naz Sepah') and the proceedings; the proceedings form is used."
+  },
+  {
+   "n": 27,
+   "entry": "M. Stigler, A. Dey, A. Hobbs, and D. Lobell, “With big data come big problems: Pitfalls in measuring basis risk for crop index insurance,” arXiv:2209.14611, 2022.",
+   "doi": "https://arxiv.org/abs/2209.14611",
+   "type": "Preprint / working paper (not peer-reviewed)",
+   "verification": "2026-10-14: arXiv abstract page read: four authors in this order, v1 of 29 Sep 2022 is the only version, no journal reference. The first author's research page lists it under current working papers. It is NOT the AJAE article by Stigler and Lobell, 'Optimal index insurance and basis risk decomposition: an application to Kenya' (DOI 10.1111/ajae.12375), which is a different paper. Abstract: field-level yield data with many fields and few years give downward-biased basis-risk estimates and so overstate insurance quality; shown with satellite-based yields for the US and Kenya and with simulations.",
+   "supports": "That a panel of many fields and few years can make an insurance index look better than it is. Cited in V-E as related evidence, with the difference in question stated.",
+   "uncertainty": "Working paper; findings not peer-reviewed. Cited for its stated argument only."
+  },
+  {
+   "n": 28,
+   "entry": "X. Huang, A. Vrieling, Y. Dou, X. Li, and A. Nelson, “Divergent crop mapping accuracies across different field types in smallholder farming regions,” Int. J. Appl. Earth Obs. Geoinf., vol. 139, 104559, 2025.",
+   "doi": "10.1016/j.jag.2025.104559",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "2026-10-14: Crossref record read (authors, journal, vol. 139, article 104559, 2025). Abstract read via the NASA MODIS science-team publication listing: fields grouped by size and Sentinel-2 water-stress index; maize and soybean; random forest on Sentinel-2 and PlanetScope, pixel- and object-based; small water-stressed fields mapped least accurately. ScienceDirect full text not accessible (HTTP 403).",
+   "supports": "That crop-mapping accuracy in smallholder regions differs by field type (size, water stress). Cited in II-A to separate that question from this paper's.",
+   "uncertainty": "Read from the abstract only."
+  },
+  {
+   "n": 29,
+   "entry": "A. Paliwal and M. Jain, “The accuracy of self-reported crop yield estimates and their ability to train remote sensing algorithms,” Front. Sustain. Food Syst., vol. 4, 25, 2020.",
+   "doi": "10.3389/fsufs.2020.00025",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "2026-10-14: Frontiers article page read. Wheat, rabi 2014-15, Arrah district, Bihar, smallholdings under 0.3 ha. About 73 % of farmers under-reported yield (mean 568 kg/ha); satellite models calibrated on self-reports predicted crop-cut yields with R2 = 0.05 (not significant). Self-reporting and crop-cut farmers were different groups.",
+   "supports": "That self-reported yields can be a poor basis for calibrating field-level satellite yield models. Cited in the label-quality limitation.",
+   "uncertainty": "One district, one season, wheat; transfer to recalled paddy yields in the Cauvery Delta is not shown."
+  },
+  {
+   "n": 30,
+   "entry": "D. B. Lobell et al., “Eyes in the sky, boots on the ground: Assessing satellite- and ground-based approaches to crop yield measurement and analysis,” Amer. J. Agr. Econ., vol. 102, no. 1, pp. 202–219, 2020.",
+   "doi": "10.1093/ajae/aaz051",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "2026-10-14: Crossref record read (7 authors: Lobell, Azzari, Burke, Gourlay, Jin, Kilic, Murray; AJAE 102(1):202-219, 2020). Findings read from the abstract of the same team's World Bank Policy Research Working Paper 8374 (DOI 10.1596/1813-9450-8374): large discrepancies among farmer reports, sub-plot crop cuts and full-plot harvests on smallholder maize plots in Uganda, largest for farmer reports; satellite estimates explained as much or more of the variation in full-plot yields as the other measures.",
+   "supports": "That farmer-reported yields can diverge from measured yields. NOT cited as evidence that satellite yield estimation fails: the same study finds satellite estimates competitive, and the text says so.",
+   "uncertainty": "AJAE full text not read; findings taken from the working-paper abstract by the same authors."
+  }
+ ],
+ "_numbering": "Authoring numbering. The prose in scripts/make_paper_ieee.py cites these numbers; that script maps them to IEEE order of first appearance at build time and writes the result to references_final.json. This file is never rewritten by the build."
+}

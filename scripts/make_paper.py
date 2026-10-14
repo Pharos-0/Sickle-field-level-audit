@@ -19,6 +19,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt
 
 PROJ = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(PROJ))
+from src.utils import completed_per_plot_iou  # noqa: E402
 FIG = PROJ / "results" / "figures"
 OUT = PROJ / "docs" / "SICKLE_Field_Level_Audit.docx"
 
@@ -39,7 +42,7 @@ def load():
     n["d_radar"] = n["v5_px"] - n["v4_px"]
 
     per = {}
-    for f in glob.glob(str(PROJ / "outputs/crop_type/v5_seed*/best_per_plot_iou.json")):
+    for f in completed_per_plot_iou("crop_type", "v5", PROJ)[0]:
         for k, v in json.loads(Path(f).read_text(encoding="utf8")).items():
             per.setdefault(float(k), []).append(v)
     vals = np.array([np.mean(v) for v in per.values()])

@@ -133,13 +133,17 @@ crop and region:
 | | |
 |---|---|
 | Headline (pixel-pooled) IoU | **0.8665** |
-| Median **individual field** | **0.672** |
-| Fields below IoU 0.5 | **33%** |
-| Seed-to-seed correlation of per-field IoU | **+0.53 to +0.58** |
-| Fields failing in **every** independent run | **11 of 12** |
+| Median **individual field** (scored on the crop it holds) | **0.957** |
+| Fields below IoU 0.5 | **4 of 36** |
+| Seed-to-seed correlation of field IoU | **+0.57 to +0.86** |
+| Fields failing in **every** independent run | **2 of 4** |
 
-The last two matter most for policy: **failure is systematic, not random.** The
-same fields are mapped badly every time. That makes **selective automation**
+Corrected 2026-10-12: an earlier version of this table used IoU averaged
+over both classes (median 0.672, 12 fields below 0.5), which caps any
+imperfect single-crop field at 0.5. The point for policy survives in a
+narrower form: **failure is concentrated and partly systematic.** Most fields
+are mapped almost perfectly, a few are not, and the same few recur across
+runs. That makes **selective automation**
 feasible — automate the reliable fields, route the rest to human verification —
 which is not possible if failure is random.
 

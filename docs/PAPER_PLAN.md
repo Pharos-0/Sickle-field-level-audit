@@ -1,5 +1,8 @@
 # The paper
 
+> **Correction, 2026-10-12.** The per-field figures in this document used IoU averaged over both classes, which caps any imperfect single-crop field at 0.5 (35 of the 36 validation fields hold one crop). Scored on the crop each field holds, the median field is 0.957 (not 0.672) and 4 of 36 fields fall below 0.50 (not 12). The current figures are in `results/field_distributions.json` and the papers; this record is left as written.
+
+
 What is publishable from this work, stated after a literature search rather
 than before one.
 

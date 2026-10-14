@@ -1,0 +1,162 @@
+{
+  "docs/SICKLE_Field_Level_Audit_IEEE.docx": {
+    "sha256_16": "c1c03f8ab50242f0",
+    "bytes": 899128
+  },
+  "docs/SICKLE_Field_Level_Audit_IEEE.pdf": {
+    "sha256_16": "fcefca08ebb46e4e",
+    "bytes": 807998
+  },
+  "docs/Thesis_Paper.docx": {
+    "sha256_16": "b9a84809e23e433d",
+    "bytes": 545148
+  },
+  "docs/Thesis_Paper.pdf": {
+    "sha256_16": "90f0e80b86e422ee",
+    "bytes": 796119
+  },
+  "docs/Policy_Brief.docx": {
+    "sha256_16": "c2bde310ccee23c1",
+    "bytes": 39984
+  },
+  "docs/Policy_Brief.pdf": {
+    "sha256_16": "9899d98c4c45012a",
+    "bytes": 254434
+  },
+  "docs/references_thesis.json": {
+    "sha256_16": "cebc9b23db9f045b",
+    "bytes": 2322
+  },
+  "docs/REFERENCE_VERIFICATION.xlsx": {
+    "sha256_16": "b984eb653062552f",
+    "bytes": 15496
+  },
+  "docs/references.json": {
+    "sha256_16": "705706da5c05665e",
+    "bytes": 25865
+  },
+  "docs/references_final.json": {
+    "sha256_16": "7c39a3ec11598083",
+    "bytes": 27267
+  },
+  "docs/MANUSCRIPT_AUDIT.md": {
+    "sha256_16": "757c81e595143c57",
+    "bytes": 29150
+  },
+  "docs/FINAL_VALIDATION_REPORT.md": {
+    "sha256_16": "cef29b81e1018a12",
+    "bytes": 13233
+  },
+  "docs/REPRODUCE.md": {
+    "sha256_16": "0b4c6e841541476c",
+    "bytes": 6658
+  },
+  "docs/MORNING_HANDOFF.md": {
+    "sha256_16": "18101c1b2a5224e2",
+    "bytes": 9292
+  },
+  "results/gate/diagnosis_misses.json": {
+    "sha256_16": "a396bed6dcc99073",
+    "bytes": 1562
+  },
+  "configs/yield_screen_protocol.yaml": {
+    "sha256_16": "2d430e7a9bc49109",
+    "bytes": 5561
+  },
+  "results/triage/yield_screen.json": {
+    "sha256_16": "d6922d89a9973de0",
+    "bytes": 5467
+  },
+  "results/triage/yield_per_field.csv": {
+    "sha256_16": "fa6b0493aebd4817",
+    "bytes": 2342
+  },
+  "results/triage/per_field_signals_v5.csv": {
+    "sha256_16": "ca51cc37ea065ef2",
+    "bytes": 2656
+  },
+  "results/triage/screen_validate.json": {
+    "sha256_16": "059aaab86e275053",
+    "bytes": 18484
+  },
+  "results/field_size_val.json": {
+    "sha256_16": "67709e222ccbb514",
+    "bytes": 4965
+  },
+  "results/field_distributions.json": {
+    "sha256_16": "0d42156dcec0a1f0",
+    "bytes": 26373
+  },
+  "results/drift_check.json": {
+    "sha256_16": "1fe72c7f01b30fe2",
+    "bytes": 9047
+  },
+  "results/minimal_repro.json": {
+    "sha256_16": "0edd66c0c1220848",
+    "bytes": 3812
+  },
+  "results/ladder_power.json": {
+    "sha256_16": "d3601ec8e4a8979f",
+    "bytes": 6771
+  },
+  "results/triage/conditional_screen.json": {
+    "sha256_16": "f4f0418b49ab6888",
+    "bytes": 2948
+  },
+  "results/yield_vs_constant.json": {
+    "sha256_16": "0bc280ce11f167fc",
+    "bytes": 19379
+  },
+  "configs/conditional_screen_protocol.yaml": {
+    "sha256_16": "e10649f314a5cb8e",
+    "bytes": 10432
+  },
+  "configs/tolerances.yaml": {
+    "sha256_16": "f6857c4ef8633c99",
+    "bytes": 15148
+  },
+  "results/figures_ieee/fig_batch.png": {
+    "sha256_16": "b9e7a317a1ae8556",
+    "bytes": 47684
+  },
+  "results/figures_ieee/fig_error_concentration.png": {
+    "sha256_16": "4210ebf3b41c02d3",
+    "bytes": 139394
+  },
+  "results/figures_ieee/fig_field_distribution.png": {
+    "sha256_16": "b590736ac54e8fa7",
+    "bytes": 180215
+  },
+  "results/figures_ieee/fig_ladder.png": {
+    "sha256_16": "47f1452a7a8ee387",
+    "bytes": 92331
+  },
+  "results/figures_ieee/fig_leave_field_out.png": {
+    "sha256_16": "35f8e01cb62b9a84",
+    "bytes": 89251
+  },
+  "results/figures_ieee/fig_perfield.png": {
+    "sha256_16": "a5777ae48f888e97",
+    "bytes": 50401
+  },
+  "results/figures_ieee/fig_satellite.png": {
+    "sha256_16": "96a7743deeef9efb",
+    "bytes": 157076
+  },
+  "results/figures_ieee/fig_seeds.png": {
+    "sha256_16": "12f998b995dda21f",
+    "bytes": 52040
+  },
+  "results/figures_ieee/fig_tails.png": {
+    "sha256_16": "e51b745e18a3e62b",
+    "bytes": 54346
+  },
+  "results/figures_ieee/fig_triage.png": {
+    "sha256_16": "7ccb45311eb3cdab",
+    "bytes": 87269
+  },
+  "results/figures_ieee/fig_yield_screen.png": {
+    "sha256_16": "8433e832b33129d8",
+    "bytes": 193459
+  }
+}
