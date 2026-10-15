@@ -446,22 +446,27 @@ def _cnt(k):
 # ----------------------------------------------------------------- authors
 # As the authors set them in their copy of the paper (2026-10-15), with
 # "Science amd Technology" corrected to "and". Shared by both IEEE papers.
-AUTHORS = [("Pharos Sophy Samuel T J", "1"), ("Dr. S. Ganesh Kumar", "2")]
-AFFIL = ["Department of Data Science and Business Systems",
-         "SRM Institute of Science and Technology, Kattankulathur"]
+# IEEE convention: no honorifics, no affiliation superscripts (2026-10-16).
+AUTHORS = [("Pharos Sophy Samuel T J", ""), ("S. Ganesh Kumar", "")]
+AFFIL = ["Dept. of Data Science and Business Systems",
+         "SRM Institute of Science and Technology",
+         "Kattankulathur, India"]
 EMAILS = ["tjpharossophysamuel@gmail.com", "ganeshk1@srmist.edu.in"]
 
 
 def author_block(doc):
-    """Authors side by side in a borderless table."""
+    """Authors side by side in a borderless table, IEEE conference layout:
+    name, then department and institution in italics, city, email."""
     from docx.enum.table import WD_TABLE_ALIGNMENT
+    assert not any(a[0].split()[0].rstrip(".") in ("Dr", "Prof", "Mr", "Ms")
+                   for a in AUTHORS), "IEEE author lines carry no honorifics"
     tb = doc.add_table(rows=1, cols=len(AUTHORS))
     tb.alignment = WD_TABLE_ALIGNMENT.CENTER
     for i, (name, mark) in enumerate(AUTHORS):
         cell = tb.rows[0].cells[i]
-        lines = ([(name, 10.5, False, mark)]
-                 + [(a, 9.5, False, None) for a in AFFIL]
-                 + [(EMAILS[i], 9.0, True, None)])
+        lines = ([(name, 11.0, False, mark)]
+                 + [(a, 9.0, j < 2, None) for j, a in enumerate(AFFIL)]
+                 + [(EMAILS[i], 9.0, False, None)])
         for j, (txt, sz, it, mk) in enumerate(lines):
             p = cell.paragraphs[0] if j == 0 else cell.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -480,6 +485,20 @@ def author_block(doc):
         borders.append(el)
     tb._tbl.tblPr.append(borders)
     doc.add_paragraph().paragraph_format.space_after = Pt(8)
+
+
+def spaced_percent(doc):
+    """One percent style throughout: '95 %', as most hand-written text has
+    it. Formatted values (f"{x:.0%}") come out closed up, so normalise every
+    run, in paragraphs and table cells, just before saving."""
+    import re as _re
+    pat = _re.compile(r"(\d)%")
+    paras = list(doc.paragraphs) + [q for tb in doc.tables for row in tb.rows
+                                    for c in row.cells for q in c.paragraphs]
+    for para in paras:
+        for r in para.runs:
+            if pat.search(r.text):
+                r.text = pat.sub(r"\1 %", r.text)
 
 
 def two_columns(section, n=2, space=0.25):
@@ -504,6 +523,7 @@ def heading(d, text, level=1):
     p = d.add_paragraph()
     pf = p.paragraph_format
     pf.space_before = Pt(8); pf.space_after = Pt(3)
+    pf.keep_with_next = True      # never strand a heading at a column foot
     if level == 1:
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         r = p.add_run(text.upper()); r.bold = True; r.font.size = Pt(9.5)
@@ -645,8 +665,10 @@ def build():
         "accuracy pooled over pixels, while a payout concerns a field. We "
         "therefore ask what a benchmark number says about an individual "
         f"field, auditing {n['n_eval']} released SICKLE models across four "
-        "tasks. Three defects make the published numbers irreproducible; "
-        "evaluation of a frozen model moves by up to "
+        f"tasks. All {n['n_models']} regression checkpoints (yield and "
+        f"dates) reproduce and {n['ct_pass']} of {n['ct_total']} crop-type "
+        "cells do, but three defects undermine reproducibility, most "
+        "visibly an evaluation of frozen weights that moves by up to "
         f"{100 * max(n['bs_spread'].values()):.1f} IoU points with batch "
         f"size alone; and none of the {len(n['yield_vs_const'])} released "
         "yield models is shown to beat a constant predictor. A pooled IoU of "
@@ -705,8 +727,9 @@ def build():
               "[1], smallholder paddy in the Cauvery Delta of Tamil Nadu, "
               "with plots averaging 0.38 acres. We ask one question: what "
               "does a published benchmark number say about an individual "
-              "field? Our contributions are: (i) three defects that make the "
-              "published numbers irreproducible, and one metric definition "
+              "field? Our contributions are: (i) three defects that undermine the "
+              "benchmark's reproducibility, although most checkpoints "
+              "reproduce, and one metric definition "
               "the released artefacts make easy to misread; "
               f"(ii) none of the {len(n['yield_vs_const'])} released yield "
               "models is shown to beat a constant predictor, a comparison "
@@ -1023,7 +1046,8 @@ def build():
               "— so the column is not comparable to a percentage error "
               "reported anywhere else, and should not be read as one.")
 
-    heading(doc, "B.  Information helps; model complexity is inconclusive", 2)
+    heading(doc, "B.  Steps that add information exceed seed spread; "
+                 "capacity is inconclusive", 2)
     body(doc, "A step is called inconclusive when the magnitude of its "
               "change falls below the largest seed-to-seed standard deviation "
               f"observed on any rung (σmax = {n['sd_max']:.4f}). This is "
@@ -1183,7 +1207,8 @@ def build():
            f"Fig. 2.  Ten-rung controlled ablation at {n['seed_phrase']}. "
            "Error bars "
            "are seed-to-seed standard deviation. The shaded region marks the "
-           "rungs that add model complexity rather than information.")
+           "rungs (v7 to v10) that change the architecture, its width, the "
+           "schedule or the sampling, not the information the model sees.")
 
     heading(doc, "C.  Reported IoU and the fields behind it", 2)
     _lad = n["fd"]["ladder_crop_type"]
@@ -1229,15 +1254,21 @@ def build():
                   "that are right, and cannot say which they are.")
     figure(doc, "fig_satellite.png",
            "Fig. 3.  Sentinel-2 chips of SICKLE validation fields beside the "
-           "best configuration's prediction (seed 0). Each pair shows the "
+           "prediction of the v5 seed-0 checkpoint, the run whose field "
+           "scores the text reports. Each pair shows the "
            "surveyed field outlined on the image and the prediction over "
            "it; red marks wrong pixels inside the field. (a) Fields chosen "
            "by size, not by result. (b) The fields whose IoU averaged over "
            "three runs is below 0.5, each shown at the season with the "
            "most wrong pixels. The number is the field's IoU over all its "
-           "seasons at seed 0; in (b) the three-run mean follows. Chips are "
+           "seasons at seed 0; in (b) the three-seed mean follows and sets "
+           "the colour. Chips are "
            "cropped around each field and carry their own 100 m bar.")
-    body(doc, f"For the best configuration, pixel-pooled IoU is {n['v5']:.4f}, "
+    body(doc, f"Field-level results use v5 (Sentinel-2 with radar), the rung with "
+              f"the highest plot-level score "
+              f"({float(n['L']['v5']['plot_macro_iou']):.3f}); v6 adds Landsat-8 "
+              f"and scores {n['d_l8']:.4f} higher pooled, within seed spread. "
+              f"For v5, pixel-pooled IoU is {n['v5']:.4f}, "
               f"the average field scores {_lad['per_field_mean']:.3f} "
               f"(95 % CI {_lad['ci_mean'][0]:.3f}–{_lad['ci_mean'][1]:.3f}) "
               f"and the median field {n['median_field']:.3f} (Fig. 4). The "
@@ -1301,7 +1332,7 @@ def build():
            "Red bars fall below 0.5; the cross marks a field scoring 0.")
     figure(doc, "fig_field_distribution.png",
            "Fig. 5.  (a) Distribution of field IoU over the "
-           f"{n['n_fields']} validation fields at the best configuration, "
+           f"{n['n_fields']} validation fields at v5, "
            "with the pooled value and three stated thresholds. (b) The same "
            "as a quantile plot. (c) Field IoU against the number of "
            "pixels the field contributes to the pooled metric; the "
@@ -1937,6 +1968,7 @@ def build():
         run.font.size = Pt(7.6)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    spaced_percent(doc)
     doc.save(OUT)
 
     # The verification table must carry the manuscript's final numbering, or

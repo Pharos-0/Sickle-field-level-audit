@@ -49,7 +49,7 @@ sys.path.insert(0, str(PROJ))
 sys.path.insert(0, str(PROJ / "scripts"))
 
 import make_thesis_paper as T                           # noqa: E402
-from make_paper_ieee import (author_block, body, heading,  # noqa: E402
+from make_paper_ieee import (spaced_percent, author_block, body, heading,  # noqa: E402
                              renumber, two_columns)
 from make_thesis_paper import ci, cil, m, pct, w        # noqa: E402
 
@@ -141,10 +141,54 @@ def _rc():
     return plt
 
 
-def text_figure(lines, out, fontsize=5.4, title=None, note=None):
+def wrap_mono(ln, width):
+    """Wrap a printed line at a word boundary, continuing at its own
+    indentation; the prototype's text is never cut mid-word in a figure.
+    Rule lines of '=' are shortened instead."""
+    import textwrap
+    if len(ln) <= width:
+        return [ln]
+    if set(ln.strip()) <= {"=", "-"}:
+        return [ln[:width]]
+    ind = " " * (len(ln) - len(ln.lstrip()))
+    return textwrap.wrap(ln, width, initial_indent="", subsequent_indent=ind,
+                         drop_whitespace=True) or [ln[:width]]
+
+
+def reflow_mono(lines, width):
+    """Re-wrap printed text to `width`: consecutive non-blank lines at the
+    same indentation are one paragraph (checkbox items and rules stay
+    their own lines), so a sentence the prototype broke at its own width
+    is not left with a one-word orphan. The words are unchanged."""
+    out, para, ind = [], [], None
+
+    def flush():
+        if para:
+            out.extend(wrap_mono(ind + " ".join(para), width))
+            para.clear()
+    for ln in lines:
+        s = ln.strip()
+        lead = ln[:len(ln) - len(ln.lstrip())]
+        solo = (not s or s.startswith("[") or set(s) <= {"=", "-"})
+        if solo or lead != ind:
+            flush()
+        if solo:
+            out.extend(wrap_mono(ln, width) if s else [""])
+            ind = None
+        else:
+            para.append(s)
+            ind = lead
+    flush()
+    return out
+
+
+def text_figure(lines, out, fontsize=6.0, title=None, note=None):
     plt = _rc()
-    n = len(lines) + (2 if title else 0) + (2 if note else 0)
-    fig = plt.figure(figsize=(3.35, 0.098 * n + 0.15))
+    n = (len(lines) + (2 if title else 0)
+         + (2 + note.count("\n") if note else 0))
+    # Consolas is 0.55 em per character against DejaVu Sans Mono's 0.60,
+    # so a 68-character line fits the column at 6 pt.
+    fig = plt.figure(figsize=(COL, 0.106 * n + 0.15))
     ax = fig.add_axes([0, 0, 1, 1])
     ax.axis("off")
     ax.add_patch(plt.Rectangle((0.005, 0.005), 0.99, 0.99,
@@ -153,16 +197,16 @@ def text_figure(lines, out, fontsize=5.4, title=None, note=None):
     y = 0.985
     step = 0.97 / n
     if title:
-        ax.text(0.03, y, title, transform=ax.transAxes, fontsize=fontsize + 0.6,
+        ax.text(0.025, y, title, transform=ax.transAxes, fontsize=fontsize + 0.6,
                 weight="bold", va="top", color="#7a2e1f")
         y -= 2 * step
     for ln in lines:
-        ax.text(0.03, y, ln, transform=ax.transAxes, fontsize=fontsize,
-                family="DejaVu Sans Mono", va="top", color="#111111")
+        ax.text(0.025, y, ln, transform=ax.transAxes, fontsize=fontsize,
+                family="Consolas", va="top", color="#111111")
         y -= step
     if note:
         y -= step
-        ax.text(0.03, y, note, transform=ax.transAxes, fontsize=fontsize,
+        ax.text(0.025, y, note, transform=ax.transAxes, fontsize=fontsize,
                 style="italic", va="top", color="#555555")
     fig.savefig(out, facecolor="white")
     plt.close(fig)
@@ -233,10 +277,10 @@ def make_figures(N):
             cut = False
             keep.append("")
         if not cut:
-            keep.append(ln[:68])
+            keep.extend(wrap_mono(ln, 68))
     F["report"] = text_figure(
         [k for k in keep if k is not None], GFIG / "fig_guard_report.png",
-        note="Illustrative inputs (field 999 is not a SICKLE field); "
+        note="Illustrative inputs (field 999 is not a SICKLE field);\n"
              "text exactly as the prototype prints it.")
 
     # ---- 3. the inspection task sheet, rendered by the workflow
@@ -248,10 +292,11 @@ def make_figures(N):
     for ln in r.stdout.rstrip("\n").split("\n"):
         ln = _re.sub(r"field \d+", "field ###", ln)
         ln = _re.sub(r"season [a-z]+-[a-z]+ \d{4}", "season ########", ln)
-        sheet.append(ln[:66])
+        sheet.append(ln)
     F["sheet"] = text_figure(
-        sheet, GFIG / "fig_guard_sheet.png",
-        note="Field and season masked: queue order derives from labels.")
+        reflow_mono(sheet, 66), GFIG / "fig_guard_sheet.png",
+        note="Field and season masked: queue order derives from labels.\n"
+             "Words as printed; lines re-wrapped to the column.")
 
     # ---- 4. held-out ranking
     t = N["ep"]["ranking"]["held-out test split"]
@@ -263,7 +308,8 @@ def make_figures(N):
              ("arbitrary order", "arbitrary order"),
              ("smallest field first", "smallest field first")]
     order = [o for o in order if o[0] in t]
-    fig, ax = plt.subplots(figsize=(3.35, 2.0))
+    fig, ax = plt.subplots(figsize=(COL, 2.0))
+    fig.subplots_adjust(left=0.42, right=0.97, top=0.97, bottom=0.2)
     y = np.arange(len(order))[::-1]
     a = [t[k]["auroc"] for k, _ in order]
     lo = [t[k]["auroc"] - t[k]["auroc_ci"][0] for k, _ in order]
@@ -329,7 +375,7 @@ def make_figures(N):
     # ---- 6. simulated studies (stacked), labelled
     ho = N["insp"]["sets"]["held-out test split (VERDICT)"]["budgets"]["0.2"]
     cur = N["yw"]["conditional_curves"]
-    fig, (b1, b2) = plt.subplots(2, 1, figsize=(3.35, 3.5))
+    fig, (b1, b2) = plt.subplots(2, 1, figsize=(COL, 3.6))
     sv = np.linspace(0.3, 1.0, 15)
     for k, lab, col in (("register", "register-guided", "#1f6f4a"),
                         ("workflow", "workflow-guided", "#1f3b73")):
@@ -340,8 +386,8 @@ def make_figures(N):
                label="perfect inspector, random")
     b1.set_xlabel("inspector sensitivity", fontsize=6.5)
     b1.set_ylabel("real problems confirmed", fontsize=6.5)
-    b1.legend(fontsize=5.6, loc="upper left")
-    b1.set_title("(a) SIMULATED inspector, observed rankings, 20 % budget",
+    b1.legend(fontsize=6.2, loc="upper left")
+    b1.set_title("(a) SIMULATED inspector,\nobserved rankings, 20 % budget",
                  fontsize=6.8, color="#a5611a")
     sh = [0.05, 0.10, 0.20, 0.30]
     for wt, lab, col in (("0.30", "30 % weight", "#1f3b73"),
@@ -355,8 +401,8 @@ def make_figures(N):
                     label=lab if sd == "0.20" else None)
     b2.set_xlabel("true shortfall below threshold (%)", fontsize=6.5)
     b2.set_ylabel("paid nothing (%)", fontsize=6.5)
-    b2.legend(fontsize=5.6)
-    b2.set_title("(b) SIMULATED Insurance Unit, technology error 0.20 "
+    b2.legend(fontsize=6.2)
+    b2.set_title("(b) SIMULATED Insurance Unit, technology\nerror 0.20 "
                  "(solid) / 0.30 (dashed)", fontsize=6.8, color="#a5611a")
     fig.tight_layout(h_pad=0.8)
     F["simulated"] = GFIG / "fig_guard_simulated.png"
@@ -364,22 +410,49 @@ def make_figures(N):
     plt.close(fig)
 
     # ---- 7. the console's summary cards (aggregates only)
+    # A print copy: the console's own light theme, only the four cards, two
+    # columns at 520 CSS px so the card text prints near 6.7 pt at column
+    # width (the full page at 680 px printed it at about 4.7 pt). The copy
+    # lives in a temporary directory: the console embeds label-derived
+    # flags, so no copy of it is written into the repository.
     F["console"] = None
     html = T.GUARD / "results" / "console" / "verification_console.html"
     shot = GFIG / "console_narrow.png"
-    if EDGE.exists() and html.exists():
-        subprocess.run([str(EDGE), "--headless=new", "--disable-gpu",
-                        "--hide-scrollbars", "--force-device-scale-factor=3",
-                        "--window-size=680,1500", f"--screenshot={shot}",
-                        html.resolve().as_uri()],
-                       capture_output=True, timeout=120)
     if shot.exists():
-        from PIL import Image
-        im = Image.open(shot)
-        # the four cards: below the legend rule, above the inspection queue
-        # (at 680 CSS px and scale 3; re-check if the console layout changes)
+        shot.unlink()
+    if EDGE.exists() and html.exists():
+        import tempfile
+        css = ("<style>.page > :not(#findings) { display: none !important; }"
+               ".page { padding: 4px !important; gap: 0 !important; }"
+               "body { background: #ffffff !important; }"
+               ".findings { grid-template-columns: 1fr 1fr !important;"
+               " gap: 8px !important; }"
+               ".finding { padding: 10px 12px 10px !important;"
+               " gap: 6px !important; }"
+               ".finding p { line-height: 1.36 !important; margin: 0; }"
+               ".finding .big { font-size: 1.6rem !important; }</style>")
+        with tempfile.TemporaryDirectory() as td:
+            pc = Path(td) / "console_print.html"
+            pc.write_text('<!doctype html><html data-theme="light">'
+                          + html.read_text(encoding="utf8") + css,
+                          encoding="utf8")
+            subprocess.run([str(EDGE), "--headless=new", "--disable-gpu",
+                            "--hide-scrollbars", "--force-device-scale-factor=3",
+                            "--window-size=520,1600", f"--screenshot={shot}",
+                            pc.resolve().as_uri()],
+                           capture_output=True, timeout=120)
+    if shot.exists():
+        from PIL import Image, ImageChops
+        im = Image.open(shot).convert("RGB")
+        # crop to the cards: everything that is not the white page
+        box = ImageChops.difference(
+            im, Image.new("RGB", im.size, (255, 255, 255))).getbbox()
+        assert box, "console screenshot is blank"
+        pad = 6
+        box = (max(0, box[0] - pad), max(0, box[1] - pad),
+               min(im.width, box[2] + pad), min(im.height, box[3] + pad))
         F["console"] = GFIG / "fig_guard_console.png"
-        im.crop((0, 990, im.width, 2725)).save(F["console"])
+        im.crop(box).save(F["console"], dpi=(300, 300))
     return F
 
 
@@ -475,7 +548,7 @@ def pipeline_figure():
     a.set_title(f"(a) Sentinel-2 true colour\n{peak[0]:%d %b %Y}, field "
                 "outlined", fontsize=6.2)
     a.plot([1, 11], [H - 2, H - 2], color="white", lw=1.2)
-    a.text(6, H - 3, "100 m", color="white", fontsize=5, ha="center",
+    a.text(6, H - 3, "100 m", color="white", fontsize=5.6, ha="center",
            va="bottom")
 
     b = fig.add_subplot(gs[0, 1])
@@ -489,7 +562,8 @@ def pipeline_figure():
     b.set_title(f"(b) field-mean NDVI: {len(kept)} clear (dots) of\n"
                 f"{len(kept) + len(rejected)} acquisitions; × rejected "
                 "as cloud", fontsize=5.8)
-    b.tick_params(axis="x", labelsize=5, rotation=30)
+    b.tick_params(axis="x", labelsize=5.6, rotation=30)
+    b.tick_params(axis="y", labelsize=5.6)
 
     c = fig.add_subplot(gs[1, :])
     c.axis("off")
@@ -504,7 +578,7 @@ def pipeline_figure():
                                   transform=c.transAxes, fill=False, ec=col,
                                   lw=0.9))
         c.text(x0 + 0.085, 0.655, txt, transform=c.transAxes, ha="center",
-               va="center", fontsize=5.2, color=col)
+               va="center", fontsize=5.7, color=col)
         if k < 4:
             c.annotate("", xy=(x0 + 0.195, 0.655), xytext=(x0 + 0.172, 0.655),
                        xycoords="axes fraction",
@@ -512,7 +586,7 @@ def pipeline_figure():
                                        color="#555555"))
     c.text(0.5, 0.08, "(c) a model output, used only because this field has "
            "no harvest record", transform=c.transAxes, ha="center",
-           fontsize=5.4, style="italic", color="#a5611a")
+           fontsize=5.8, style="italic", color="#a5611a")
     out = GFIG / "fig_guard_pipeline.png"
     fig.savefig(out, facecolor="white")
     plt.close(fig)
@@ -755,6 +829,20 @@ def build(N):
               f"({n_ho_fs} field-seasons) that was never used to fit or "
               "tune anything; out-of-fold predictions over all "
               "field-seasons give a second, larger view with more power.", 0.0)
+    body(doc, "The sequence is fixed. The split was made once, by plot and "
+              "stratified by plot-mean yield tercile: 80 training plots "
+              "(197 field-seasons), 24 validation (60) and 27 test (62). "
+              "Candidate yield models were compared on validation only, and "
+              "the random forest was selected there; the shipped model is "
+              "refitted on the training and validation plots, and the test "
+              "split was scored once. Grouped five-fold cross-validation by "
+              "plot gives the out-of-fold view. Rankings and AUROC are over "
+              "field-seasons. A budget b inspects the round(bN) "
+              "highest-priority field-seasons of the N in the evaluated "
+              "pool: on the held-out split N = 62, so budgets of 10, 20 and "
+              "33 % mean 6, 12 and 20 inspections. Random referral is a null "
+              "distribution over 10,000 random orderings, reported by its "
+              "mean and 97.5th percentile.")
     body(doc, "A field-season counts as below threshold when its recalled "
               "yield is under 80 % of the training-split mean, "
               f"{thr:,.0f} kg/acre. This is a convention of the study, not "
@@ -838,6 +926,12 @@ def build(N):
         ("Record observations, never decisions; hash every action",
          f"{N['n_wf_tests']} workflow tests, tampering caught (software)"),
     ], "Each design rule and the evidence behind it", widths=[1.25, 2.05])
+    body(doc, "For a field with no record the report does print the "
+              "satellite number, so the warning travels with it: the basis "
+              "line reads \u201csatellite imagery (no past harvest on "
+              "record)\u201d, and under \u201cHOW MUCH TO TRUST THIS\u201d "
+              "the report states \u201cNO RELIABLE ESTIMATE\u201d and "
+              "\u201cDo not act on the number itself\u201d.")
     body(doc, "Fig. 3 shows the rule at work: a report for a field with no "
               "harvest record and an estimate close to the average, the case "
               "in which a reassuring display would be most tempting.")
@@ -909,7 +1003,8 @@ def build(N):
                        f"{rr_['register']['n_found']}",
                        f"{rr_['history_only']['n_found']}",
                        f"{rr_['workflow']['n_found']}",
-                       ci(*cr["ci_adjusted"], 2)))
+                       f"[{z(cr['ci_adjusted'][0], 2)}, "
+                       f"{z(cr['ci_adjusted'][1], 2)}]"))
     body(doc, "A pre-registered experiment compared four policies on the "
               "same held-out plots at three budgets: random referral, the "
               "register an office already keeps (plots ranked by their "
@@ -917,7 +1012,9 @@ def build(N):
               "harvests, and the SICKLE-Guard workflow. The target is "
               f"the {w(n_ho_bad)} below-threshold field-seasons, not "
               "verified damage, and six comparisons were made, so intervals "
-              "are Bonferroni-adjusted (Table II).", 0.0)
+              "are Bonferroni-adjusted (Table II). Recall moves in steps of "
+              "one field-season, so a percentile bound can sit exactly at "
+              "zero; the pre-registered rule needs it above zero.", 0.0)
     table(doc, ["Budget", "Random", "Register", "History", "Workflow",
                 "Workflow \u2212 register"], rows_a,
           f"Below-threshold field-seasons found (of {ea['n_bad']}) and the "
@@ -1010,8 +1107,8 @@ def build(N):
               f"cold starts, with satellite estimates of {min(_me):,.0f} to "
               f"{max(_me):,.0f} kg/acre against a threshold of {thr:,.0f}: "
               "the model pulls a field without a record towards the "
-              f"average. {w(N['n_safety_tests'], True)} safety tests probe "
-              "exactly these cases, and require the report's wording to be "
+              f"average. A set of {N['n_safety_tests']} safety tests probes "
+              "exactly these cases and requires the report's wording to be "
               "identical for estimates from 300 to 3,500 kg/acre, so a high "
               "number cannot soften a warning into reassurance; the check "
               "itself was verified by injecting a report that reassured "
@@ -1262,6 +1359,7 @@ def main() -> int:
             print("  -", p)
         return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    spaced_percent(doc)
     doc.save(str(OUT))
     print(f"wrote {OUT}")
     print(f"  {len(text.split()):,} words, {_FIGNO[0]} figures, {_TABNO[0]} "

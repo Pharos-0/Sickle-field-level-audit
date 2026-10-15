@@ -16,8 +16,10 @@ Two groups of fields, chosen by rules that do not look at the picture:
       exactly as the manuscript computes it.
 For every field the chip shown is the season with the most labelled pixels,
 again chosen without looking at the prediction. The number under a tile is
-the field's IoU at seed 0 over all of its chips; the seed mean follows in
-brackets for the failing group, since that is what selected it.
+the field's IoU at seed 0 over all of its chips; the seed mean follows
+for the failing group, since that is what selected it. The cache is checked
+against the checkpoint (best.json pooled score, field_confusions seed 0) and
+the checkpoint against docs/CHECKPOINT_INVENTORY.csv by SHA-256.
 """
 
 from __future__ import annotations
@@ -39,8 +41,30 @@ import render_sickle_gallery as G                    # noqa: E402
 from src.utils import completed_field_iou            # noqa: E402
 
 OUT = PROJ / "results" / "figures_ieee" / "fig_satellite.png"
+CKPT_DIR = PROJ / "outputs" / "crop_type" / "v5_seed0"
 INK, MUTED = "#111111", "#555555"
 C_OK, C_BAD = "#1a7f37", "#c62828"
+
+
+def trace_checkpoint() -> dict:
+    """The checkpoint behind the tiles, by path and SHA-256, checked against
+    docs/CHECKPOINT_INVENTORY.csv so the figure names a file that exists in
+    the inventory with the same bytes."""
+    import csv
+    import hashlib
+    f = CKPT_DIR / "checkpoint_best.pth.tar"
+    rel = f.relative_to(PROJ).as_posix()
+    rows = [r for r in csv.DictReader(
+        (PROJ / "docs" / "CHECKPOINT_INVENTORY.csv").open(encoding="utf8"))
+        if r["file"] == rel]
+    assert len(rows) == 1, f"{rel}: {len(rows)} inventory rows"
+    h = hashlib.sha256()
+    with f.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    assert h.hexdigest() == rows[0]["sha256"], "checkpoint changed since inventory"
+    return {"file": rel, "sha256": h.hexdigest(),
+            "inventory_group": rows[0]["group"], "run": rows[0]["run"]}
 
 
 def best_sample(R, plot, most_wrong=False):
@@ -113,7 +137,7 @@ def tile(ax, R, s, plot, mode, scale=8):
     h = up.shape[0]
     ax.plot([4, 4 + 10 * scale], [h - 6, h - 6], color="white", lw=1.4)
     if mode == "image":
-        ax.text(4 + 5 * scale, h - 10, "100 m", color="white", fontsize=4.4,
+        ax.text(4 + 5 * scale, h - 10, "100 m", color="white", fontsize=5.6,
                 ha="center", va="bottom")
 
 
@@ -130,29 +154,34 @@ def main() -> int:
     if not bad:
         raise SystemExit("no field below 0.5 at v5; the figure's group (b) "
                          "would be empty")
-    # Seed 0 of this cache must be seed 0 of the confusion file the paper
-    # uses, or the numbers under the tiles would come from a different run.
+    # Traceability. The cache must be the v5 seed-0 checkpoint's own output:
+    # its pooled score equals the one the trainer saved in best.json, and its
+    # field IoUs equal seed 0 of the confusion file the paper counts from.
+    # Anything else and the tiles would show a different run from the text.
+    best = json.loads((CKPT_DIR / "best.json").read_text(encoding="utf8"))
+    assert abs(R["pooled_macro_iou"] - best["macro_iou"]) < 1e-9, \
+        (R["pooled_macro_iou"], best["macro_iou"])
     s0 = completed_field_iou("v5", PROJ)[0][0]
-    for k, v in R["own_iou"].items():
-        if abs(s0[float(k)] - v) > 2e-3:
-            print(f"  note: field {float(k):.0f} seed-0 IoU {v:.4f} here vs "
-                  f"{s0[float(k)]:.4f} in field_confusions (AMP vs fp32)")
+    dev = max(abs(s0[float(k)] - v) for k, v in R["own_iou"].items())
+    assert dev < 1e-6 and len(R["own_iou"]) == len(s0), \
+        f"seed-0 field IoU differs from field_confusions by {dev:.4g}"
+    ckpt = trace_checkpoint()
 
     groups = [("(a) Typical fields, chosen by size", typical, False),
               (f"(b) The {len(bad)} fields scoring below 0.5", bad, True)]
     rows = sum((len(g[1]) + 1) // 2 for g in groups)
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 6})
-    fig = plt.figure(figsize=(3.3, 0.92 * rows + 0.7), facecolor="white")
+    fig = plt.figure(figsize=(3.3, 1.02 * rows + 0.95), facecolor="white")
     gs = fig.add_gridspec(rows + len(groups), 4,
                           height_ratios=sum(([0.09] + [1] * ((len(g[1]) + 1) // 2)
                                              for g in groups), []),
-                          left=0.01, right=0.99, top=0.995, bottom=0.085,
-                          wspace=0.05, hspace=0.42)
+                          left=0.01, right=0.99, top=0.995, bottom=0.135,
+                          wspace=0.05, hspace=0.62)
     r = 0
     for title, plots, is_bad in groups:
         ax = fig.add_subplot(gs[r, :]); ax.axis("off")
-        ax.text(0, 0.1, title, fontsize=6.4, weight="bold", color=INK,
-                va="bottom")
+        ax.text(0, -2.6, title, fontsize=7.0, weight="bold", color=INK,
+                va="center")   # into the gap, nearer its tiles
         r += 1
         for i, plot in enumerate(plots):
             rr, cc = r + i // 2, 2 * (i % 2)
@@ -162,22 +191,26 @@ def main() -> int:
             tile(a1, R, s, plot, "image")
             tile(a2, R, s, plot, "pred")
             cls, iou = G._field_label(R, {"plot": plot, "sample": s})
-            a1.set_xlabel(f"field {int(plot)}, {cls}", fontsize=5.4,
-                          color=INK, labelpad=1.5)
+            # One two-line label centred under the pair, so neither line
+            # has to fit under a single 0.8-inch tile.
+            mid = 1 + 0.05 / 2          # halfway across the wspace gap
+            a1.text(mid, -0.05, f"field {int(plot)} ({cls})", fontsize=6.2,
+                    color=INK, ha="center", va="top", transform=a1.transAxes)
             lab = f"IoU {iou:.2f}"
             # (b) was selected on the seed mean, so that decides its colour
             score = mean[float(plot)] if is_bad else iou
             if is_bad:
-                lab += f", mean {mean[float(plot)]:.2f}"
-            a2.set_xlabel(lab, fontsize=5.4, labelpad=1.5, weight="bold",
-                          color=C_OK if score >= 0.5 else C_BAD)
+                lab += f"; {len(seeds)}-seed mean {mean[float(plot)]:.2f}"
+            a1.text(mid, -0.20, lab, fontsize=6.2, weight="bold",
+                    ha="center", va="top", transform=a1.transAxes,
+                    color=C_OK if score >= 0.5 else C_BAD)
         r += (len(plots) + 1) // 2
     leg = [Patch(facecolor=G.C_PADDY, label="predicted paddy"),
            Patch(facecolor=G.C_OTHER, label="predicted non-paddy"),
            Patch(facecolor=G.C_WRONG, label="wrong, inside surveyed field"),
            Patch(facecolor="#9e9e9e", edgecolor="white",
                  label="surveyed field (outline)")]
-    fig.legend(handles=leg, loc="lower center", ncol=2, fontsize=5.4,
+    fig.legend(handles=leg, loc="lower center", ncol=2, fontsize=6.2,
                frameon=False, bbox_to_anchor=(0.5, -0.005),
                handlelength=1.2, columnspacing=1.0)
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -186,6 +219,10 @@ def main() -> int:
     plt.close(fig)
     meta = {
         "rung": "v5", "seed_shown": 0, "seeds_for_selection": seeds,
+        "checkpoint": ckpt,
+        "pooled_macro_iou": R["pooled_macro_iou"],
+        "pooled_macro_iou_in_best_json": best["macro_iou"],
+        "max_abs_diff_seed0_field_iou_vs_field_confusions": dev,
         "typical_fields_rule": "largest, then 75th/50th/25th percentile "
                                "by labelled pixels (render_sickle_gallery)",
         "typical_fields": [int(p) for p in typical],

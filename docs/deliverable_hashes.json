@@ -1,50 +1,50 @@
 {
   "docs/SICKLE_Field_Level_Audit_IEEE.docx": {
-    "sha256_16": "ae8fb72c90f9fe06",
-    "bytes": 899393
+    "sha256_16": "b184b2b5ab73bb49",
+    "bytes": 928145
   },
   "docs/SICKLE_Field_Level_Audit_IEEE.pdf": {
-    "sha256_16": "a7ce0533a69ab21e",
-    "bytes": 808904
+    "sha256_16": "e17ab96c23efb97c",
+    "bytes": 815770
   },
   "docs/Thesis_Paper.docx": {
-    "sha256_16": "36f3b5c5ac20c775",
+    "sha256_16": "b6224723034e61a3",
     "bytes": 545202
   },
   "docs/Thesis_Paper.pdf": {
-    "sha256_16": "fa5e3772a02c26aa",
+    "sha256_16": "ae07db029adf8e0e",
     "bytes": 796210
   },
   "docs/Policy_Brief.docx": {
-    "sha256_16": "c3826386293962c5",
+    "sha256_16": "42faef830c96a8b6",
     "bytes": 39984
   },
   "docs/Policy_Brief.pdf": {
-    "sha256_16": "e0129c1ede1ff592",
+    "sha256_16": "12adffb58de84db9",
     "bytes": 254434
   },
   "docs/SICKLE_Guard_IEEE.docx": {
-    "sha256_16": "4d2f40875d690ef0",
-    "bytes": 949168
+    "sha256_16": "9ff5e317d18f68d7",
+    "bytes": 982569
   },
   "docs/SICKLE_Guard_IEEE.pdf": {
-    "sha256_16": "9e08cd46f5290c09",
-    "bytes": 833366
+    "sha256_16": "9d1280c3994dd1f4",
+    "bytes": 1003613
   },
   "docs/SICKLE_Audit_IEEE_conf.docx": {
-    "sha256_16": "1b73c351d93d5cbe",
-    "bytes": 793615
+    "sha256_16": "56476d057b3b9045",
+    "bytes": 822815
   },
   "docs/SICKLE_Audit_IEEE_conf.pdf": {
-    "sha256_16": "3df6872517258457",
-    "bytes": 663501
+    "sha256_16": "a4f669a865231a69",
+    "bytes": 673662
   },
   "docs/references_thesis.json": {
     "sha256_16": "cebc9b23db9f045b",
     "bytes": 2322
   },
   "docs/REFERENCE_VERIFICATION.xlsx": {
-    "sha256_16": "f4b330ef97ee645f",
+    "sha256_16": "8618d21a0c6d771b",
     "bytes": 15496
   },
   "docs/references.json": {
@@ -156,8 +156,8 @@
     "bytes": 50401
   },
   "results/figures_ieee/fig_satellite.png": {
-    "sha256_16": "96a7743deeef9efb",
-    "bytes": 157076
+    "sha256_16": "bbfca13ffd6d4ad5",
+    "bytes": 185998
   },
   "results/figures_ieee/fig_seeds.png": {
     "sha256_16": "12f998b995dda21f",

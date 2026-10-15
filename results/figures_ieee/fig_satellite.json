@@ -6,6 +6,15 @@
     1,
     2
   ],
+  "checkpoint": {
+    "file": "outputs/crop_type/v5_seed0/checkpoint_best.pth.tar",
+    "sha256": "faa3b0816b9ca8bf543e3bc8a6c8120a083f09273027334337e510b3e42f0861",
+    "inventory_group": "ladder",
+    "run": "crop_type/v5_seed0"
+  },
+  "pooled_macro_iou": 0.8852750925188204,
+  "pooled_macro_iou_in_best_json": 0.8852750925188204,
+  "max_abs_diff_seed0_field_iou_vs_field_confusions": 0.0,
   "typical_fields_rule": "largest, then 75th/50th/25th percentile by labelled pixels (render_sickle_gallery)",
   "typical_fields": [
     211,

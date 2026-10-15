@@ -32,13 +32,17 @@ sys.path.insert(0, str(PROJ))
 sys.path.insert(0, str(PROJ / "scripts"))
 
 import make_paper_ieee as M                                  # noqa: E402
-from make_paper_ieee import (_sgn, author_block, body, figure,  # noqa: E402
+from make_paper_ieee import (spaced_percent, _cnt, _sgn, author_block, body, figure,  # noqa: E402
                              heading, lst, renumber, two_columns)
 
 OUT = PROJ / "docs" / "SICKLE_Audit_IEEE_conf.docx"
 TITLE = ("Aggregate Metrics Hide Field-Level Failures: A Reliability and "
          "Reproducibility Audit of the SICKLE Satellite Crop-Monitoring "
          "Benchmark")
+
+
+def _nw(k):
+    return {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}.get(k, str(k))
 
 
 def build():
@@ -103,8 +107,10 @@ def build():
         "accuracy pooled over pixels, while a payout concerns a field. We "
         "therefore ask what a benchmark number says about an individual "
         f"field, auditing {n['n_eval']} released SICKLE models across four "
-        "tasks. Three defects make the published numbers irreproducible; "
-        "evaluation of a frozen model moves by up to "
+        f"tasks. All {n['n_models']} regression checkpoints (yield and "
+        f"dates) reproduce and {n['ct_pass']} of {n['ct_total']} crop-type "
+        "cells do, but three defects undermine reproducibility, most "
+        "visibly an evaluation of frozen weights that moves by up to "
         f"{100 * max(n['bs_spread'].values()):.1f} IoU points with batch "
         f"size alone; and none of the {len(n['yield_vs_const'])} released "
         "yield models is shown to beat a constant predictor. A pooled IoU of "
@@ -153,16 +159,17 @@ def build():
     body(doc, "We audit SICKLE [1], smallholder paddy in the Cauvery Delta "
               "of Tamil Nadu, and ask what a published benchmark number says "
               "about an individual field. Our contributions are: (i) a "
-              f"reproduction of {n['n_eval']} released models that finds "
-              "three defects making the published numbers irreproducible; "
+              f"reproduction of {n['n_eval']} released models, which finds "
+              "three defects that undermine reproducibility although most "
+              "checkpoints reproduce; "
               "(ii) a field-level evaluation showing that the pooled score "
               "conceals a tail of failing fields that recurs across runs, "
               "and that the common two-class form of per-field IoU misstates "
               "single-crop fields; (iii) evidence that no released yield "
               "model is shown to beat a constant, and that the association "
               "it does have lies between fields, not between seasons; (iv) a "
-              "controlled ablation in which information helps and model "
-              "capacity is inconclusive; and (v) a test of label-free "
+              "controlled ablation in which the steps that add information "
+              "exceed seed spread and added capacity does not; and (v) a test of label-free "
               "safeguards, weak for crop type and, in a pre-registered "
               "test, at chance for yield. We audit a public benchmark, not "
               "any deployed system, and make no claim about payouts or "
@@ -211,17 +218,21 @@ def build():
               "formed as micro-batches of 8 with four accumulation steps "
               "under bfloat16 autocast to fit an 8 GB device; this is held "
               "constant across rungs, so rung-to-rung differences stay "
-              "controlled. The yield baseline is a constant issuing the "
+              "controlled, but absolute values are not comparable with runs "
+              "trained at a true batch of 32. The yield baseline is a "
+              "constant issuing the "
               "training-split mean for every field-season, a comparison the "
               "benchmark does not report.")
-    body(doc, "A ten-rung ablation changes one factor per rung, from a single "
+    body(doc, "A ten-rung ablation (v1 to v10) changes one factor per rung, "
+              "from a single "
               "acquisition through the temporal sequence, augmentation, "
               "class weighting, Sentinel-1 radar and Landsat-8 to a change "
               "of architecture (UTAE [18] for U-Net3D [17]), width, schedule "
               f"and sampling, each run at {n['seed_phrase']}. A step is "
               "inconclusive when its change is below the largest "
               "seed-to-seed standard deviation, a descriptive rule rather "
-              "than a test. Two label-free signals, seed disagreement and "
+              "than a test; a paired-by-seed 95 % interval is reported "
+              "beside it. Two label-free signals, seed disagreement and "
               "low confidence, are scored as screens for fields below 0.5 "
               "and compared with random referral and with checking the "
               "smallest fields first. Intervals resample fields or plots, "
@@ -239,7 +250,9 @@ def build():
               f"{n['ct_total']} crop-type cells do; the other "
               f"{n['ct_total'] - n['ct_pass']} miss by "
               f"{min(n['ct_miss']):.3f} to {max(n['ct_miss']):.3f}. Three "
-              "defects make published numbers irreproducible. First, "
+              "defects nonetheless undermine reproducibility: they affect "
+              "how any score is evaluated, whether training runs, and which "
+              "baselines are meaningful. First, "
               "evaluation depends on batch size: with frozen weights the "
               f"released {f} scores "
               + ", ".join(f"{fc[k]:.4f}" for k in sorted(fc, reverse=True))
@@ -255,21 +268,32 @@ def build():
                 "samples), so training fails while reproduction succeeds. "
                 "Third, three of the four released UTAE crop-type baselines "
                 "never trained: all are best at epoch 1, and two predict one "
-                "class everywhere. Separately, the phenology logs' column "
-                "labelled MAPE equals MAE divided by the constant 183 in all "
-                "39 released date runs: the definition the dataset paper "
-                "gives [1], but not a percentage error.", 0.0)
+                "class everywhere. These are the three defects. A fourth "
+                "finding is a labelling issue and is not counted as a "
+                "defect: the phenology logs' column labelled MAPE equals MAE "
+                "divided by the constant 183 in all 39 released date runs. "
+                "That is the definition the dataset paper gives [1], so the "
+                "values are correct, but they are not a percentage error and "
+                "should not be compared with one.", 0.0)
     figure(doc, "fig_batch.png",
            "Fig. 1.  Evaluation of a frozen checkpoint depends on batch size: "
            "same weights, same data, unmodified code.", 2.4)
 
     heading(doc, "B.  What the pooled score conceals", 2)
-    body(doc, f"For the best configuration the pixel-pooled IoU is "
+    body(doc, f"Field-level results use v5 (Sentinel-2 with radar), the rung with "
+              f"the highest plot-level score "
+              f"({float(n['L']['v5']['plot_macro_iou']):.3f}); v6 adds Landsat-8 "
+              f"and scores {n['d_l8']:.4f} higher pooled, within seed spread. "
+              f"For v5 the pixel-pooled IoU is "
               f"{n['v5']:.4f}, close to the average field "
               f"({n['mean_field']:.3f}); the median field scores "
               f"{n['median_field']:.3f}. The shortfall is concentrated: "
-              f"{b50['n']} of {n['n_fields']} fields fall below 0.5 (95 % CI "
-              f"{b50['ci'][0]:.0%}–{b50['ci'][1]:.0%}), and Fig. 2 shows "
+              f"{b50['n']} of {n['n_fields']} fields fall below 0.5, a share "
+              f"of {b50['frac']:.0%} with a 95 % interval of "
+              f"{b50['ci'][0]:.0%}–{b50['ci'][1]:.0%} from a percentile "
+              f"bootstrap over the {n['n_fields']} fields; with "
+              f"{_nw(b50['n'])} such fields the estimate is necessarily "
+              "imprecise. Fig. 2 shows "
               "them beside fields mapped almost perfectly. One field "
               f"supplies {100 * fs['share_largest']:.0f} % of the "
               f"{fs['n_pixels_in_pooled_metric']:,} scored pixels; removing "
@@ -281,15 +305,17 @@ def build():
          0.0)
     figure(doc, "fig_satellite.png",
            "Fig. 2.  Sentinel-2 chips of SICKLE validation fields beside the "
-           "best configuration's prediction (seed 0); red marks wrong "
-           "pixels inside the surveyed field. (a) Fields chosen by size, not "
-           "by result. (b) The fields whose IoU averaged over three runs is "
-           "below 0.5, each at its season with the most wrong pixels. The "
-           "number is the field's IoU at seed 0; in (b) the three-run mean "
-           "follows. Chips are cropped around each field.")
+           "prediction of the v5 seed-0 checkpoint, the run whose field "
+           "scores the text reports; red marks wrong pixels inside the "
+           "surveyed field. (a) Fields chosen by size, not by result. (b) "
+           "The fields whose IoU averaged over three seeds is below 0.5, "
+           "each at its season with the most wrong pixels. The first number "
+           "is the field's IoU over all its seasons at seed 0; in (b) the "
+           "three-seed mean follows and sets the colour. Chips are cropped "
+           "around each field.")
     figure(doc, "fig_field_distribution.png",
            f"Fig. 3.  (a) Field IoU over the {n['n_fields']} validation "
-           "fields at the best configuration, with the pooled value. (b) The "
+           "fields at v5, with the pooled value. (b) The "
            "same as a quantile plot. (c) Field IoU against the pixels a field "
            "contributes; no trend is distinguishable from zero.")
     body(doc, "The same fields fail in every run: field IoU correlates "
@@ -369,21 +395,50 @@ def build():
               "contributor to these results, not a demonstrated "
               "explanation.")
 
-    heading(doc, "D.  Information helps; capacity is inconclusive", 2)
+    heading(doc, "D.  Ablation: which changes exceed seed spread", 2)
+    # sigma_max is a descriptive threshold; the paired-by-seed interval is
+    # the separate question of whether a change is distinguishable from 0.
+    _st = {r_["step"]: r_ for r_ in n["lp"]["steps"]}
+    _lab = {f"v{int(x['to'][1:]) - 1}->{x['to']}": x["label"]
+            for x in n["pos"] + n["neg"] + n["inc"]}
+
+    def _ex0(k):
+        lo, hi = _st[k]["ci95_paired"]
+        return lo > 0 or hi < 0
+
+    _res = [k for k in _st if _ex0(k)]
+    _gap = [k for k in _st if k in _lab and not _ex0(k)
+            and k in {f"v{int(x['to'][1:]) - 1}->{x['to']}"
+                      for x in n["pos"] + n["neg"]}]
+    assert all(x["kind"] == "information" for x in n["pos"]), n["pos"]
     body(doc, f"Of the {n['n_steps']} ablation steps, "
               f"{len(n['pos']) + len(n['neg'])} exceed the seed-spread rule "
               f"(σmax = {n['sd_max']:.4f}): upward, " + lst(n["pos"])
               + "; downward, " + lst(n["neg"]) + f". The other "
               f"{len(n['inc'])} are inconclusive: " + lst(n["inc"])
-              + " (Fig. 5). The steps that help add information; those that "
-              "add capacity or change optimisation are inconclusive and "
-              "consumed most of the compute. Inconclusive is not evidence of "
-              "no effect, and the ordering is cumulative, so each step is "
-              "attributable only within this sequence.", 0.0)
+              + " (Fig. 5). The rule is descriptive, not a significance "
+              "test. Paired by seed, the 95 % interval excludes zero for "
+              f"{_cnt(len(_res))} steps: "
+              + lst([{"label": _lab[k], "delta": _st[k]["paired_mean"]}
+                     for k in _res]) + ". "
+              + "".join(
+                  f"The {_lab[k]} step exceeds σmax at {n['seed_phrase']}, "
+                  f"but with {_st[k]['n_seeds']} seeds its paired interval "
+                  f"[{_sgn(_st[k]['ci95_paired'][0], '+.3f')}, "
+                  f"{_sgn(_st[k]['ci95_paired'][1], '+.3f')}] includes zero, "
+                  "so it is not resolved. " for k in _gap)
+              + "Both upward steps add information; the steps that add "
+              "capacity or change optimisation stay within seed spread. "
+              "These are changes larger than run-to-run noise on this "
+              "benchmark, not evidence of general superiority; inconclusive "
+              "is not evidence of no effect, and because the order is "
+              "cumulative each step is attributable only within this "
+              "sequence.", 0.0)
     figure(doc, "fig_ladder.png",
            f"Fig. 5.  Ten-rung ablation at {n['seed_phrase']}; error bars "
-           "are seed-to-seed standard deviation. The shaded rungs add model "
-           "complexity rather than information.")
+           "are seed-to-seed standard deviation. The shaded rungs (v7 to v10) "
+           "change the architecture, its width, the schedule or the "
+           "sampling, not the information the model sees.")
 
     heading(doc, "E.  Can failing fields be found without labels?", 2)
     body(doc, f"With {tg['n_bad']} failing fields every rate is a statement "
@@ -394,15 +449,28 @@ def build():
               f"(95 % CI {sd_['auroc_ci'][0]:.3f}–"
               f"{sd_['auroc_ci'][1]:.3f}), which includes chance; confidence "
               f"at {lc_['auroc']:.3f} ({lc_['auroc_ci'][0]:.3f}–"
-              f"{lc_['auroc_ci'][1]:.3f}), below the permutation null's 97.5th "
-              f"percentile of {pn['auroc_p97_5']:.3f}; and checking the "
+              f"{lc_['auroc_ci'][1]:.3f}), which "
+              + ("equals, and so does not exceed,"
+                 if abs(lc_['auroc'] - pn['auroc_p97_5']) < 1e-9 else
+                 "does not exceed" if lc_['auroc'] < pn['auroc_p97_5'] else
+                 "exceeds")
+              + " the 97.5th percentile of random referral's AUROC over "
+              f"{pn['n_permutations']:,} orderings "
+              f"({pn['auroc_p97_5']:.3f}); and checking the "
               f"smallest fields first, with no model, scores "
               f"{sf_['auroc']:.3f}. Against a null that preserves the size "
               f"relationship, confidence scores p = {t1['p_one_sided']:.3f}, "
               "so it carries information that size does not; but its gain "
               "over size has an interval of "
-              f"[{sa['ci_vs_smaller_first'][0]:+.3f}, "
-              f"{sa['ci_vs_smaller_first'][1]:+.3f}], and is not shown.", 0.0)
+              f"[{_sgn(sa['ci_vs_smaller_first'][0], '+.3f')}, "
+              f"{_sgn(sa['ci_vs_smaller_first'][1], '+.3f')}], and is not "
+              "shown. The two "
+              "results answer different questions and do not conflict: the "
+              "permutation test asks whether confidence holds any "
+              "information beyond field size, and it does; the interval asks "
+              "whether ranking by confidence beats the operational baseline "
+              "of checking the smallest fields first, and that is not "
+              "established.", 0.0)
     figure(doc, "fig_triage.png",
            "Fig. 6.  Screening performance of two label-free signals for "
            "fields below 0.5. The diagonal is random referral; thresholds are "
@@ -426,7 +494,8 @@ def build():
     body(doc, "Because failing fields recur across runs, failure is not "
               "random, which is what would make it worth referring some "
               "fields for human verification; whether a label-free signal "
-              "can choose them is not shown here, and on yield it fails. "
+              "can choose them is not shown here, and on yield the "
+              "pre-registered screen performs at chance. "
               "Benchmarks that feed field-level decisions should therefore "
               "report per-field error distributions and the evaluation "
               "batch size, and a confidence indicator should be shown to "
@@ -444,7 +513,7 @@ def build():
               "type and 41 field-seasons from 14 plots for yield, from one "
               "delta and one cropping system in 2018-2021; intervals are "
               f"wide and no operating threshold is established. "
-              f"{n['seed_phrase'].capitalize()} afford limited power, so "
+              f"{n['seed_phrase'].capitalize()} per rung afford limited power, so "
               "inconclusive rungs are not evidence of no effect. The yield "
               "labels are recalled, not measured. Our automated checks "
               "establish that the manuscript agrees with the saved "
@@ -540,6 +609,7 @@ def main() -> int:
         for p in problems:
             print("  -", p)
         return 1
+    spaced_percent(doc)
     doc.save(str(OUT))
     print(f"wrote {OUT}")
     print(f"  {len(text.split()):,} words, 7 figures, 1 table, "
