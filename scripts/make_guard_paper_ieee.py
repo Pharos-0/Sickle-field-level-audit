@@ -1134,19 +1134,38 @@ def build(N):
 
     # ------------------------------------------------------------ VIII
     heading(doc, "VIII.  Limitations")
-    body(doc, "All results are on one delta, one cropping system and "
-              "2018-2021, with yield labels recalled by farmers rather than "
-              "measured, so model error and recall error cannot be "
-              "separated. The held-out split has 27 plots and "
-              f"{w(n_ho_bad)} below-threshold field-seasons, so intervals "
-              "are wide and no operating threshold is established. The "
-              "state's records are district-level and SICKLE plots carry no "
-              "district. No Insurance Unit identity exists in the data, so "
-              "nothing here reproduces a scheme decision, and the YES-TECH "
-              "study simulates a mechanism, not the scheme's accuracy. "
-              "Nobody has used the prototype, the workflow or the console; "
-              "comprehension, workflow and outcomes for farmers or officials "
-              "are unmeasured.", 0.0)
+    body(doc, "Some limits bound the evidence and some bound the claims.", 0.0)
+    for lead_, txt in (
+            ("Small samples.",
+             f"The held-out split has 27 plots and {w(n_ho_bad)} "
+             "below-threshold field-seasons, so intervals are wide and no "
+             "operating threshold is established."),
+            ("One setting.",
+             "One delta, one cropping system, 2018-2021; nothing here shows "
+             "transfer elsewhere."),
+            ("Recalled labels and a study threshold.",
+             "Yields are farmers' recollections, so model error and recall "
+             "error cannot be separated, and below-threshold means under 80 % "
+             "of the training mean, a convention of the study."),
+            ("No seasonal detection.",
+             "On plots that cross the threshold the ranking falls to AUROC "
+             f"{m(ev['auroc'])} {cil(*ev['ci'])}: the tool ranks fields by "
+             "their usual level and cannot tell a bad season."),
+            ("Limits on the claims.",
+             "The satellite component is not shown to add value, and an "
+             "advantage over the register an office keeps is not "
+             "demonstrated."),
+            ("No scheme linkage.",
+             "The state's records are district-level and the plots carry no "
+             "district; no Insurance Unit identity exists, so nothing here "
+             "reproduces a scheme decision, and the YES-TECH study simulates "
+             "a mechanism, not the scheme's accuracy."),
+            ("No people.",
+             "Nobody has used the prototype, the workflow or the console, so "
+             "comprehension and outcomes for farmers or officials are "
+             "unmeasured; the Tamil report was translated by one native "
+             "speaker and not yet checked by a second or with farmers.")):
+        lead(doc, lead_, txt, indent=0.0)
 
     # ------------------------------------------------------------ IX
     heading(doc, "IX.  Conclusion")
@@ -1163,6 +1182,18 @@ def build(N):
               "reported as found. Whether these rules improve outcomes for "
               "farmers is untested, and a pilot designed to test it is the "
               "next step.", 0.0)
+
+    heading(doc, "Data and Code Availability")
+    body(doc, "The SICKLE data and the released checkpoints are distributed "
+              "by their authors on request [1] and are not redistributed "
+              "here. SICKLE-Guard's code, tests and configurations, the "
+              "Tamil translation file, and the scripts that regenerate every "
+              "number and figure in this paper are available from the authors "
+              "on request and will be released publicly with the final "
+              "version.", 0.0)
+    heading(doc, "Acknowledgment")
+    body(doc, "We thank the authors of SICKLE for making the dataset and "
+              "their trained models available.", 0.0)
 
     # ------------------------------------------------------------ refs
     refs_all = (json.loads((PROJ / "docs/references.json").read_text(

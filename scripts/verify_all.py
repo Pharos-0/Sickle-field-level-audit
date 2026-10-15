@@ -282,7 +282,8 @@ def main() -> int:
         banned = ("loses to a constant", "lose to a constant",
                   "worse than a constant", "worse than the constant")
         for name in ("SICKLE_Field_Level_Audit_IEEE.docx", "Thesis_Paper.docx",
-                     "Policy_Brief.docx"):
+                     "Policy_Brief.docx", "SICKLE_Audit_IEEE_conf.docx",
+                     "SICKLE_Guard_IEEE.docx"):
             f = PROJ / "docs" / name
             if not f.exists():
                 continue

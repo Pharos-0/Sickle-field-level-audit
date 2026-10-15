@@ -71,6 +71,8 @@ ARTEFACTS = [
     "docs/Policy_Brief.pdf",
     "docs/SICKLE_Guard_IEEE.docx",
     "docs/SICKLE_Guard_IEEE.pdf",
+    "docs/SICKLE_Audit_IEEE_conf.docx",
+    "docs/SICKLE_Audit_IEEE_conf.pdf",
     "docs/references_thesis.json",
     "docs/REFERENCE_VERIFICATION.xlsx",
     "docs/references.json",
@@ -153,6 +155,10 @@ def main() -> int:
         # overstatement or a missing simulated/scope label.
         ("8d/15 SICKLE-Guard paper",
          ["scripts/make_guard_paper_ieee.py"], True),
+        # The audit paper at conference length; same loader as the full
+        # version, so the two cannot disagree on a number.
+        ("8e/15 audit paper, conference version",
+         ["scripts/make_paper_ieee_conf.py"], True),
         ("9/15 reference table",
          ["scripts/make_reference_table.py"], True),
     ]
@@ -169,6 +175,9 @@ def main() -> int:
         steps.append(("10d/15 SICKLE-Guard paper PDF export",
                       ["scripts/export_pdf.py", "docs/SICKLE_Guard_IEEE.docx"],
                       True))
+        steps.append(("10e/15 conference audit paper PDF export",
+                      ["scripts/export_pdf.py",
+                       "docs/SICKLE_Audit_IEEE_conf.docx"], True))
 
     for label, cmd, required in steps:
         ok, _ = run(label, cmd, required)
