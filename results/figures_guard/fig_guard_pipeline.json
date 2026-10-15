@@ -1,0 +1,13 @@
+{
+  "selection": "held-out field-seasons with no harvest record; median clear Sentinel-2 count; ties by id",
+  "uid": "2164",
+  "plot": 352.0,
+  "season": "sep-feb",
+  "n_candidates": 27,
+  "n_clear": 32,
+  "n_acquisitions": 72,
+  "estimate_kg_per_acre": 1842.4615864684608,
+  "report_prints": 1842,
+  "n_features": 52,
+  "peak_date": "2019-12-22"
+}

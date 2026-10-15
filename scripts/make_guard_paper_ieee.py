@@ -383,6 +383,152 @@ def make_figures(N):
     return F
 
 
+# ----------------------------------------------------------------- pipeline
+def pipeline_figure():
+    """How the satellite model reads the imagery, for ONE held-out field.
+
+    The field is chosen by a rule that never looks at its yield: among
+    held-out field-seasons with no harvest record (the only case in which
+    the report uses the satellite), the one with the median number of clear
+    Sentinel-2 acquisitions, ties broken by id. Every value is computed by
+    the prototype's own code, and two assertions tie the figure to it: the
+    clear count must equal the saved feature table's, and the estimate must
+    equal the number the shipped report prints for this field. The recalled
+    yield is not shown.
+    """
+    import glob as _glob
+    import json as _json
+    import re as _re
+    import extract_features as ef
+    import farmer_report as fr
+    from reliability import cols_all
+    plt = _rc()
+    from matplotlib.collections import LineCollection
+
+    feats = fr.load()
+    hist = fr.causal_history(feats)
+    sat = fr.satellite(feats)
+    cands = [i for i, r in enumerate(feats)
+             if r["split"] == "test" and not np.isfinite(hist[i])]
+    ncl = {i: int(float(feats[i]["s2_n_clear"])) for i in cands}
+    order = sorted(cands, key=lambda i: (ncl[i], str(feats[i]["uid"])))
+    pick = order[len(order) // 2]
+    r = feats[pick]
+    uid, pid = r["uid"], float(r["plot"])
+
+    sel = ef.plot_pixels(uid, pid, "10m")
+    kept, rejected = [], []
+    for f in sorted(_glob.glob(str(ef.ROOT / f"images/S2/npy/{uid}/*.npz"))):
+        d = np.load(f)
+        dt = ef.acq_date(f)
+        bad = False
+        if "SCL" in d:
+            mm = ef.fit_mask(sel, d["SCL"].shape)
+            bad = bool(mm.sum() and np.isin(d["SCL"][mm].astype(int),
+                                            list(ef.SCL_BAD)).mean() > 0.5)
+        if bad or "B4" not in d or "B8" not in d:
+            rejected.append(dt)
+            continue
+        mm = ef.fit_mask(sel, d["B4"].shape)
+        red = float(np.nanmean(d["B4"][mm]))
+        nir = float(np.nanmean(d["B8"][mm]))
+        kept.append((dt, (nir - red) / (nir + red + 1e-9), f))
+    # tie the figure to the saved features and to the shipped report
+    assert len(kept) == ncl[pick], (len(kept), ncl[pick])
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        fr.report(r, sat[pick], "satellite", 100.0, False, None, "en")
+    printed = int(_re.search(r"Estimated yield: (\d+)", buf.getvalue()).group(1))
+    assert printed == round(sat[pick]), (printed, sat[pick])
+    n_feat = len(cols_all())
+
+    peak = max(kept, key=lambda k: k[1])
+    d = np.load(peak[2])
+    rgb = np.stack([d["B4"], d["B3"], d["B2"]], -1).astype(float)
+    lo, hi = np.nanpercentile(rgb, 2), np.nanpercentile(rgb, 98)
+    rgb = np.clip((rgb - lo) / (hi - lo), 0, 1)
+    msk = ef.fit_mask(sel, d["B4"].shape)
+
+    fig = plt.figure(figsize=(3.35, 2.75))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 1.75],
+                          height_ratios=[1.35, 1], wspace=0.32, hspace=0.45)
+    a = fig.add_subplot(gs[0, 0])
+    a.grid(False)
+    a.imshow(rgb, interpolation="nearest")
+    segs = []
+    H, W = msk.shape
+    for y in range(H):
+        for x in range(W):
+            if not msk[y, x]:
+                continue
+            if y == 0 or not msk[y - 1, x]:
+                segs.append([(x - .5, y - .5), (x + .5, y - .5)])
+            if y == H - 1 or not msk[y + 1, x]:
+                segs.append([(x - .5, y + .5), (x + .5, y + .5)])
+            if x == 0 or not msk[y, x - 1]:
+                segs.append([(x - .5, y - .5), (x - .5, y + .5)])
+            if x == W - 1 or not msk[y, x + 1]:
+                segs.append([(x + .5, y - .5), (x + .5, y + .5)])
+    a.add_collection(LineCollection(segs, colors="white", linewidths=0.9))
+    a.set_xticks([])
+    a.set_yticks([])
+    a.set_title(f"(a) Sentinel-2 true colour\n{peak[0]:%d %b %Y}, field "
+                "outlined", fontsize=6.2)
+    a.plot([1, 11], [H - 2, H - 2], color="white", lw=1.2)
+    a.text(6, H - 3, "100 m", color="white", fontsize=5, ha="center",
+           va="bottom")
+
+    b = fig.add_subplot(gs[0, 1])
+    b.plot([k[0] for k in kept], [k[1] for k in kept], "-o", ms=2, lw=0.8,
+           color="#2d7a3a")
+    b.plot([peak[0]], [peak[1]], "o", ms=4.5, mfc="none", mec="#a5611a",
+           mew=1)
+    yb = min(k[1] for k in kept) - 0.08
+    b.plot(rejected, [yb] * len(rejected), "x", ms=2.5, color="#999999")
+    b.set_ylabel("NDVI", fontsize=6.0, labelpad=1)
+    b.set_title(f"(b) field-mean NDVI: {len(kept)} clear (dots) of\n"
+                f"{len(kept) + len(rejected)} acquisitions; × rejected "
+                "as cloud", fontsize=5.8)
+    b.tick_params(axis="x", labelsize=5, rotation=30)
+
+    c = fig.add_subplot(gs[1, :])
+    c.axis("off")
+    steps = [("mask to\nthe field", "#1f3b73"),
+             ("drop cloudy\ndates", "#1f3b73"),
+             (f"{n_feat} season\nfeatures", "#1f3b73"),
+             ("random\nforest", "#1f3b73"),
+             (f"estimate\n{sat[pick]:,.0f}\nkg/acre", "#a5611a")]
+    for k, (txt, col) in enumerate(steps):
+        x0 = 0.01 + k * 0.198
+        c.add_patch(plt.Rectangle((x0, 0.38), 0.17, 0.55,
+                                  transform=c.transAxes, fill=False, ec=col,
+                                  lw=0.9))
+        c.text(x0 + 0.085, 0.655, txt, transform=c.transAxes, ha="center",
+               va="center", fontsize=5.2, color=col)
+        if k < 4:
+            c.annotate("", xy=(x0 + 0.195, 0.655), xytext=(x0 + 0.172, 0.655),
+                       xycoords="axes fraction",
+                       arrowprops=dict(arrowstyle="->", lw=0.7,
+                                       color="#555555"))
+    c.text(0.5, 0.08, "(c) a model output, used only because this field has "
+           "no harvest record", transform=c.transAxes, ha="center",
+           fontsize=5.4, style="italic", color="#a5611a")
+    out = GFIG / "fig_guard_pipeline.png"
+    fig.savefig(out, facecolor="white")
+    plt.close(fig)
+    meta = {"selection": "held-out field-seasons with no harvest record; "
+                         "median clear Sentinel-2 count; ties by id",
+            "uid": uid, "plot": pid, "season": r["season"],
+            "n_candidates": len(cands), "n_clear": len(kept),
+            "n_acquisitions": len(kept) + len(rejected),
+            "estimate_kg_per_acre": float(sat[pick]),
+            "report_prints": printed, "n_features": n_feat,
+            "peak_date": f"{peak[0]:%Y-%m-%d}"}
+    out.with_suffix(".json").write_text(_json.dumps(meta, indent=2),
+                                        encoding="utf8")
+    return out, meta
+
+
 # ----------------------------------------------------------------- paper
 def z(v, nd=3):
     """A signed value, except that one rounding to zero carries no sign."""
@@ -392,6 +538,7 @@ def z(v, nd=3):
 def build(N):
     from docx import Document
     F = make_figures(N)
+    F["pipeline"], PM = pipeline_figure()
     ep = N["ep"]
     hold = ep["ranking"]["held-out test split"]
     flag = ep["flag_adds_information"]["held-out test split"]
@@ -620,6 +767,37 @@ def build(N):
               "experiments and its crop-damage relief tables [23].")
 
     # ------------------------------------------------------------ IV
+    body(doc, "The satellite model reduces each field-season to numbers. "
+              "Every Sentinel-2 acquisition is averaged over the field's own "
+              "pixels, with the field mask resampled onto each band's native "
+              "grid, and an acquisition is dropped when more than half the "
+              "field's pixels are flagged as cloud, shadow, snow or "
+              "saturated by the scene classification. Vegetation, water and "
+              "moisture indices (NDVI, NDWI, NDMI, EVI and a red-edge "
+              "chlorophyll index), red, near-infrared and short-wave "
+              "infrared reflectance, and Sentinel-1 VV, VH and a radar "
+              "vegetation index are summarised over the season by their "
+              "mean, maximum, minimum and standard deviation; with the "
+              "timing of the greenness peak and its rates of rise and fall, "
+              "the numbers of acquisitions, and the field's area and pixel "
+              f"count, this gives {PM['n_features']} features. A random "
+              "forest (300 trees, depth 8), fitted on the training and "
+              "validation plots and averaged over three seeds, turns them "
+              "into a yield estimate (Fig. 1). The report uses that estimate "
+              "only for a field with no harvest record, and labels it there "
+              "as no reliable estimate.")
+    figure(doc, F["pipeline"],
+           "How the satellite model reads the imagery, for one held-out "
+           "field with no harvest record, chosen by a rule that does not "
+           "look at its yield (the median number of clear acquisitions among "
+           f"{PM['n_candidates']} such field-seasons). (a) True colour on "
+           "the date of peak greenness. (b) Field-mean NDVI, one of the "
+           f"{PM['n_features']} season features; cloudy acquisitions are "
+           "dropped. (c) The steps from image to estimate. The estimate is "
+           "the model's output as the shipped report prints it, not a "
+           "measured yield; one field illustrates the pipeline and says "
+           "nothing about its accuracy.")
+
     heading(doc, "IV.  The SICKLE-Guard Design")
     body(doc, "One rule governs the design. Because a false reassurance is "
               "the costly error, the report has no reassuring state: a field "
@@ -631,7 +809,7 @@ def build(N):
     figure(doc, F["workflow"],
            "The five steps of SICKLE-Guard and the status of the evidence "
            "behind each.")
-    body(doc, "The prototype works in five steps (Fig. 1). It estimates a "
+    body(doc, "The prototype works in five steps (Fig. 2). It estimates a "
               "field's yield from its own past harvests and falls back to "
               "the satellite model only where no record exists; it shows no "
               "reliability flag, because none was found to work; it ranks "
@@ -660,7 +838,7 @@ def build(N):
         ("Record observations, never decisions; hash every action",
          f"{N['n_wf_tests']} workflow tests, tampering caught (software)"),
     ], "Each design rule and the evidence behind it", widths=[1.25, 2.05])
-    body(doc, "Fig. 2 shows the rule at work: a report for a field with no "
+    body(doc, "Fig. 3 shows the rule at work: a report for a field with no "
               "harvest record and an estimate close to the average, the case "
               "in which a reassuring display would be most tempting.")
     figure(doc, F["report"],
@@ -690,7 +868,7 @@ def build(N):
               f"{m(hold['SICKLE-Guard (as shipped)']['auroc'])} "
               f"{cil(*hold['SICKLE-Guard (as shipped)']['auroc_ci'])} and "
               f"beats an arbitrary order ({m(hold['arbitrary order']['auroc'])})"
-              " (Fig. 3). It does not demonstrably beat a lookup of each "
+              " (Fig. 4). It does not demonstrably beat a lookup of each "
               "field's most recent harvest: the paired difference is "
               f"{m(lh['paired_delta'], 3, True)} {ci(*lh['ci'])}. Over all "
               "field-seasons, where a cold start must fall back on "
@@ -803,7 +981,7 @@ def build(N):
               "reserve of fields with no record, chosen at random under a "
               "logged seed because the satellite chose among them no better "
               "than chance. Each inspector receives a task sheet that "
-              "withholds the yield estimate (Fig. 4). The rule comes from an "
+              "withholds the yield estimate (Fig. 5). The rule comes from an "
               f"observed count: at a 20 % budget the workflow sends "
               f"inspectors to {A20['workflow']['n_found']} below-threshold "
               "field-seasons, and "
@@ -838,7 +1016,7 @@ def build(N):
               "number cannot soften a warning into reassurance; the check "
               "itself was verified by injecting a report that reassured "
               "above 2,000 kg/acre, which it caught. The prototype's "
-              "browser console (Fig. 5) presents the queue, the sheet, the "
+              "browser console (Fig. 6) presents the queue, the sheet, the "
               "audit chain and the evidence, each panel labelled observed, "
               "simulated or sourced.")
     figure(doc, F["console"],
@@ -846,26 +1024,33 @@ def build(N):
            "kind of evidence behind it. The console also shows the queue, "
            "the task sheet and the audit chain, re-hashed in the viewer's "
            "browser.")
-    if N["untranslated"]:
+    if N["untranslated"] and N["untranslated"][0] == 0:
+        body(doc, "The Tamil report was translated in full by the first author, a "
+                  "native Tamil speaker, and each sentence is stored with the English "
+                  "it was translated from. A sentence whose English later changes "
+                  "falls back to English under a notice that the report is not fully "
+                  "translated, and tests require every Tamil report to carry the "
+                  "safety sentences in Tamil, to keep every number unchanged and to "
+                  "keep its wording independent of the estimate. The translation has "
+                  "not been checked by a second speaker or tested with farmers.")
+    elif N["untranslated"]:
         lit, tot = N["untranslated"]
-        body(doc, f"The Tamil report translates headings and leaves {lit} of "
-                  f"{tot} lines in English, including every safety warning. "
-                  "Rather than machine-translate safety text, it opens by "
-                  "stating that it is not translated; native-speaker review "
-                  "is required before it is offered to Tamil-reading "
-                  "farmers.")
+        body(doc, f"The Tamil report leaves {lit} of {tot} sentences in "
+                  "English and opens by stating that it is not fully "
+                  "translated; native-speaker review is required before it "
+                  "is offered to Tamil-reading farmers.")
 
     heading(doc, "G.  Labels and model against the state's records", 2)
     body(doc, "Against Tamil Nadu's district-season crop-cutting yields for "
               "2019-20 [23], the benchmark's recalled yields run low: "
               f"{m(hl['kuruvai_ratio_to_official'], 2)} of the official "
               f"figure in Kuruvai and {m(hl['samba_ratio_to_official'], 2)} "
-              "in Samba (Fig. 6a). In 2020-21 the state allocated about "
+              "in Samba (Fig. 7a). In 2020-21 the state allocated about "
               f"\u20b9{rel20:,.0f} crore of crop-damage relief across the "
               "delta districts. Recalled Samba yields at the same plots "
               f"changed by {m(100 * hl['samba_recalled_change'], 1, True)} % "
               "into that season, and the satellite model's estimates by "
-              f"{abs(100 * hl['samba_model_change']):.1f} % (Fig. 6b): the "
+              f"{abs(100 * hl['samba_model_change']):.1f} % (Fig. 7b): the "
               "model does not respond to the season. SICKLE plots carry no "
               "district, so which of them were damaged is unknown; the check "
               "says what the model does not see, not what happened on any "
@@ -888,7 +1073,7 @@ def build(N):
               "register-guided inspector with a sensitivity of "
               f"{m(ho20['register']['break_even_sensitivity'], 2)} confirms "
               "as many real problems as a perfect inspector sent at random "
-              "(Fig. 7a). With a sensitivity of 0.70 and a 10 % false-alarm "
+              "(Fig. 8a). With a sensitivity of 0.70 and a 10 % false-alarm "
               f"rate, {m(g7['register']['precision_of_confirmed'], 2)} of a "
               "register-guided team's confirmed findings are real against "
               f"{m(g7['random']['precision_of_confirmed'], 2)} for random "
@@ -907,7 +1092,7 @@ def build(N):
               "[20]. For a unit truly 10 % below its threshold and a "
               "technology error of 0.20, the chance of being paid nothing is "
               f"{pct(p100)} at 100 % weight against {pct(p30)} at the 30 % "
-              "minimum (Fig. 7b). Re-checking the units whose estimate lands "
+              "minimum (Fig. 8b). Re-checking the units whose estimate lands "
               "just above the threshold recovers wrongly unpaid units at "
               f"{m(gd['near_threshold']['rechecks_per_recovery'], 1)} rechecks "
               f"each against {m(gd['random']['rechecks_per_recovery'], 1)} for "
