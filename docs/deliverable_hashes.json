@@ -1,63 +1,63 @@
 {
   "docs/SICKLE_Field_Level_Audit_IEEE.docx": {
-    "sha256_16": "b184b2b5ab73bb49",
-    "bytes": 928145
+    "sha256_16": "ee86080f3764b33c",
+    "bytes": 928147
   },
   "docs/SICKLE_Field_Level_Audit_IEEE.pdf": {
-    "sha256_16": "e17ab96c23efb97c",
-    "bytes": 815770
+    "sha256_16": "7ed66c4bc4e02293",
+    "bytes": 815773
   },
   "docs/Thesis_Paper.docx": {
-    "sha256_16": "b6224723034e61a3",
+    "sha256_16": "d82d49c31d082a3a",
     "bytes": 545202
   },
   "docs/Thesis_Paper.pdf": {
-    "sha256_16": "ae07db029adf8e0e",
+    "sha256_16": "15571bb1ac8899dc",
     "bytes": 796210
   },
   "docs/Policy_Brief.docx": {
-    "sha256_16": "42faef830c96a8b6",
+    "sha256_16": "50523b3db536a8d4",
     "bytes": 39984
   },
   "docs/Policy_Brief.pdf": {
-    "sha256_16": "12adffb58de84db9",
+    "sha256_16": "a1f73b6840651a2f",
     "bytes": 254434
   },
   "docs/SICKLE_Guard_IEEE.docx": {
-    "sha256_16": "9ff5e317d18f68d7",
+    "sha256_16": "d0638ed7391b2059",
     "bytes": 982569
   },
   "docs/SICKLE_Guard_IEEE.pdf": {
-    "sha256_16": "9d1280c3994dd1f4",
+    "sha256_16": "c8be18d89adc0522",
     "bytes": 1003613
   },
   "docs/SICKLE_Audit_IEEE_conf.docx": {
-    "sha256_16": "56476d057b3b9045",
-    "bytes": 822815
+    "sha256_16": "6ad79250d81454f2",
+    "bytes": 822818
   },
   "docs/SICKLE_Audit_IEEE_conf.pdf": {
-    "sha256_16": "a4f669a865231a69",
-    "bytes": 673662
+    "sha256_16": "73afda18db3ba231",
+    "bytes": 673669
   },
   "docs/references_thesis.json": {
     "sha256_16": "cebc9b23db9f045b",
     "bytes": 2322
   },
   "docs/REFERENCE_VERIFICATION.xlsx": {
-    "sha256_16": "8618d21a0c6d771b",
-    "bytes": 15496
+    "sha256_16": "e95827b1b6d4353b",
+    "bytes": 15548
   },
   "docs/references.json": {
-    "sha256_16": "705706da5c05665e",
-    "bytes": 25865
+    "sha256_16": "5bd90d825b23fb5e",
+    "bytes": 26392
   },
   "docs/references_final.json": {
-    "sha256_16": "7c39a3ec11598083",
-    "bytes": 27267
+    "sha256_16": "0976b03d88a816aa",
+    "bytes": 27535
   },
   "docs/MANUSCRIPT_AUDIT.md": {
-    "sha256_16": "757c81e595143c57",
-    "bytes": 29150
+    "sha256_16": "cc5c0d4ccc2a0b49",
+    "bytes": 30447
   },
   "docs/FINAL_VALIDATION_REPORT.md": {
     "sha256_16": "cef29b81e1018a12",

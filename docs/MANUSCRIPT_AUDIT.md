@@ -527,3 +527,17 @@ existing measurements without launching anything.
   help text. `[S2]_convlstm` is still covered at 1, 8, 16, 32 and 64.
 - **Figure 7 was redrawn stacked** after the first version, drawn at page
   width, was clipped inside a 3.3 in IEEE column.
+
+### SICKLE page range, 2026-10-16: version of record
+
+Section 10.1 reverted the SICKLE pages to the CVF value (5995-6004) on the
+grounds that Crossref was "indexer metadata". That reasoning was wrong.
+Crossref metadata for a `10.1109` DOI is deposited by IEEE, the publisher.
+The CVF page itself says its copies are the Open Access versions and that
+"the final published version of the proceedings is available on IEEE
+Xplore". The reference also prints the IEEE DOI
+`10.1109/WACV57701.2024.00589`, so it was pairing one version's pages with
+the other version's identifier. The entry now cites the version of record:
+IEEE Xplore, pp. **5983-5992**, with that DOI. Both records were read on
+2026-10-16: same title, same eight authors in the same order.
+

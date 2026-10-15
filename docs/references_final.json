@@ -74,12 +74,12 @@
     },
     {
       "n": 8,
-      "entry": "D. Sani et al., “SICKLE: A Multi-Sensor Satellite Imagery Dataset Annotated With Multiple Key Cropping Parameters,” in Proc. IEEE/CVF Winter Conf. on Applications of Computer Vision (WACV), 2024, pp. 5995–6004.",
+      "entry": "D. Sani et al., “SICKLE: A Multi-Sensor Satellite Imagery Dataset Annotated With Multiple Key Cropping Parameters,” in Proc. IEEE/CVF Winter Conf. on Applications of Computer Vision (WACV), 2024, pp. 5983–5992.",
       "doi": "10.1109/WACV57701.2024.00589",
       "type": "Conference paper (peer-reviewed)",
-      "verification": "Official CVF Open Access record read directly 2026-10-11 (openaccess.thecvf.com WACV2024 paper page). Its own BibTeX gives pages = {5995-6004}, 8 authors in the order cited, title with 'Annotated With Multiple Key Cropping Parameters'. >6 authors so IEEE 'et al.' applies.",
+      "verification": "2026-10-16: Crossref record for DOI 10.1109/WACV57701.2024.00589 (deposited by IEEE, the publisher) read directly: title, 8 authors led by Depanshu Sani, 2024 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV), pages 5983-5992. The CVF Open Access page for the same paper was also read: same title and 8 authors in the same order; its BibTeX gives pages 5995-6004, and the page states that these are the Open Access versions and that 'the final published version of the proceedings is available on IEEE Xplore'. Earlier read of the CVF record: 2026-10-11. >6 authors so IEEE 'et al.' applies.",
       "supports": "The dataset and released baselines audited throughout",
-      "uncertainty": "PAGE-RANGE DISCREPANCY, documented not hidden. Crossref metadata for DOI 10.1109/WACV57701.2024.00589 returns page '5983-5992', which disagrees with the CVF proceedings record's 5995-6004. IEEE Xplore and CVF pagination for WACV differ. We cite the CVF record because it is the proceedings page the authors' own BibTeX points to. An earlier draft of this manuscript followed Crossref and printed 5983-5992; that was an error introduced by trusting indexer metadata over the publisher record, and it is corrected here.",
+      "uncertainty": "Two paginations exist: IEEE Xplore (version of record, DOI 10.1109/WACV57701.2024.00589) 5983-5992, and the CVF Open Access copy 5995-6004. The reference cites the version of record, so its pages match the DOI it prints. Corrected 2026-10-16: the entry had printed the CVF pages beside the IEEE DOI. An 11 Oct note called the Crossref value 'indexer metadata'; that was wrong, since Crossref metadata for a 10.1109 DOI is deposited by IEEE itself.",
       "was": 1
     },
     {
