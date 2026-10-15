@@ -443,6 +443,45 @@ def _cnt(k):
     return {0: "none", 1: "one", 2: "two", 3: "three"}.get(k, str(k))
 
 
+# ----------------------------------------------------------------- authors
+# As the authors set them in their copy of the paper (2026-10-15), with
+# "Science amd Technology" corrected to "and". Shared by both IEEE papers.
+AUTHORS = [("Pharos Sophy Samuel T J", "1"), ("Dr. S. Ganesh Kumar", "2")]
+AFFIL = ["Department of Data Science and Business Systems",
+         "SRM Institute of Science and Technology, Kattankulathur"]
+EMAILS = ["tjpharossophysamuel@gmail.com", "ganeshk1@srmist.edu.in"]
+
+
+def author_block(doc):
+    """Authors side by side in a borderless table."""
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    tb = doc.add_table(rows=1, cols=len(AUTHORS))
+    tb.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, (name, mark) in enumerate(AUTHORS):
+        cell = tb.rows[0].cells[i]
+        lines = ([(name, 10.5, False, mark)]
+                 + [(a, 9.5, False, None) for a in AFFIL]
+                 + [(EMAILS[i], 9.0, True, None)])
+        for j, (txt, sz, it, mk) in enumerate(lines):
+            p = cell.paragraphs[0] if j == 0 else cell.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.space_after = Pt(0)
+            if mk:
+                r = p.add_run(mk)
+                r.font.superscript = True
+                r.font.size = Pt(sz)
+            r = p.add_run(txt)
+            r.font.size = Pt(sz)
+            r.italic = it
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "nil")
+        borders.append(el)
+    tb._tbl.tblPr.append(borders)
+    doc.add_paragraph().paragraph_format.space_after = Pt(8)
+
+
 def two_columns(section, n=2, space=0.25):
     cols = section._sectPr.xpath("./w:cols")[0]
     cols.set(qn("w:num"), str(n))
@@ -586,14 +625,7 @@ def build():
     r.bold = True; r.font.size = Pt(19)
     t.paragraph_format.space_after = Pt(10)
 
-    for line, sz, it in (("[Author name(s) — to be completed by the author]", 10, False),
-                         ("Department of Data Science and Business Systems", 9.5, False),
-                         ("SRM Institute of Science and Technology, Kattankulathur, India", 9.5, False),
-                         ("[email — to be completed]", 9.5, True)):
-        p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        rr = p.add_run(line); rr.font.size = Pt(sz); rr.italic = it
-        p.paragraph_format.space_after = Pt(1)
-    doc.paragraphs[-1].paragraph_format.space_after = Pt(12)
+    author_block(doc)
 
     # ---- switch to two columns
     sec = doc.add_section(WD_SECTION.CONTINUOUS)

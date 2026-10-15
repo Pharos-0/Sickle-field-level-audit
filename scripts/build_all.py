@@ -69,6 +69,8 @@ ARTEFACTS = [
     "docs/Thesis_Paper.pdf",
     "docs/Policy_Brief.docx",
     "docs/Policy_Brief.pdf",
+    "docs/SICKLE_Guard_IEEE.docx",
+    "docs/SICKLE_Guard_IEEE.pdf",
     "docs/references_thesis.json",
     "docs/REFERENCE_VERIFICATION.xlsx",
     "docs/references.json",
@@ -146,6 +148,11 @@ def main() -> int:
         # Two pages for officials and the panel, from the same loader as the
         # thesis; refuses to save if a finding lacks its evidence label.
         ("8c/15 policy brief", ["scripts/make_policy_brief.py"], True),
+        # The SICKLE-Guard paper (IEEE): reads the thesis loader, so its
+        # numbers cannot drift from the thesis; refuses to save on an
+        # overstatement or a missing simulated/scope label.
+        ("8d/15 SICKLE-Guard paper",
+         ["scripts/make_guard_paper_ieee.py"], True),
         ("9/15 reference table",
          ["scripts/make_reference_table.py"], True),
     ]
@@ -158,6 +165,9 @@ def main() -> int:
                       True))
         steps.append(("10c/15 policy brief PDF export",
                       ["scripts/export_pdf.py", "docs/Policy_Brief.docx"],
+                      True))
+        steps.append(("10d/15 SICKLE-Guard paper PDF export",
+                      ["scripts/export_pdf.py", "docs/SICKLE_Guard_IEEE.docx"],
                       True))
 
     for label, cmd, required in steps:

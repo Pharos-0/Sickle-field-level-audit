@@ -1,35 +1,43 @@
 {
   "docs/SICKLE_Field_Level_Audit_IEEE.docx": {
-    "sha256_16": "c1c03f8ab50242f0",
-    "bytes": 899128
+    "sha256_16": "c2b45b9b23f25dc4",
+    "bytes": 899393
   },
   "docs/SICKLE_Field_Level_Audit_IEEE.pdf": {
-    "sha256_16": "fcefca08ebb46e4e",
-    "bytes": 807998
+    "sha256_16": "1b7f1ace488760b2",
+    "bytes": 808904
   },
   "docs/Thesis_Paper.docx": {
-    "sha256_16": "b9a84809e23e433d",
+    "sha256_16": "b5b7d0a721323e68",
     "bytes": 545148
   },
   "docs/Thesis_Paper.pdf": {
-    "sha256_16": "90f0e80b86e422ee",
+    "sha256_16": "f5270a3666804193",
     "bytes": 796119
   },
   "docs/Policy_Brief.docx": {
-    "sha256_16": "c2bde310ccee23c1",
+    "sha256_16": "1c0da86f15bfc372",
     "bytes": 39984
   },
   "docs/Policy_Brief.pdf": {
-    "sha256_16": "9899d98c4c45012a",
+    "sha256_16": "6ed4cbba7120ed6c",
     "bytes": 254434
+  },
+  "docs/SICKLE_Guard_IEEE.docx": {
+    "sha256_16": "69364020585da5ef",
+    "bytes": 858400
+  },
+  "docs/SICKLE_Guard_IEEE.pdf": {
+    "sha256_16": "896ff2e71d4e0a5b",
+    "bytes": 742744
   },
   "docs/references_thesis.json": {
     "sha256_16": "cebc9b23db9f045b",
     "bytes": 2322
   },
   "docs/REFERENCE_VERIFICATION.xlsx": {
-    "sha256_16": "b984eb653062552f",
-    "bytes": 15496
+    "sha256_16": "9747283de2f2fadf",
+    "bytes": 15495
   },
   "docs/references.json": {
     "sha256_16": "705706da5c05665e",
