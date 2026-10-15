@@ -1121,14 +1121,22 @@ def build(N) -> Doc:
         "software; whether a farmer reading the report understands it is "
         "untested.", bold_lead="Safety under failure.")
 
-    if N["untranslated"]:
-        lit, tot = N["untranslated"]
-        D.p(f"The Tamil report translates headings and leaves {lit} of "
-            f"{tot} lines in English, including every safety warning. "
-            "Rather than machine-translate safety text, the report opens by "
-            "stating that it is not translated; native-speaker review is "
-            "required before it can be offered to Tamil-reading farmers.",
+    if N["untranslated"] and N["untranslated"][0] == 0:
+        D.p("The Tamil report was translated in full by the first author, a "
+            "native Tamil speaker, and each sentence is stored with the English "
+            "it was translated from. A sentence whose English later changes "
+            "falls back to English under a notice that the report is not fully "
+            "translated, and tests require every Tamil report to carry the "
+            "safety sentences in Tamil, to keep every number unchanged and to "
+            "keep its wording independent of the estimate. The translation has "
+            "not been checked by a second speaker or tested with farmers.",
             bold_lead="Accessibility.")
+    elif N["untranslated"]:
+        lit, tot = N["untranslated"]
+        D.p(f"The Tamil report leaves {lit} of {tot} sentences in English "
+            "and opens by stating that it is not fully translated; "
+            "native-speaker review is required before it can be offered to "
+            "Tamil-reading farmers.", bold_lead="Accessibility.")
 
     # ================================================ 6 simulation
     D.h("6. Simulated studies", 1)
