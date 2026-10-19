@@ -708,7 +708,8 @@ def build():
               "not file claims: they are \u201cautomatically worked out "
               "based on the shortfall in yield\u201d [21], as press "
               "reporting had described for Madhya Pradesh [4]. Farmers there "
-              "contest the resulting assessments [5], [22]. No figure in "
+              "contest the resulting assessments [5], [22], and "
+              "a recent study proposes that satellite yield proxies supplement and progressively replace crop-cutting experiments [34]. No figure in "
               "this paper depends on these sources.", 0.0)
     body(doc, "The assessment is administrative, but the error is not. The "
               "manual estimates yield \u201cat the smallest administrative "
@@ -762,7 +763,13 @@ def build():
               "analysis [7], [9], and field-scale yield estimation from "
               "satellite time series is an established task [16]. SICKLE [1] "
               "extends this to a multi-task setting, annotating crop type, "
-              "yield and three phenology dates over the same plots. In "
+              "yield and three phenology dates over the same plots. Methods "
+              "proposed on it since continue to report pooled metrics: a "
+              "multisensor transformer reports state-of-the-art yield MAPE "
+              "[31], and agriculture-specific pretext tasks report pooled "
+              "crop-mapping IoU and yield MAPE [32]; a 2026 review surveys "
+              "benchmark datasets for satellite image time-series "
+              "classification [33]. In "
               "smallholder regions, mapping accuracy also differs by field "
               "type: Huang et al. [28] find small, water-stressed fields the "
               "hardest to map. We ask a related but distinct question: not "
@@ -1442,7 +1449,7 @@ def build():
               + (", nor any wholly below it" if _y["n_ci_below_zero"] == 0
                  else "")
               + ". No checkpoint is shown to beat the constant, and none "
-              "is shown to be worse than it either.")
+              "is shown to be worse than it either. Failing to beat the mean on unseen units is not peculiar to SICKLE: maize-yield models from five African countries reach moderate R² within a country, but tested on an unseen country every feature set scores a negative R², worse than predicting the test-set mean [35].")
     # Decomposed 2026-10-14: the overall r is between-plot association, and
     # an earlier reading of it as season-level skill was wrong.
     _dc = _yb["decomposition"]

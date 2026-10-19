@@ -68,8 +68,10 @@ ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
 
 def figure(doc, path, caption, width=COL):
     if path is None or not Path(path).exists():
-        print(f"  figure skipped (not available): {path}")
-        return None
+        # A submission-ready build must not lose a figure silently: the
+        # caption and in-text references would then point at the wrong one.
+        raise SystemExit(f"figure not available: {path} (caption: "
+                         f"{caption[:60]}...)")
     _FIGNO[0] += 1
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -441,6 +443,17 @@ def make_figures(N):
                             "--window-size=520,1600", f"--screenshot={shot}",
                             pc.resolve().as_uri()],
                            capture_output=True, timeout=120)
+            # Edge can return before its background process writes the
+            # file, so wait for it to appear and stop growing (2026-10-20:
+            # an immediate check silently dropped this figure).
+            import time
+            last = -1
+            for _ in range(120):
+                size = shot.stat().st_size if shot.exists() else -1
+                if size > 0 and size == last:
+                    break
+                last = size
+                time.sleep(0.5)
     if shot.exists():
         from PIL import Image, ImageChops
         im = Image.open(shot).convert("RGB")
@@ -761,7 +774,13 @@ def build(N):
               "Madhya Pradesh gave them 100 % and Maharashtra 50 %, and "
               "claims are \u201cautomatically worked out based on the "
               "shortfall in yield\u201d [21]. Farmers in Madhya Pradesh "
-              "contest the resulting assessments [5], [22].", 0.0)
+              "contest the resulting assessments [5], [22]. Research "
+              "proposals go further: satellite yield proxies that "
+              "supplement and progressively replace crop-cutting "
+              "experiments [34], and systems that take satellite or "
+              "machine-learning estimates through to payouts [36], [37], "
+              "while the models behind such decisions, PMFBY triggers "
+              "included, are protected as trade secrets [38].", 0.0)
     body(doc, "The two ways such a system can err are not symmetric. A false "
               "alarm costs an inspection visit. A false reassurance, an "
               "estimate that says a damaged field looks normal, can stop a "
@@ -804,7 +823,10 @@ def build(N):
               "failed to predict crop-cut yields [29]. For index insurance, "
               "yield data covering many fields but few years lead standard "
               "estimates to understate basis risk and so overstate insurance "
-              "quality [27]. These studies concern how well an estimate can "
+              "quality [27]. Across borders the problem is starker: when "
+              "maize-yield models were tested on an unseen African "
+              "country, every feature set scored worse than the test-set "
+              "mean [35]. These studies concern how well an estimate can "
               "be measured or how a scheme should be designed; ours concerns "
               "what to do downstream of an estimate whose reliability for a "
               "given field is unknown.", 0.0)

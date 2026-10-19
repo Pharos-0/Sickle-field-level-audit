@@ -253,6 +253,78 @@
    "verification": "2026-10-14: Crossref record read (7 authors: Lobell, Azzari, Burke, Gourlay, Jin, Kilic, Murray; AJAE 102(1):202-219, 2020). Findings read from the abstract of the same team's World Bank Policy Research Working Paper 8374 (DOI 10.1596/1813-9450-8374): large discrepancies among farmer reports, sub-plot crop cuts and full-plot harvests on smallholder maize plots in Uganda, largest for farmer reports; satellite estimates explained as much or more of the variation in full-plot yields as the other measures.",
    "supports": "That farmer-reported yields can diverge from measured yields. NOT cited as evidence that satellite yield estimation fails: the same study finds satellite estimates competitive, and the text says so.",
    "uncertainty": "AJAE full text not read; findings taken from the working-paper abstract by the same authors."
+  },
+  {
+   "n": 31,
+   "entry": "T. Gong, X. Zhu, Y. Chen, and S. Xiong, “Temporal-Aware Spatial Interaction Transformer for Crop Yield Prediction Based on Multisensor Satellite Image Time Series,” IEEE Geosci. Remote Sens. Lett., vol. 22, pp. 1–5, 2025.",
+   "doi": "10.1109/LGRS.2025.3627552",
+   "type": "Journal article (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: four authors in this order, IEEE Geoscience and Remote Sensing Letters vol. 22, pp. 1-5, 2025. Found 2026-10-17 in IEEE Xplore as a paper citing SICKLE; abstract read on IEEE Xplore and again via OpenAlex: proposes TASI-Transformer, evaluated on SICKLE and CROPNET, reports state-of-the-art performance with SICKLE yield MAPE as low as 26.99 % (actual season), outperforming existing methods.",
+   "supports": "That methods proposed on SICKLE after its release report yield as a pooled MAPE and claim state-of-the-art against other learned methods.",
+   "uncertainty": "Read from the abstract only; full text not read, so whether it reports a constant baseline is not known and is not claimed."
+  },
+  {
+   "n": 32,
+   "entry": "M. R. Gupta and A. Sobti, “Time2Agri: Temporal Pretext Tasks for Agricultural Monitoring,” in Proc. AAAI Conf. on Artificial Intelligence, vol. 40, no. 45, 2026, pp. 38533–38541.",
+   "doi": "10.1609/aaai.v40i45.41195",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: two authors, Proceedings of the AAAI Conference on Artificial Intelligence 40(45):38533-38541, 2026. Found 2026-10-17 in Scopus (SICKLE in abstract) and Google Scholar's cited-by list; Scopus abstract read: three agriculture-specific self-supervised pretext tasks; on SICKLE, 69.6 % IoU on crop mapping and 30.7 % MAPE on yield prediction.",
+   "supports": "That methods proposed on SICKLE after its release report pooled crop-mapping IoU and yield MAPE.",
+   "uncertainty": "Read from the abstract only."
+  },
+  {
+   "n": 33,
+   "entry": "A. Zhang, Z. Zhang, K. Shi, and P. Tang, “Benchmark Datasets for Satellite Image Time Series Classification: A Review,” Remote Sens., vol. 18, no. 10, 1581, 2026.",
+   "doi": "10.3390/rs18101581",
+   "type": "Journal article, review (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: four authors, Remote Sensing 18(10):1581, 15 May 2026. Found 2026-10-17 in IEEE Xplore's list of works citing SICKLE and in Google Scholar's.",
+   "supports": "That benchmark datasets for satellite image time-series classification have been reviewed recently; cited only as a pointer to that literature.",
+   "uncertainty": "Title and record only; content not summarised in the text."
+  },
+  {
+   "n": 34,
+   "entry": "S. Shahin and R. P. Pradhan, “Can remote sensing-based yield proxies substitute crop cutting experiments in Indian agricultural insurance models?” Inf. Process. Agric., 2026, in press.",
+   "doi": "10.1016/j.inpa.2026.08.004",
+   "type": "Journal article, in press (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: two authors, Information Processing in Agriculture, August 2026, no volume or pages yet. Abstract read in Scopus 2026-10-17: examines whether remote-sensing yield proxies can supplement and progressively replace crop-cutting experiments in India's area-yield insurance model; proof-of-concept for rainfed paddy in the Baghelkhand region of Madhya Pradesh; DSSAT plus machine learning; R2 = 0.81 at district level from 372 farmer interactions; threshold-yield adjustment said to reduce basis risk by about 7 %.",
+   "supports": "That research proposes satellite yield proxies supplement and progressively replace crop-cutting experiments in Indian crop insurance.",
+   "uncertainty": "In press; cited from the abstract. No volume or page numbers yet: update before final submission."
+  },
+  {
+   "n": 35,
+   "entry": "Y. O. Adjei, “Do Foundation Model Embeddings Improve Cross-Country Crop Yield Generalisation? A Leave-One-Country-Out Evaluation in Sub-Saharan Africa,” arXiv:2605.08113, 2026.",
+   "doi": "https://arxiv.org/abs/2605.08113",
+   "type": "Preprint / working paper (not peer-reviewed)",
+   "verification": "2026-10-20: arXiv API read: single author, first posted 27 Apr 2026, latest version 19 Oct 2026, no journal reference. Abstract: 6,404 maize field observations from five African countries; under leave-one-country-out testing all feature sets perform poorly, with universally negative R2; Prithvi-EO embeddings give no meaningful advantage over engineered Sentinel-2 features.",
+   "supports": "That maize-yield models moved to an unseen country score negative R2, i.e. worse than predicting the test-set mean, for every feature set tested.",
+   "uncertainty": "Preprint, not peer-reviewed; cited for its stated result only. Check for a published version before final submission."
+  },
+  {
+   "n": 36,
+   "entry": "R. S. S. V. Deepthi, A. L. Priya, D. Revanth, K. Ajay, and M. Madhavi, “From Pixels to Payouts – A Satellite Based Solution,” in Proc. Int. Conf. on Knowledge Engineering and Communication Systems (ICKECS), 2024, pp. 1–5.",
+   "doi": "10.1109/ICKECS61492.2024.10617315",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: five authors in this order, ICKECS 2024, pp. 1-5. Abstract read on IEEE Xplore 2026-10-17: addresses PMFBY's delayed claims and inaccurate loss assessment with a framework integrating remote sensing and machine learning to optimise insurance resource allocation, replacing the area-based approach with a technology-driven, personalised one.",
+   "supports": "That systems are proposed which take satellite and machine-learning estimates through to PMFBY payouts.",
+   "uncertainty": "Read from the abstract only."
+  },
+  {
+   "n": 37,
+   "entry": "Merphin R, Patan Usman Khan, Cherukuri Nandakumar, Ajith V, Bandaru Venkatesh, and Ram Abishek S, “An Enhanced AI-based Agricultural Risk & Insurance Trigger System,” in Proc. Int. Conf. on Computer Networks and Inventive Communication Technologies (ICCNCT), 2026, pp. 1452–1459.",
+   "doi": "10.1109/ICCNCT68477.2026.11590693",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: six authors in this order, ICCNCT 2026, pp. 1452-1459. Abstract read on IEEE Xplore 2026-10-17: AgriInsure, an XGBoost classifier on historical crop production and district rainfall that generates crop-failure probabilities and maps predicted losses to PMFBY trigger thresholds to streamline payout recommendations.",
+   "supports": "That systems are proposed which turn machine-learning loss predictions into PMFBY payout recommendations.",
+   "uncertainty": "Names printed exactly as registered (given name then initial), since initials cannot be derived reliably from the record. Read from the abstract only."
+  },
+  {
+   "n": 38,
+   "entry": "U. S. Patil, A. Bhilare, and G. M. Joseph, “Black Boxes in the Field: Trade Secrets, Algorithmic Opacity, and a Tiered Disclosure Framework for AgTech in India,” in Proc. Int. Conf. on Artificial Intelligence and Machine Learning for Agro-Ecosystems (ICAIML-AE 2026), Advances in Intelligent Systems Research. Atlantis Press, 2026, pp. 455–466.",
+   "doi": "10.2991/978-94-6239-791-0_34",
+   "type": "Conference paper (peer-reviewed)",
+   "verification": "2026-10-20: Crossref record read: three authors, Proceedings of ICAIML-AE 2026 (Advances in Intelligent Systems Research), Atlantis Press, pp. 455-466. Abstract opening read via Google Scholar 2026-10-17: agricultural technology platforms in India contribute to decisions including parametric crop insurance triggers under PMFBY, and the machine-learning models driving these decisions are protected as trade secrets.",
+   "supports": "That the machine-learning models behind such decisions, PMFBY triggers included, are protected as trade secrets.",
+   "uncertainty": "Read from the abstract opening only."
   }
  ],
  "_numbering": "Authoring numbering. The prose in scripts/make_paper_ieee.py cites these numbers; that script maps them to IEEE order of first appearance at build time and writes the result to references_final.json. This file is never rewritten by the build."

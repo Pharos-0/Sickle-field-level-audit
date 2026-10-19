@@ -64,6 +64,16 @@
     },
     {
       "n": 7,
+      "entry": "S. Shahin and R. P. Pradhan, “Can remote sensing-based yield proxies substitute crop cutting experiments in Indian agricultural insurance models?” Inf. Process. Agric., 2026, in press.",
+      "doi": "10.1016/j.inpa.2026.08.004",
+      "type": "Journal article, in press (peer-reviewed)",
+      "verification": "2026-10-20: Crossref record read: two authors, Information Processing in Agriculture, August 2026, no volume or pages yet. Abstract read in Scopus 2026-10-17: examines whether remote-sensing yield proxies can supplement and progressively replace crop-cutting experiments in India's area-yield insurance model; proof-of-concept for rainfed paddy in the Baghelkhand region of Madhya Pradesh; DSSAT plus machine learning; R2 = 0.81 at district level from 372 farmer interactions; threshold-yield adjustment said to reduce basis risk by about 7 %.",
+      "supports": "That research proposes satellite yield proxies supplement and progressively replace crop-cutting experiments in Indian crop insurance.",
+      "uncertainty": "In press; cited from the abstract. No volume or page numbers yet: update before final submission.",
+      "was": 34
+    },
+    {
+      "n": 8,
       "entry": "Mahalanobis National Crop Forecast Centre, Dept. of Agriculture and Farmers Welfare, Government of India, “Yield Estimation System based on Technology (YES-TECH) under PMFBY: Manual for Implementation,” Jan. 2023.",
       "doi": "https://apsac.ap.gov.in/wp-content/uploads/2023/01/Document2.pdf",
       "type": "Government technical manual, superseded (not peer-reviewed)",
@@ -73,7 +83,7 @@
       "was": 20
     },
     {
-      "n": 8,
+      "n": 9,
       "entry": "D. Sani et al., “SICKLE: A Multi-Sensor Satellite Imagery Dataset Annotated With Multiple Key Cropping Parameters,” in Proc. IEEE/CVF Winter Conf. on Applications of Computer Vision (WACV), 2024, pp. 5983–5992.",
       "doi": "10.1109/WACV57701.2024.00589",
       "type": "Conference paper (peer-reviewed)",
@@ -83,7 +93,7 @@
       "was": 1
     },
     {
-      "n": 9,
+      "n": 10,
       "entry": "P. Rao et al., “Using Sentinel-1, Sentinel-2, and Planet Imagery to Map Crop Type of Smallholder Farms,” Remote Sensing, vol. 13, no. 10, 1870, 2021.",
       "doi": "10.3390/rs13101870",
       "type": "Journal article (peer-reviewed)",
@@ -93,7 +103,7 @@
       "was": 6
     },
     {
-      "n": 10,
+      "n": 11,
       "entry": "V. Sitokonstantinou, I. Papoutsis, C. Kontoes, A. Lafarga Arnal, A. P. Armesto Andrés, and J. A. Garraza Zurbano, “Scalable Parcel-Based Crop Identification Scheme Using Sentinel-2 Data Time-Series for the Monitoring of the Common Agricultural Policy,” Remote Sensing, vol. 10, no. 6, 911, 2018.",
       "doi": "10.3390/rs10060911",
       "type": "Journal article (peer-reviewed)",
@@ -103,7 +113,7 @@
       "was": 7
     },
     {
-      "n": 11,
+      "n": 12,
       "entry": "J. Reuss, J. Macdonald, S. Becker, L. Richter, and M. Körner, “The EuroCropsML time series benchmark dataset for few-shot crop type classification in Europe,” Scientific Data, vol. 12, no. 1, 664, 2025.",
       "doi": "10.1038/s41597-025-04952-7",
       "type": "Journal article (peer-reviewed, data descriptor)",
@@ -113,7 +123,7 @@
       "was": 9
     },
     {
-      "n": 12,
+      "n": 13,
       "entry": "M. L. Hunt, G. A. Blackburn, L. Carrasco, J. W. Redhead, and C. S. Rowland, “High resolution wheat yield mapping using Sentinel-2,” Remote Sensing of Environment, vol. 233, 111410, 2019.",
       "doi": "10.1016/j.rse.2019.111410",
       "type": "Journal article (peer-reviewed)",
@@ -123,7 +133,37 @@
       "was": 16
     },
     {
-      "n": 13,
+      "n": 14,
+      "entry": "T. Gong, X. Zhu, Y. Chen, and S. Xiong, “Temporal-Aware Spatial Interaction Transformer for Crop Yield Prediction Based on Multisensor Satellite Image Time Series,” IEEE Geosci. Remote Sens. Lett., vol. 22, pp. 1–5, 2025.",
+      "doi": "10.1109/LGRS.2025.3627552",
+      "type": "Journal article (peer-reviewed)",
+      "verification": "2026-10-20: Crossref record read: four authors in this order, IEEE Geoscience and Remote Sensing Letters vol. 22, pp. 1-5, 2025. Found 2026-10-17 in IEEE Xplore as a paper citing SICKLE; abstract read on IEEE Xplore and again via OpenAlex: proposes TASI-Transformer, evaluated on SICKLE and CROPNET, reports state-of-the-art performance with SICKLE yield MAPE as low as 26.99 % (actual season), outperforming existing methods.",
+      "supports": "That methods proposed on SICKLE after its release report yield as a pooled MAPE and claim state-of-the-art against other learned methods.",
+      "uncertainty": "Read from the abstract only; full text not read, so whether it reports a constant baseline is not known and is not claimed.",
+      "was": 31
+    },
+    {
+      "n": 15,
+      "entry": "M. R. Gupta and A. Sobti, “Time2Agri: Temporal Pretext Tasks for Agricultural Monitoring,” in Proc. AAAI Conf. on Artificial Intelligence, vol. 40, no. 45, 2026, pp. 38533–38541.",
+      "doi": "10.1609/aaai.v40i45.41195",
+      "type": "Conference paper (peer-reviewed)",
+      "verification": "2026-10-20: Crossref record read: two authors, Proceedings of the AAAI Conference on Artificial Intelligence 40(45):38533-38541, 2026. Found 2026-10-17 in Scopus (SICKLE in abstract) and Google Scholar's cited-by list; Scopus abstract read: three agriculture-specific self-supervised pretext tasks; on SICKLE, 69.6 % IoU on crop mapping and 30.7 % MAPE on yield prediction.",
+      "supports": "That methods proposed on SICKLE after its release report pooled crop-mapping IoU and yield MAPE.",
+      "uncertainty": "Read from the abstract only.",
+      "was": 32
+    },
+    {
+      "n": 16,
+      "entry": "A. Zhang, Z. Zhang, K. Shi, and P. Tang, “Benchmark Datasets for Satellite Image Time Series Classification: A Review,” Remote Sens., vol. 18, no. 10, 1581, 2026.",
+      "doi": "10.3390/rs18101581",
+      "type": "Journal article, review (peer-reviewed)",
+      "verification": "2026-10-20: Crossref record read: four authors, Remote Sensing 18(10):1581, 15 May 2026. Found 2026-10-17 in IEEE Xplore's list of works citing SICKLE and in Google Scholar's.",
+      "supports": "That benchmark datasets for satellite image time-series classification have been reviewed recently; cited only as a pointer to that literature.",
+      "uncertainty": "Title and record only; content not summarised in the text.",
+      "was": 33
+    },
+    {
+      "n": 17,
       "entry": "X. Huang, A. Vrieling, Y. Dou, X. Li, and A. Nelson, “Divergent crop mapping accuracies across different field types in smallholder farming regions,” Int. J. Appl. Earth Obs. Geoinf., vol. 139, 104559, 2025.",
       "doi": "10.1016/j.jag.2025.104559",
       "type": "Journal article (peer-reviewed)",
@@ -133,7 +173,7 @@
       "was": 28
     },
     {
-      "n": 14,
+      "n": 18,
       "entry": "Z. Wang et al., “Revisiting Evaluation Metrics for Semantic Segmentation: Optimization and Evaluation of Fine-grained Intersection over Union,” in Advances in Neural Information Processing Systems 36 (NeurIPS), 2023.",
       "doi": "https://proceedings.neurips.cc/paper_files/paper/2023/file/bd3611971089d466ab4ca96a20f7ab13-Paper-Datasets_and_Benchmarks.pdf",
       "type": "Conference paper (peer-reviewed)",
@@ -143,7 +183,7 @@
       "was": 8
     },
     {
-      "n": 15,
+      "n": 19,
       "entry": "R. Burnell et al., “Rethink reporting of evaluation results in AI,” Science, vol. 380, no. 6641, pp. 136–138, 2023.",
       "doi": "10.1126/science.adf6369",
       "type": "Journal article, Science Policy Forum (peer-reviewed)",
@@ -153,7 +193,7 @@
       "was": 25
     },
     {
-      "n": 16,
+      "n": 20,
       "entry": "O. E. Gundersen and S. Kjensmo, “State of the Art: Reproducibility in Artificial Intelligence,” in Proc. AAAI Conf. on Artificial Intelligence, vol. 32, no. 1, 2018.",
       "doi": "10.1609/AAAI.V32I1.11503",
       "type": "Conference paper (peer-reviewed)",
@@ -163,7 +203,7 @@
       "was": 10
     },
     {
-      "n": 17,
+      "n": 21,
       "entry": "X. Bouthillier et al., “Accounting for Variance in Machine Learning Benchmarks,” in Proc. Machine Learning and Systems (MLSys), vol. 3, 2021.",
       "doi": "https://proceedings.mlsys.org/paper_files/paper/2021/hash/0184b0cd3cfb185989f858a1d9f5c1eb-Abstract.html",
       "type": "Conference paper (peer-reviewed)",
@@ -173,7 +213,7 @@
       "was": 26
     },
     {
-      "n": 18,
+      "n": 22,
       "entry": "B. Lakshminarayanan, A. Pritzel, and C. Blundell, “Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles,” in Advances in Neural Information Processing Systems 30 (NIPS), 2017.",
       "doi": "https://proceedings.neurips.cc/paper/2017/hash/9ef2ed4b7fd2c810847ffa5fa85bce38-Abstract.html",
       "type": "Conference paper (peer-reviewed)",
@@ -183,7 +223,7 @@
       "was": 11
     },
     {
-      "n": 19,
+      "n": 23,
       "entry": "Y. Geifman and R. El-Yaniv, “Selective Classification for Deep Neural Networks,” in Advances in Neural Information Processing Systems 30 (NIPS), 2017.",
       "doi": "https://papers.neurips.cc/paper_files/paper/2017/file/4a8423d5e91fda00bb7e46540e2b0cf1-Paper.pdf",
       "type": "Conference paper (peer-reviewed)",
@@ -193,7 +233,7 @@
       "was": 12
     },
     {
-      "n": 20,
+      "n": 24,
       "entry": "A. Koukos, H.-W. Jo, V. Sitokonstantinou, I. Tsoumas, C. Kontoes, and W.-K. Lee, “Towards Global Crop Maps with Transfer Learning,” in Proc. IEEE Int. Geoscience and Remote Sensing Symposium (IGARSS), 2024, pp. 1540–1545.",
       "doi": "10.1109/IGARSS53475.2024.10641793",
       "type": "Conference paper (peer-reviewed)",
@@ -203,7 +243,7 @@
       "was": 15
     },
     {
-      "n": 21,
+      "n": 25,
       "entry": "P. Ploton et al., “Spatial validation reveals poor predictive performance of large-scale ecological mapping models,” Nature Communications, vol. 11, 4540, 2020.",
       "doi": "10.1038/s41467-020-18321-y",
       "type": "Journal article (peer-reviewed)",
@@ -213,7 +253,7 @@
       "was": 13
     },
     {
-      "n": 22,
+      "n": 26,
       "entry": "A. M. J.-C. Wadoux, G. B. M. Heuvelink, S. de Bruin, and D. J. Brus, “Spatial cross-validation is not the right way to evaluate map accuracy,” Ecological Modelling, vol. 457, 109692, 2021.",
       "doi": "10.1016/j.ecolmodel.2021.109692",
       "type": "Journal article (peer-reviewed)",
@@ -223,7 +263,7 @@
       "was": 14
     },
     {
-      "n": 23,
+      "n": 27,
       "entry": "V. Sainte Fare Garnot and L. Landrieu, “Panoptic Segmentation of Satellite Image Time Series with Convolutional Temporal Attention Networks,” in Proc. IEEE/CVF Int. Conf. on Computer Vision (ICCV), 2021.",
       "doi": "10.1109/ICCV48922.2021.00483",
       "type": "Conference paper (peer-reviewed)",
@@ -233,7 +273,7 @@
       "was": 18
     },
     {
-      "n": 24,
+      "n": 28,
       "entry": "Ö. Çiçek, A. Abdulkadir, S. S. Lienkamp, T. Brox, and O. Ronneberger, “3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation,” in Proc. MICCAI, Lecture Notes in Computer Science, vol. 9901, 2016, pp. 424–432.",
       "doi": "10.1007/978-3-319-46723-8_49",
       "type": "Conference paper (peer-reviewed)",
@@ -243,7 +283,7 @@
       "was": 17
     },
     {
-      "n": 25,
+      "n": 29,
       "entry": "X. Shi, Z. Chen, H. Wang, D.-Y. Yeung, W.-K. Wong, and W.-C. Woo, “Convolutional LSTM Network: A Machine Learning Approach for Precipitation Nowcasting,” in Advances in Neural Information Processing Systems 28 (NIPS), 2015.",
       "doi": "https://papers.nips.cc/paper_files/paper/2015/hash/07563a3fe3bbe7e3ba84431ad9d055af-Abstract.html",
       "type": "Conference paper (peer-reviewed)",
@@ -253,7 +293,17 @@
       "was": 19
     },
     {
-      "n": 26,
+      "n": 30,
+      "entry": "Y. O. Adjei, “Do Foundation Model Embeddings Improve Cross-Country Crop Yield Generalisation? A Leave-One-Country-Out Evaluation in Sub-Saharan Africa,” arXiv:2605.08113, 2026.",
+      "doi": "https://arxiv.org/abs/2605.08113",
+      "type": "Preprint / working paper (not peer-reviewed)",
+      "verification": "2026-10-20: arXiv API read: single author, first posted 27 Apr 2026, latest version 19 Oct 2026, no journal reference. Abstract: 6,404 maize field observations from five African countries; under leave-one-country-out testing all feature sets perform poorly, with universally negative R2; Prithvi-EO embeddings give no meaningful advantage over engineered Sentinel-2 features.",
+      "supports": "That maize-yield models moved to an unseen country score negative R2, i.e. worse than predicting the test-set mean, for every feature set tested.",
+      "uncertainty": "Preprint, not peer-reviewed; cited for its stated result only. Check for a published version before final submission.",
+      "was": 35
+    },
+    {
+      "n": 31,
       "entry": "M. Stigler, A. Dey, A. Hobbs, and D. Lobell, “With big data come big problems: Pitfalls in measuring basis risk for crop index insurance,” arXiv:2209.14611, 2022.",
       "doi": "https://arxiv.org/abs/2209.14611",
       "type": "Preprint / working paper (not peer-reviewed)",
@@ -263,7 +313,7 @@
       "was": 27
     },
     {
-      "n": 27,
+      "n": 32,
       "entry": "A. Paliwal and M. Jain, “The accuracy of self-reported crop yield estimates and their ability to train remote sensing algorithms,” Front. Sustain. Food Syst., vol. 4, 25, 2020.",
       "doi": "10.3389/fsufs.2020.00025",
       "type": "Journal article (peer-reviewed)",
@@ -273,7 +323,7 @@
       "was": 29
     },
     {
-      "n": 28,
+      "n": 33,
       "entry": "D. B. Lobell et al., “Eyes in the sky, boots on the ground: Assessing satellite- and ground-based approaches to crop yield measurement and analysis,” Amer. J. Agr. Econ., vol. 102, no. 1, pp. 202–219, 2020.",
       "doi": "10.1093/ajae/aaz051",
       "type": "Journal article (peer-reviewed)",

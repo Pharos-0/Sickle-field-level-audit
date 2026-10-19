@@ -149,7 +149,8 @@ def build():
               "[2]; in 2025-26 Madhya Pradesh gave them 100 % and "
               "Maharashtra 50 %, and claims are “automatically worked "
               "out based on the shortfall in yield” [21]. Farmers there "
-              "contest the resulting assessments [5], [22].", 0.0)
+              "contest the resulting assessments [5], [22], and "
+              "a recent study proposes that satellite yield proxies supplement and progressively replace crop-cutting experiments [34].", 0.0)
     body(doc, "The assessment unit is the Gram Panchayat [2], but a village "
               "estimate is assembled from the fields in it: if a model errs "
               "systematically on some fields, the errors bias the village "
@@ -189,7 +190,8 @@ def build():
               "models is a standard uncertainty signal [11], and selective "
               "prediction defers uncertain cases [12]. For index insurance, "
               "yield data covering many fields but few years overstate "
-              "insurance quality [27]. We claim none of these strands; what "
+              "insurance quality [27]. Methods proposed on SICKLE since its release continue to report pooled metrics: a multisensor transformer reports state-of-the-art yield MAPE [31], and agriculture-specific pretext tasks report pooled crop-mapping IoU and yield MAPE [32]. "
+              "We claim none of these strands; what "
               "this paper adds is their measurement, together, on a "
               "benchmark whose objects are farm fields with an "
               "administrative consequence.", 0.0)
@@ -375,7 +377,7 @@ def build():
               f"{_sgn(yb['ci95'][0], '+.1f')} to {_sgn(yb['ci95'][1], '+.1f')})"
               f", and none of the {yv['n_checkpoints']} intervals lies "
               "wholly above or below zero: no checkpoint is shown to beat "
-              "the constant, and none is shown to be worse.", 0.0)
+              "the constant, and none is shown to be worse. Failing to beat the mean on unseen units is not peculiar to SICKLE: maize-yield models from five African countries reach moderate R² within a country, but tested on an unseen country every feature set scores a negative R², worse than predicting the test-set mean [35].", 0.0)
     body(doc, f"The best checkpoint correlates with the reference at "
               f"r = {_sgn(yb['pearson_r'], '+.3f')}, but that association "
               f"lies between plots: the {bp['n']} plot means correlate at "
