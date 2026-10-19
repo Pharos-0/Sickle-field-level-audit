@@ -144,6 +144,7 @@ def tile(ax, R, s, plot, mode, scale=8):
 def main() -> int:
     import matplotlib
     matplotlib.use("Agg")
+    import _vector_figs  # noqa: F401,E402  (vector PDF beside every PNG)
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 

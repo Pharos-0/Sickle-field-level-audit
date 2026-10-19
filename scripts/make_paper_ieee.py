@@ -1320,13 +1320,13 @@ def build():
               "are simply easier, which would make the pooled figure "
               "optimistic in a predictable way: field IoU shows no "
               "relationship with field size that the data can distinguish "
-              f"from zero (Spearman {_sp:+.3f}, 95 % CI "
-              f"{_spci[0]:+.3f} to {_spci[1]:+.3f}; Fig. 5c), so the pooled "
+              f"from zero (Spearman {_sgn(_sp, '+.3f')}, 95 % CI "
+              f"{_sgn(_spci[0], '+.3f')} to {_sgn(_spci[1], '+.3f')}; Fig. 5c), so the pooled "
               "figure is dominated by a few fields in weight without those "
               "fields being demonstrably better. The second is that the gap is a fixed "
               "optimism that could be subtracted: across the released "
-              f"checkpoints it ranges from {min(n['gaps']):+.4f} to "
-              f"{max(n['gaps']):+.4f}, and "
+              f"checkpoints it ranges from {_sgn(min(n['gaps']), '+.4f')} to "
+              f"{_sgn(max(n['gaps']), '+.4f')}, and "
               f"{', '.join(n['gap_neg']) if n['gap_neg'] else 'no checkpoint'} "
               + ("score" if len(n['gap_neg']) > 1 else "scores")
               + " higher per-field than pooled. The two metrics disagree "
@@ -1402,7 +1402,7 @@ def build():
         c = tb.rows[0].cells[i]; c.text = h
         for p_ in c.paragraphs:
             for r_ in p_.runs: r_.bold = True; r_.font.size = Pt(7.5)
-    for t, lab, u in (("crop_yield", "Yield", "kg"),
+    for t, lab, u in (("crop_yield", "Yield", "kg/acre"),
                       ("harvesting_date", "Harvest", "d"),
                       ("transplanting_date", "Transplant", "d")):
         v = n[t]; row = tb.add_row().cells
@@ -1501,7 +1501,7 @@ def build():
     body(doc, "Field IoU correlates positively between every pair of "
               f"independently seeded runs: across the {n['n_seed_pairs']} "
               f"pairs the Pearson correlation ranges from "
-              f"r = {min(n['seed_r']):+.2f} to {max(n['seed_r']):+.2f}. Of "
+              f"r = {_sgn(min(n['seed_r']), '+.2f')} to {_sgn(max(n['seed_r']), '+.2f')}. Of "
               f"the {n['n_bad_fields']} fields whose mean field IoU is below "
               f"0.5, {n['n_bad_always']} are below 0.5 in every run "
               "(Fig. 7). How well a field is mapped is thus largely a "
@@ -1534,8 +1534,8 @@ def build():
               "disagreement, which needs several independently trained "
               "models, and mean confidence, which needs one. Both correlate "
               "with field IoU in the useful direction (r = "
-              f"{tg['seed_disagreement']['corr_with_iou']:+.2f} and "
-              f"{tg['low_confidence']['corr_with_iou']:+.2f}). Referring the "
+              f"{_sgn(tg['seed_disagreement']['corr_with_iou'], '+.2f')} and "
+              f"{_sgn(tg['low_confidence']['corr_with_iou'], '+.2f')}). Referring the "
               f"top half by confidence catches {d50c['n_caught']} of the "
               f"{tg['n_bad']} (95 % CI {d50c['recall_ci']['lo']:.0%}–"
               f"{d50c['recall_ci']['hi']:.0%}) at "
@@ -1553,8 +1553,8 @@ def build():
               "97.5th percentile. And a ranking that needs no model at all, "
               "checking the smallest fields first, scores "
               f"{_sf['auroc']:.3f}; the confidence signal's advantage over it "
-              f"is {_lcb['delta_auroc']:+.3f} (95 % CI {_lcb['ci'][0]:+.3f} "
-              f"to {_lcb['ci'][1]:+.3f}).")
+              f"is {_sgn(_lcb['delta_auroc'], '+.3f')} (95 % CI {_sgn(_lcb['ci'][0], '+.3f')} "
+              f"to {_sgn(_lcb['ci'][1], '+.3f')}).")
     body(doc, "Being no better than size is not the same as being size, and "
               "the two can be told apart. Permuting the signal within size "
               "terciles leaves the size-to-failure relationship exactly "
@@ -1565,8 +1565,8 @@ def build():
               "information improves a ranking is not demonstrated, since "
               "the screen must beat size in either direction and its gain "
               "over the stronger direction has an interval of "
-              f"[{_sa['ci_vs_smaller_first'][0]:+.3f}, "
-              f"{_sa['ci_vs_smaller_first'][1]:+.3f}]. We report the crop-type "
+              f"[{_sgn(_sa['ci_vs_smaller_first'][0], '+.3f')}, "
+              f"{_sgn(_sa['ci_vs_smaller_first'][1], '+.3f')}]. We report the crop-type "
               "screen as carrying information beyond field size, as not "
               "shown to rank unreliable fields better than size, and as not "
               "established.")
@@ -1657,7 +1657,7 @@ def build():
                   f"{tf['auroc']:.3f} with 95\u202f% CI "
                   f"[{tf['auroc_ci']['lo']:.3f}, {tf['auroc_ci']['hi']:.3f}] "
                   f"against 0.500 for random referral, and Spearman "
-                  f"{tf['spearman_signal_vs_ape']:+.3f} between the signal "
+                  f"{_sgn(tf['spearman_signal_vs_ape'], '+.3f')} between the signal "
                   f"and the realised error. The interval includes 0.5, so "
                   f"the signal is not shown to rank yield errors better than "
                   f"chance. The point estimate in fact sits below 0.5, and "
@@ -1803,8 +1803,8 @@ def build():
               "signal carries some information that field size does not, "
               "but its gain over simply checking the smallest fields first "
               "has an interval of "
-              f"[{_sad['ci_vs_smaller_first'][0]:+.3f}, "
-              f"{_sad['ci_vs_smaller_first'][1]:+.3f}], and on yield the "
+              f"[{_sgn(_sad['ci_vs_smaller_first'][0], '+.3f')}, "
+              f"{_sgn(_sad['ci_vs_smaller_first'][1], '+.3f')}], and on yield the "
               "equivalent signal fails outright. We therefore present "
               "recurrence as the reason the question is worth asking, not as "
               "evidence that a referral rule built on it would work.", 0.0)
@@ -1930,8 +1930,8 @@ def build():
               "label-free confidence signal carries some information that "
               f"field size does not (p = {_t1['p_one_sided']:.3f}), but it "
               "does not beat checking the smallest fields first (gain "
-              f"interval [{_sa['ci_vs_smaller_first'][0]:+.3f}, "
-              f"{_sa['ci_vs_smaller_first'][1]:+.3f}]). For yield, the "
+              f"interval [{_sgn(_sa['ci_vs_smaller_first'][0], '+.3f')}, "
+              f"{_sgn(_sa['ci_vs_smaller_first'][1], '+.3f')}]). For yield, the "
               "quantity a payout uses, ensemble dispersion ranks error at "
               f"AUROC {_ys['auroc']:.2f}, no better than chance.")
     body(doc, "Two recommendations follow, and no more. Benchmarks that feed "

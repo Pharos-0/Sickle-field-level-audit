@@ -9,6 +9,7 @@ import csv, glob, json
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
+import _vector_figs  # noqa: F401,E402  (vector PDF beside every PNG)
 import matplotlib.pyplot as plt
 import numpy as np
 

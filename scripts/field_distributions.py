@@ -375,6 +375,7 @@ def regression():
 def figures(lad, x, w, rel, reg):
     import matplotlib
     matplotlib.use("Agg")
+    import _vector_figs  # noqa: F401,E402  (vector PDF beside every PNG)
     import matplotlib.pyplot as plt
     plt.rcParams.update({"font.size": 7.2, "figure.dpi": 400,
                          "savefig.bbox": "tight", "axes.grid": True,

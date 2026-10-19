@@ -1,50 +1,66 @@
 {
   "docs/SICKLE_Field_Level_Audit_IEEE.docx": {
-    "sha256_16": "7bf30b538255b487",
-    "bytes": 928902
+    "sha256_16": "676b3240a72c4e4c",
+    "bytes": 928900
   },
   "docs/SICKLE_Field_Level_Audit_IEEE.pdf": {
-    "sha256_16": "579ec982ca7c4174",
-    "bytes": 818956
+    "sha256_16": "26152f04f3affff0",
+    "bytes": 819213
   },
   "docs/Thesis_Paper.docx": {
-    "sha256_16": "abc2206785c7c18a",
+    "sha256_16": "5cb6164eed73d428",
     "bytes": 545202
   },
   "docs/Thesis_Paper.pdf": {
-    "sha256_16": "567e2c326e3c0ee1",
+    "sha256_16": "5f4a7372065f975c",
     "bytes": 796210
   },
   "docs/Policy_Brief.docx": {
-    "sha256_16": "665ebd31e0135934",
+    "sha256_16": "8b0624b3e919fb53",
     "bytes": 39984
   },
   "docs/Policy_Brief.pdf": {
-    "sha256_16": "586e281c7dd35e60",
+    "sha256_16": "7daabb615f4aa8b9",
     "bytes": 254434
   },
   "docs/SICKLE_Guard_IEEE.docx": {
-    "sha256_16": "9dea80c6fc3e0ca2",
+    "sha256_16": "b3b500b977c42ed4",
     "bytes": 983475
   },
   "docs/SICKLE_Guard_IEEE.pdf": {
-    "sha256_16": "990c870e22878aba",
+    "sha256_16": "fafb5056617c5a31",
     "bytes": 1007951
   },
   "docs/SICKLE_Audit_IEEE_conf.docx": {
-    "sha256_16": "a736b27c3d8b56f6",
+    "sha256_16": "85dd40fd5b2dc899",
     "bytes": 823523
   },
   "docs/SICKLE_Audit_IEEE_conf.pdf": {
-    "sha256_16": "d3573dbe5823f235",
+    "sha256_16": "7d68653bd4f78601",
     "bytes": 677167
+  },
+  "docs/rse/SICKLE_Audit_RSE.docx": {
+    "sha256_16": "ad6e4eee47579b8a",
+    "bytes": 930706
+  },
+  "docs/rse/SICKLE_Audit_RSE.pdf": {
+    "sha256_16": "8287e4a1a7a455f1",
+    "bytes": 1196620
+  },
+  "docs/rse/SICKLE_Audit_RSE_highlights.docx": {
+    "sha256_16": "c3e7096262dfb5e5",
+    "bytes": 36868
+  },
+  "docs/references_rse.json": {
+    "sha256_16": "84a5c88a478fdbc4",
+    "bytes": 13254
   },
   "docs/references_thesis.json": {
     "sha256_16": "cebc9b23db9f045b",
     "bytes": 2322
   },
   "docs/REFERENCE_VERIFICATION.xlsx": {
-    "sha256_16": "e36566807e6595b6",
+    "sha256_16": "c3c3d856e7e6eb7c",
     "bytes": 17212
   },
   "docs/references.json": {

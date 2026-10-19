@@ -321,8 +321,8 @@ def build():
            "same as a quantile plot. (c) Field IoU against the pixels a field "
            "contributes; no trend is distinguishable from zero.")
     body(doc, "The same fields fail in every run: field IoU correlates "
-              f"between every pair of seeds (r = {min(n['seed_r']):+.2f} to "
-              f"{max(n['seed_r']):+.2f}), and {n['n_bad_always']} of the "
+              f"between every pair of seeds (r = {_sgn(min(n['seed_r']), '+.2f')} to "
+              f"{_sgn(max(n['seed_r']), '+.2f')}), and {n['n_bad_always']} of the "
               f"{n['n_bad_fields']} failing fields are below 0.5 in all of "
               "them (Fig. 4). The pattern holds across tasks (Table I): for "
               "every regression task the typical field-season is better than "
@@ -596,7 +596,7 @@ def self_check(text: str, n) -> list[str]:
     dc = n["yvc"]["best"]["decomposition"]
     for v in (dc["between_plots"]["r"], dc["within_plots"]["r"]):
         if _sgn(v, "+.3f") not in text:
-            problems.append(f"decomposition value {v:+.3f} not quoted")
+            problems.append(f"decomposition value {_sgn(v, '+.3f')} not quoted")
     if "[author" in low or "to be completed" in low:
         problems.append("author placeholder left in")
     return problems

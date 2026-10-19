@@ -73,6 +73,10 @@ ARTEFACTS = [
     "docs/SICKLE_Guard_IEEE.pdf",
     "docs/SICKLE_Audit_IEEE_conf.docx",
     "docs/SICKLE_Audit_IEEE_conf.pdf",
+    "docs/rse/SICKLE_Audit_RSE.docx",
+    "docs/rse/SICKLE_Audit_RSE.pdf",
+    "docs/rse/SICKLE_Audit_RSE_highlights.docx",
+    "docs/references_rse.json",
     "docs/references_thesis.json",
     "docs/REFERENCE_VERIFICATION.xlsx",
     "docs/references.json",
@@ -159,6 +163,11 @@ def main() -> int:
         # version, so the two cannot disagree on a number.
         ("8e/15 audit paper, conference version",
          ["scripts/make_paper_ieee_conf.py"], True),
+        # The same audit as a Remote Sensing of Environment submission: the
+        # journal build converted to the journal's requirements, with its own
+        # checks (abstract length, highlights, name-date citations).
+        ("8f/15 audit paper, RSE submission",
+         ["scripts/make_paper_rse.py"], True),
         ("9/15 reference table",
          ["scripts/make_reference_table.py"], True),
     ]
@@ -178,6 +187,9 @@ def main() -> int:
         steps.append(("10e/15 conference audit paper PDF export",
                       ["scripts/export_pdf.py",
                        "docs/SICKLE_Audit_IEEE_conf.docx"], True))
+        steps.append(("10f/15 RSE submission PDF export",
+                      ["scripts/export_pdf.py",
+                       "docs/rse/SICKLE_Audit_RSE.docx"], True))
 
     for label, cmd, required in steps:
         ok, _ = run(label, cmd, required)
