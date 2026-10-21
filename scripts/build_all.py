@@ -168,6 +168,8 @@ def main() -> int:
         # checks (abstract length, highlights, name-date citations).
         ("8f/15 audit paper, RSE submission",
          ["scripts/make_paper_rse.py"], True),
+        ("8g/15 RSE cover letter, e-mail draft and checklist",
+         ["scripts/make_rse_letters.py"], True),
         ("9/15 reference table",
          ["scripts/make_reference_table.py"], True),
     ]

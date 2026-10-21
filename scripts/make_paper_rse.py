@@ -68,11 +68,15 @@ EMAILS = {"Pharos Sophy Samuel T J": "tjpharossophysamuel@gmail.com",
 # ------------------------------------------------- decisions for the authors
 # None = not yet confirmed. The draft prints the proposed text highlighted,
 # prefixed "TO CONFIRM"; --final refuses to build until every item is set.
-CORRESPONDING = None          # e.g. "S. Ganesh Kumar"
-CREDIT = None                 # {name: "roles"}
-COMPETING = None              # the declaration text, once confirmed
-FUNDING = None                # the funding sentence, once confirmed
-GENAI = None                  # the AI-use declaration, once confirmed
+# Confirmed by the first author on 2026-10-21: the guide is corresponding
+# author; CRediT roles, the competing-interest and funding statements and
+# the generative-AI declaration as proposed below. Code availability is
+# still open (repository not yet public).
+CORRESPONDING = "S. Ganesh Kumar"
+CREDIT = "proposed"           # resolved to PROPOSED["credit"] below
+COMPETING = "proposed"
+FUNDING = "proposed"
+GENAI = "proposed"
 CODE_AVAILABILITY = None      # repository URL or the on-request wording
 
 PROPOSED = {
@@ -101,6 +105,10 @@ PROPOSED = {
             "the corresponding author on request and will be deposited in a "
             "public repository on acceptance.",
 }
+
+# Family names, for the submission system and name-date citation of this
+# paper (confirmed by the first author on 2026-10-21).
+FAMILY = {"Pharos Sophy Samuel T J": "Samuel", "S. Ganesh Kumar": "Kumar"}
 
 KEYWORDS = ["Crop monitoring", "Reproducibility", "Evaluation metrics",
             "Smallholder agriculture", "Crop insurance",
@@ -166,6 +174,11 @@ CITE_GROUP = re.compile(r"\[(\d+)\](?:,\s*\[\d+\])*")
 
 # ---------------------------------------------------------------- build
 def build(final: bool = False) -> Path:
+    global CREDIT, COMPETING, FUNDING, GENAI
+    CREDIT = PROPOSED["credit"] if CREDIT == "proposed" else CREDIT
+    COMPETING = PROPOSED["competing"] if COMPETING == "proposed" else COMPETING
+    FUNDING = PROPOSED["funding"] if FUNDING == "proposed" else FUNDING
+    GENAI = PROPOSED["genai"] if GENAI == "proposed" else GENAI
     pending = {k: v for k, v in (("corresponding", CORRESPONDING),
                                  ("credit", CREDIT), ("competing", COMPETING),
                                  ("funding", FUNDING), ("genai", GENAI),
