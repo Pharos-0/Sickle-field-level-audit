@@ -107,8 +107,10 @@ PROPOSED = {
 }
 
 # Family names, for the submission system and name-date citation of this
-# paper (confirmed by the first author on 2026-10-21).
-FAMILY = {"Pharos Sophy Samuel T J": "Samuel", "S. Ganesh Kumar": "Kumar"}
+# paper. The first author's name must read exactly as on the Aadhaar card,
+# "Pharos Sophy Samuel T J" (2026-10-21); since a byline prints given name
+# then family name, the family-name field carries "Samuel T J".
+FAMILY = {"Pharos Sophy Samuel T J": "Samuel T J", "S. Ganesh Kumar": "Kumar"}
 
 KEYWORDS = ["Crop monitoring", "Reproducibility", "Evaluation metrics",
             "Smallholder agriculture", "Crop insurance",
