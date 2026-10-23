@@ -57,7 +57,7 @@ def protocol_configs():
 
 def runs():
     """The protocol's runs only. Five v5 runs (seed 1, 50-250 plots) predate
-    commit 64f48cb, which replaced v5 with v2_radar on 2026-10-10 because v5
+    commit a8aa0dc (64f48cb before the 2026-10-23 history rewrite), which replaced v5 with v2_radar on 2026-10-10 because v5
     also carries augmentation and class weighting; they are not re-scored."""
     keep = set(protocol_configs())
     out = []

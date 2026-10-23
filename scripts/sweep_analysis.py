@@ -202,7 +202,7 @@ def main() -> int:
            "protocol_frozen": PROTO["frozen"], "checks": chk, "reported": True,
            "excluded_runs": {
                "runs": sorted(set(excluded)),
-               "reason": "config v5, superseded by v2_radar in commit 64f48cb "
+               "reason": "config v5, superseded by v2_radar in commit a8aa0dc (64f48cb before the 2026-10-23 history rewrite) "
                          "(2026-10-10) because v5 also carries augmentation "
                          "and class weighting; not in the protocol's design"}}
     all_deltas = []
